@@ -43,7 +43,9 @@ jobs:
         run: npm run build
 
       - name: 📊 SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4db3827f80164c0fcbc
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'pull_request'
+        # Sonar'ın kendi resmi eklentisi olduğu için master dalını kullanmak kurumsal bir istisnadır.
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           # GITHUB_TOKEN, GitHub Actions tarafından otomatik olarak sağlanır (PR'lara yorum yapabilmesi için)
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
