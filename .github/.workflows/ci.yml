@@ -1,0 +1,51 @@
+name: OleAI Web CI Pipeline
+
+on:
+  # Pipeline'ın hangi durumlarda tetikleneceğini belirliyoruz
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-analyze:
+    name: Build, Lint and SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # SonarCloud'un projenin durumunu tam analiz edebilmesi için 
+          # tüm git geçmişini (history) çekmesi gerekir. Bu çok kritik bir ayardır.
+          fetch-depth: 0  
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # Bağımlılıkların daha hızlı kurulması için önbellekleme
+
+      - name: 📦 Install Dependencies
+        # Senior Pratiği: CI ortamlarında 'npm install' yerine HER ZAMAN 'npm ci' kullanılır.
+        # Bu sayede package-lock.json dosyasındaki birebir aynı sürümler kurulur, sürpriz yaşanmaz.
+        run: npm ci
+
+      - name: 🧹 Run Linter
+        # ESLint ve Prettier kurallarımızı test ediyoruz
+        run: npm run lint
+
+      - name: 🏗️ Type Check & Build
+        # TypeScript tip kontrolünü ve Vite derlemesini yapıyoruz.
+        # Herhangi bir tip hatası (Örn: any kullanımı veya eksik prop) varsa pipeline burada patlar.
+        run: npm run build
+
+      - name: 📊 SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          # GITHUB_TOKEN, GitHub Actions tarafından otomatik olarak sağlanır (PR'lara yorum yapabilmesi için)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # SONAR_TOKEN, senin Repository Secrets kısmına eklediğin değerdir
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
