@@ -44,7 +44,7 @@ jobs:
 
       - name: 📊 SonarCloud Scan
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'pull_request'
-        uses: SonarSource/sonarcloud-github-action@v3.1.0
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           # GITHUB_TOKEN, GitHub Actions tarafından otomatik olarak sağlanır (PR'lara yorum yapabilmesi için)
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
