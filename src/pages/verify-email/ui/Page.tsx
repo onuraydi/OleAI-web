@@ -70,7 +70,7 @@ export default function VerifyEmailPage() {
         });
         setAuth(true, loginResponse.user);
         setIsSuccess(true);
-        setTimeout(() => navigate("/home"), 1500);
+        setTimeout(() => navigate("/onboarding"), 1500);
       } else {
         // Password yoksa (sayfa yenilendiyse vb.) login'e yönlendir
         setIsSuccess(true);
