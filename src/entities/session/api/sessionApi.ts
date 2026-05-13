@@ -8,7 +8,10 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  accessToken: string;
+  accessToken: {
+    token: string;
+    expiration: string;
+  };
   refreshToken: {
     token: string;
     expiration: string;
@@ -52,5 +55,9 @@ export const sessionApi = {
     await apiInstance.post("/auth/resend-otp", {
       request: { email },
     });
+  },
+  refreshToken: async (): Promise<string> => {
+    const response = await apiInstance.post<{ token: string; expiration: string }>("/auth/refresh-token");
+    return response.data.token;
   },
 };

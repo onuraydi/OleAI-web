@@ -18,7 +18,6 @@ export const apiInstance: AxiosInstance = axios.create({
 
 // CSRF Interceptor
 apiInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  // Get token from cookie manually if needed, but usually Axios handles XSRF-TOKEN if configured.
   // Standard backend implementations expect the token in 'X-XSRF-TOKEN' header.
   const xsrfToken = document.cookie
     .split('; ')

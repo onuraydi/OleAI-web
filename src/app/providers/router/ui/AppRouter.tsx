@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage } from '@/pages';
+import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage } from '@/pages';
 import { ProtectedRoute } from './ProtectedRoute';
 
 const router = createBrowserRouter([
@@ -34,7 +34,14 @@ const router = createBrowserRouter([
         path: '/home',
         element: <HomePage />,
       },
-      // Add more protected routes here
+      {
+        path: '/onboarding',
+        element: <OnboardingPage />,
+      },
+      {
+        path: '/preferences',
+        element: <PreferencesPage />,
+      },
     ],
   },
   {

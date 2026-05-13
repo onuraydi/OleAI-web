@@ -45,12 +45,12 @@ export default function OnboardingPage() {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      navigate("/home");
+      navigate("/preferences");
     }
   };
 
   const skipOnboarding = () => {
-    navigate("/home");
+    navigate("/preferences");
   };
 
   return (

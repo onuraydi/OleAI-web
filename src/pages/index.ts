@@ -6,3 +6,4 @@ export * from './forgot-password';
 export * from './register';
 export * from './verify-email';
 export * from './onboarding';
+export * from './preferences';
