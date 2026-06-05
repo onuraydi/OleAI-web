@@ -1,4 +1,4 @@
-import { apiInstance } from "@/shared/api/base";
+import { apiInstance } from "@/shared/api";
 
 export interface DietaryPreference {
   id: string;

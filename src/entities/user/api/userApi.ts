@@ -1,4 +1,35 @@
-import { apiInstance } from "@/shared/api/base";
+import { apiInstance } from "@/shared/api";
+
+/**
+ * Matches backend's UserProfileResponse exactly.
+ * Note: Backend does NOT include 'role' in the profile response.
+ */
+export interface UserProfileResponse {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  isEmailVerified: boolean;
+  createdDate: string;
+  dietaryPreferences: DietaryPreferenceItemResponse[];
+  allergies: AllergyRestrictionItemResponse[];
+  dislikedIngredients: DislikedIngredientItemResponse[];
+}
+
+export interface DietaryPreferenceItemResponse {
+  id: string;
+  name: string;
+}
+
+export interface AllergyRestrictionItemResponse {
+  id: string;
+  name: string;
+}
+
+export interface DislikedIngredientItemResponse {
+  ingredientId: string;
+  displayName: string;
+}
 
 export interface UpdateUserPreferencesRequest {
   dietaryPreferenceIds: string[];
@@ -13,8 +44,8 @@ export interface UpdateUserDislikedIngredientsRequest {
 }
 
 export const userApi = {
-  getProfile: async () => {
-    const response = await apiInstance.get("/users/me");
+  getProfile: async (): Promise<UserProfileResponse> => {
+    const response = await apiInstance.get<UserProfileResponse>("/users/me");
     return response.data;
   },
   updateDietaryPreferences: async (request: UpdateUserPreferencesRequest): Promise<{ message: string }> => {
