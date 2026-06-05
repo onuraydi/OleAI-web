@@ -15,9 +15,9 @@ export const PantryStatus = () => {
           </div>
         </div>
         <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest mb-4">Dolabındaki Malzemeler</p>
-        <h3 className="text-4xl font-black text-foreground mb-2">24</h3>
+        <h3 className="text-4xl font-black text-muted-foreground/40 mb-2">--</h3>
         <p className="text-sm text-muted-foreground flex items-center gap-1 font-medium">
-          <span className="text-primary flex items-center">+3</span> bu hafta eklendi
+          <span className="text-primary/60 flex items-center">Dolabını bağla</span> başlamak için
         </p>
       </motion.div>
 
@@ -32,9 +32,9 @@ export const PantryStatus = () => {
           </div>
         </div>
         <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest mb-4">Tazeliği Geçmek Üzere</p>
-        <h3 className="text-4xl font-black text-foreground mb-2">5</h3>
+        <h3 className="text-4xl font-black text-muted-foreground/40 mb-2">--</h3>
         <p className="text-sm text-muted-foreground flex items-center gap-1 font-medium">
-          <span className="text-amber-500 flex items-center">Hemen</span> kullanılması önerilir
+          <span className="text-amber-500/60 flex items-center">Veri yok</span> henüz takip edilmiyor
         </p>
       </motion.div>
 

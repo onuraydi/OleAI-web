@@ -4,3 +4,7 @@ export * from './features';
 export * from './stats';
 export * from './cta';
 export * from './footer';
+export * from './sidebar';
+export * from './dashboard-header';
+export * from './pantry-status';
+export * from './recipe-feed';
