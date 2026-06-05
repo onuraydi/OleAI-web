@@ -6,7 +6,8 @@ import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
  * Features:
  * - withCredentials: true for HttpOnly cookies.
  * - CSRF protection via X-XSRF-TOKEN.
- * - Centralized error handling.
+ * - Automatic Token Refresh on 401.
+ * - Request Queue for concurrent failures.
  */
 export const apiInstance: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -16,9 +17,22 @@ export const apiInstance: AxiosInstance = axios.create({
   },
 });
 
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 // CSRF Interceptor
 apiInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  // Standard backend implementations expect the token in 'X-XSRF-TOKEN' header.
   const xsrfToken = document.cookie
     .split('; ')
     .find((row) => row.startsWith('XSRF-TOKEN='))
@@ -31,30 +45,47 @@ apiInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// Response Interceptor for Error Handling
+// Response Interceptor for Autonomous Re-Auth
 apiInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response) {
-      const { status } = error.response;
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If 401 and not already retrying
+    if (error.response?.status === 401 && !originalRequest._retry) {
       
-      // Global 401 (Unauthorized) handling - should trigger re-auth or logout
-      if (status === 401) {
-        // Handle 401 logic here or via a dedicated event bus/store
-        console.error('[API] Unauthorized - 401');
+      // If it's a refresh-token request failing, logout and reject
+      if (originalRequest.url?.includes('refresh-token')) {
+        return Promise.reject(error);
       }
-      
-      // Global 403 (Forbidden)
-      if (status === 403) {
-        console.error('[API] Forbidden - 403');
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => apiInstance(originalRequest))
+          .catch((err) => Promise.reject(err));
       }
-      
-      // Global 500 (Server Error)
-      if (status >= 500) {
-        console.error('[API] Internal Server Error - 500+');
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Attempt to refresh the token using HttpOnly cookies
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/refresh-token`, {}, { withCredentials: true });
+        
+        processQueue(null);
+        return apiInstance(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        // Dispatch a custom event or let the store handle logout
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

@@ -13,6 +13,10 @@ export interface UpdateUserDislikedIngredientsRequest {
 }
 
 export const userApi = {
+  getProfile: async () => {
+    const response = await apiInstance.get("/users/me");
+    return response.data;
+  },
   updateDietaryPreferences: async (request: UpdateUserPreferencesRequest): Promise<{ message: string }> => {
     const response = await apiInstance.put<{ message: string }>("/users/me/dietary-preferences", request);
     return response.data;

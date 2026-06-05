@@ -7,10 +7,10 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ redirectPath = '/login' }: ProtectedRouteProps) => {
   const isAuth = useSessionStore((state) => state.isAuth);
-  const isLoading = useSessionStore((state) => state.isLoading);
+  const isInitialized = useSessionStore((state) => state.isInitialized);
 
-  if (isLoading) {
-    return <div>Loading session...</div>; // TODO: Replace with a proper skeleton/spinner
+  if (!isInitialized) {
+    return null; // Return null to avoid flickering before session check is done
   }
 
   if (!isAuth) {
