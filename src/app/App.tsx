@@ -6,7 +6,8 @@ import { useSessionStore } from '@/entities/session';
 import '../index.css';
 
 function App() {
-  const { initialize, logout } = useSessionStore();
+  const initialize = useSessionStore((s) => s.initialize);
+  const logout = useSessionStore((s) => s.logout);
 
   useEffect(() => {
     initialize();
