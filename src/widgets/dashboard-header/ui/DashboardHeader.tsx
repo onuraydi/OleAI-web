@@ -30,12 +30,12 @@ export const DashboardHeader = () => {
         <div className="flex items-center gap-3 pl-2">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-foreground leading-none mb-1">
-              {user?.email.split('@')[0] || "Şef Onur"}
+              {user?.email?.split('@')[0] || "Şef Onur"}
             </p>
             <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Altın Üye</p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary font-black shadow-lg shadow-primary/5">
-            {user?.email[0].toUpperCase() || "O"}
+            {user?.email?.[0]?.toUpperCase() || "O"}
           </div>
         </div>
 
