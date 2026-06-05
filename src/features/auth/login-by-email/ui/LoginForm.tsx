@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { AxiosError } from "axios";
 import { Button, Input, Checkbox, Label } from "@/shared/ui";
 import { Mail, Lock, Eye, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { useSessionStore } from "@/entities/session";
-import { sessionApi } from "@/entities/session/api/sessionApi";
+import { useSessionStore, sessionApi } from "@/entities/session";
 import { useNavigate, Link } from "react-router-dom";
 
 const loginSchema = z.object({
@@ -20,7 +20,7 @@ export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const setAuth = useSessionStore((state) => state.setAuth);
+  const initialize = useSessionStore((state) => state.initialize);
   const navigate = useNavigate();
 
   const {
@@ -38,38 +38,39 @@ export const LoginForm = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await sessionApi.login({
+      await sessionApi.login({
         request: {
           email: data.email,
           password: data.password,
         },
       });
-      setAuth(true, response.user);
+      // Fetch full profile to determine onboarding status
+      await initialize();
       navigate("/home");
-    } catch (err: any) {
-      const errorData = err.response?.data;
-      // Backend PascalCase veya camelCase dönebilir, ikisini de kontrol et
-      const errorCode = errorData?.errorCode || errorData?.ErrorCode;
-      const errorMessage = errorData?.detail || errorData?.Detail || errorData?.message;
-      
-      console.log("[Login Error]", { errorCode, errorMessage, errorData });
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        const errorData = err.response?.data;
+        // Backend PascalCase veya camelCase dönebilir, ikisini de kontrol et
+        const errorCode = errorData?.errorCode || errorData?.ErrorCode;
+        const errorMessage = errorData?.detail || errorData?.Detail || errorData?.message;
 
-      // Eğer e-posta doğrulanmamışsa (ErrorCode üzerinden kontrol), doğrulama sayfasına yönlendir
-      if (errorCode === "EMAIL_NOT_VERIFIED") {
-        // Otomatik olarak yeni kod gönder
-        try {
-          await sessionApi.resendOtp(data.email);
-        } catch (resendErr) {
-          console.error("[Resend Error]", resendErr);
+        // Eğer e-posta doğrulanmamışsa (ErrorCode üzerinden kontrol), doğrulama sayfasına yönlendir
+        if (errorCode === "EMAIL_NOT_VERIFIED") {
+          // Otomatik olarak yeni kod gönder
+          try {
+            await sessionApi.resendOtp(data.email);
+          } catch {
+            // Silent fail — resend is best-effort
+          }
+
+          navigate(`/verify-email?email=${encodeURIComponent(data.email)}`);
+          return;
         }
-        
-        navigate(`/verify-email?email=${encodeURIComponent(data.email)}`, {
-          state: { password: data.password }
-        });
-        return;
-      }
 
-      setError(errorMessage || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+        setError(errorMessage || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+      } else {
+        setError("Beklenmeyen bir hata oluştu.");
+      }
     } finally {
       setIsLoading(false);
     }

@@ -1,10 +1,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { AxiosError } from "axios";
 import { Button, Input, Label } from "@/shared/ui";
 import { Mail, Lock, User, ArrowRight, Loader2, RotateCcw } from "lucide-react";
 import { useState } from "react";
-import { sessionApi } from "@/entities/session/api/sessionApi";
+import { sessionApi } from "@/entities/session";
 import { useNavigate, Link } from "react-router-dom";
 
 const registerSchema = z.object({
@@ -43,12 +44,14 @@ export const RegisterForm = () => {
         email: data.email,
         password: data.password,
       });
-      // Kayıt başarılı, doğrulama sayfasına yönlendir (şifreyi güvenli bir şekilde state ile taşıyoruz)
-      navigate(`/verify-email?email=${encodeURIComponent(data.email)}`, {
-        state: { password: data.password }
-      });
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Kayıt sırasında bir hata oluştu.");
+      // Kayıt başarılı, doğrulama sayfasına yönlendir
+      navigate(`/verify-email?email=${encodeURIComponent(data.email)}`);
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data?.message || "Kayıt sırasında bir hata oluştu.");
+      } else {
+        setError("Beklenmeyen bir hata oluştu.");
+      }
     } finally {
       setIsLoading(false);
     }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { AxiosError } from "axios";
 import {
   Button,
   Input,
@@ -11,7 +12,7 @@ import {
   InputOTPSlot,
 } from "@/shared/ui";
 import { Mail, Loader2, CheckCircle2, Lock, Utensils, ChevronLeft } from "lucide-react";
-import { sessionApi } from "@/entities/session/api/sessionApi";
+import { sessionApi } from "@/entities/session";
 import { Link, useNavigate } from "react-router-dom";
 
 const forgotPasswordSchema = z.object({
@@ -58,11 +59,15 @@ export default function ForgotPasswordPage() {
       setUserEmail(data.email);
       setStep("reset");
       setCountdown(60); // İlk gönderimde sayacı başlat
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message || 
-        "İşlem sırasında bir hata oluştu. Lütfen e-postanızı kontrol edin."
-      );
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(
+          err.response?.data?.message || 
+          "İşlem sırasında bir hata oluştu. Lütfen e-postanızı kontrol edin."
+        );
+      } else {
+        setError("Beklenmeyen bir hata oluştu.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -78,11 +83,15 @@ export default function ForgotPasswordPage() {
         newPassword: data.newPassword,
       });
       setStep("success");
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message || 
-        "Şifre sıfırlanamadı. Lütfen kodu ve yeni şifrenizi kontrol edin."
-      );
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(
+          err.response?.data?.message || 
+          "Şifre sıfırlanamadı. Lütfen kodu ve yeni şifrenizi kontrol edin."
+        );
+      } else {
+        setError("Beklenmeyen bir hata oluştu.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -96,8 +105,12 @@ export default function ForgotPasswordPage() {
       // Şifre sıfırlama için forgot-password tekrar çağrılır.
       await sessionApi.forgotPassword(userEmail);
       setCountdown(60);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Kod gönderilemedi.");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data?.message || "Kod gönderilemedi.");
+      } else {
+        setError("Beklenmeyen bir hata oluştu.");
+      }
     } finally {
       setResendLoading(false);
     }
