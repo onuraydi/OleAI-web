@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { AxiosError } from "axios";
 import {
   Button,
   InputOTP,
@@ -9,9 +10,8 @@ import {
   InputOTPSlot,
 } from "@/shared/ui";
 import { Loader2, CheckCircle2, Utensils, ArrowRight, Mail } from "lucide-react";
-import { sessionApi } from "@/entities/session/api/sessionApi";
-import { useSessionStore } from "@/entities/session";
-import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { sessionApi } from "@/entities/session";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const verifySchema = z.object({
   otpCode: z.string().length(6, "Doğrulama kodu 6 haneli olmalıdır"),
@@ -27,11 +27,8 @@ export default function VerifyEmailPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const setAuth = useSessionStore((state) => state.setAuth);
   
   const email = searchParams.get("email") || "";
-  const password = location.state?.password;
 
   useEffect(() => {
     if (!email) {
@@ -63,21 +60,15 @@ export default function VerifyEmailPage() {
         otpCode: data.otpCode,
       });
       
-      // Eğer password elimizdeyse otomatik giriş yap
-      if (password) {
-        const loginResponse = await sessionApi.login({
-          request: { email, password }
-        });
-        setAuth(true, loginResponse.user);
-        setIsSuccess(true);
-        setTimeout(() => navigate("/onboarding"), 1500);
+      // Doğrulama başarılı — giriş sayfasına yönlendir
+      setIsSuccess(true);
+      setTimeout(() => navigate("/login?verified=true"), 2000);
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data?.message || "Doğrulama başarısız. Lütfen kodu kontrol edin.");
       } else {
-        // Password yoksa (sayfa yenilendiyse vb.) login'e yönlendir
-        setIsSuccess(true);
-        setTimeout(() => navigate("/login"), 2000);
+        setError("Beklenmeyen bir hata oluştu.");
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Doğrulama başarısız. Lütfen kodu kontrol edin.");
     } finally {
       setIsLoading(false);
     }
@@ -90,8 +81,12 @@ export default function VerifyEmailPage() {
     try {
       await sessionApi.resendOtp(email);
       setCountdown(60); // 1 dakika bekleme
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Kod gönderilemedi. Lütfen daha sonra tekrar deneyin.");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data?.message || "Kod gönderilemedi. Lütfen daha sonra tekrar deneyin.");
+      } else {
+        setError("Beklenmeyen bir hata oluştu.");
+      }
     } finally {
       setResendLoading(false);
     }

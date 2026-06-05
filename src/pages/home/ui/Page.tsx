@@ -1,11 +1,15 @@
 import { motion } from "framer-motion";
-import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
-import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
-import { PantryStatus } from "@/widgets/pantry-status/ui/PantryStatus";
-import { RecipeFeed } from "@/widgets/recipe-feed/ui/RecipeFeed";
+import { Sidebar } from "@/widgets/sidebar";
+import { DashboardHeader } from "@/widgets/dashboard-header";
+import { PantryStatus } from "@/widgets/pantry-status";
+import { RecipeFeed } from "@/widgets/recipe-feed";
 import { Sparkles } from "lucide-react";
+import { useSessionStore } from "@/entities/session";
+import { ErrorBoundary } from "@/shared/ui/ErrorBoundary";
 
 export default function HomePage() {
+  const user = useSessionStore((s) => s.user);
+
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-500">
       <Sidebar />
@@ -26,7 +30,7 @@ export default function HomePage() {
               </div>
             </motion.div>
             <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight">
-              Hoş geldin, <span className="text-primary">Şef!</span>
+              Hoş geldin, <span className="text-primary">{user?.email?.split('@')[0] || 'Şef'}!</span>
             </h1>
             <p className="text-muted-foreground text-lg mt-2 font-medium">
               Dolabındakilerle bugün harika bir şeyler yaratmaya hazır mısın?
@@ -35,12 +39,16 @@ export default function HomePage() {
 
           {/* Pantry Status Summary */}
           <section>
-            <PantryStatus />
+            <ErrorBoundary>
+              <PantryStatus />
+            </ErrorBoundary>
           </section>
 
           {/* Recipe Recommendations */}
           <section className="pb-20">
-            <RecipeFeed />
+            <ErrorBoundary>
+              <RecipeFeed />
+            </ErrorBoundary>
           </section>
         </div>
       </main>

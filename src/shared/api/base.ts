@@ -18,14 +18,19 @@ export const apiInstance: AxiosInstance = axios.create({
 });
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+interface QueueItem {
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+}
 
-const processQueue = (error: any, token: string | null = null) => {
+let failedQueue: QueueItem[] = [];
+
+const processQueue = (error: unknown) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve(token);
+      prom.resolve();
     }
   });
   failedQueue = [];
@@ -36,7 +41,7 @@ apiInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const xsrfToken = document.cookie
     .split('; ')
     .find((row) => row.startsWith('XSRF-TOKEN='))
-    ?.split('=')[1];
+    ?.split('=').slice(1).join('=');
 
   if (xsrfToken && config.headers) {
     config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
@@ -72,12 +77,12 @@ apiInstance.interceptors.response.use(
 
       try {
         // Attempt to refresh the token using HttpOnly cookies
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/refresh-token`, {}, { withCredentials: true });
+        await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh-token`, {}, { withCredentials: true });
         
         processQueue(null);
         return apiInstance(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
+        processQueue(refreshError);
         // Dispatch a custom event or let the store handle logout
         window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         return Promise.reject(refreshError);

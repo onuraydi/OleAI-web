@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/shared/ui";
+import { useSessionStore } from "@/entities/session";
 import { 
   ArrowRight, 
   ArrowLeft, 
@@ -31,10 +32,11 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { dietaryPreferenceApi } from "@/entities/dietary-preference/api/dietaryPreferenceApi";
-import { allergyApi } from "@/entities/allergy/api/allergyApi";
-import { userApi } from "@/entities/user/api/userApi";
-import { pantryApi } from "@/entities/pantry/api/pantryApi";
+import { dietaryPreferenceApi } from "@/entities/dietary-preference";
+import { allergyApi } from "@/entities/allergy";
+import { userApi } from "@/entities/user";
+import { pantryApi } from "@/entities/pantry";
+import { useDebouncedValue } from '@/shared/lib/hooks/useDebouncedValue';
 
 const getDietIcon = (name: string) => {
   const n = name.toLowerCase();
@@ -83,6 +85,7 @@ export default function PreferencesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFinishing, setIsFinishing] = useState(false);
   const navigate = useNavigate();
+  const setOnboardingCompleted = useSessionStore((s) => s.setOnboardingCompleted);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -98,17 +101,21 @@ export default function PreferencesPage() {
   const { data: diets, isLoading: isLoadingDiets } = useQuery({
     queryKey: ["dietary-preferences"],
     queryFn: dietaryPreferenceApi.getList,
+    staleTime: Infinity,
   });
 
   const { data: allergies, isLoading: isLoadingAllergies } = useQuery({
     queryKey: ["allergy-restrictions"],
     queryFn: allergyApi.getList,
+    staleTime: Infinity,
   });
 
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
+
   const { data: searchResults, isLoading: isLoadingSearch } = useQuery({
-    queryKey: ["search-ingredients", searchQuery],
-    queryFn: () => pantryApi.searchIngredients(searchQuery),
-    enabled: searchQuery.length >= 2,
+    queryKey: ["search-ingredients", debouncedSearchQuery],
+    queryFn: () => pantryApi.searchIngredients(debouncedSearchQuery),
+    enabled: debouncedSearchQuery.length >= 2,
   });
 
   const toggleAllergy = (id: string) => {
@@ -129,7 +136,7 @@ export default function PreferencesPage() {
     setIsFinishing(true);
     try {
       // Backend entegrasyonu profil için sonra yapılacak
-      console.log("Profil Bilgileri:", { username, birthDate, profileImage });
+
 
       // 1. Diyet tercihini kaydet
       const dietaryPreferenceIds = selectedDiet === "none" ? [] : (selectedDiet ? [selectedDiet] : []);
@@ -142,9 +149,11 @@ export default function PreferencesPage() {
       const ingredientIds = selectedDislikedIngredients.map(i => i.id);
       await userApi.updateDislikedIngredients({ ingredientIds });
 
+      // Mark onboarding as completed in session store
+      setOnboardingCompleted();
       navigate("/home");
-    } catch (error) {
-      console.error("Tercihler kaydedilirken hata oluştu:", error);
+    } catch {
+      // Error handling: toast notification could be added here
     } finally {
       setIsFinishing(false);
     }
