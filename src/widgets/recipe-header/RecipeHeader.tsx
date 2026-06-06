@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
-import { MessageSquare, Bookmark, Share2, Star, ThumbsDown, ThumbsUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { MessageSquare, Bookmark, Share2, Star, ThumbsDown, ThumbsUp, ChevronLeft, ChevronRight, ChefHat } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";
 import { motion, AnimatePresence } from "framer-motion";
+import { CookingAssistantModal } from "@/features/cooking-assistant/ui/CookingAssistantModal";
 
 interface RecipeHeaderProps {
   recipe: RecipeDetailResponse;
@@ -15,6 +16,7 @@ interface RecipeHeaderProps {
 export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"], mockRating = 4.8 }: RecipeHeaderProps) => {
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isCookingModalOpen, setIsCookingModalOpen] = useState(false);
 
   const sortedImages = useMemo(() => {
     if (!recipe.images || recipe.images.length === 0) {
@@ -236,10 +238,21 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
         </div>
 
         {recipe.description && (
-          <p className="text-lg text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
             {recipe.description}
           </p>
         )}
+
+        {/* Start Cooking Button */}
+        <div className="flex justify-center mb-10">
+          <button 
+            onClick={() => setIsCookingModalOpen(true)}
+            className="group relative inline-flex items-center justify-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-full font-black text-lg shadow-xl shadow-primary/30 hover:scale-105 transition-all active:scale-95"
+          >
+            <ChefHat className="w-6 h-6 group-hover:-rotate-12 transition-transform" />
+            <span>Tarifi Yap</span>
+          </button>
+        </div>
 
         {/* Interaction Bar */}
         <div className="flex items-center justify-center gap-4 md:gap-8 bg-white dark:bg-[#111111] border border-muted/20 shadow-lg rounded-full py-3 px-6 md:px-8 mb-16 mx-auto w-fit max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -304,6 +317,12 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           </button>
         </div>
       </div>
+
+      <CookingAssistantModal 
+        isOpen={isCookingModalOpen} 
+        onClose={() => setIsCookingModalOpen(false)} 
+        recipe={recipe} 
+      />
     </div>
   );
 };

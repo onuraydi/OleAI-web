@@ -126,5 +126,9 @@ export const recipeApi = {
   addComment: async (id: string, content: string, parentId?: string) => {
     const response = await apiInstance.post<{ message: string }>(`/recipes/${id}/comments`, { content, parentCommentId: parentId });
     return response.data;
+  },
+  startCooking: async (id: string) => {
+    const response = await apiInstance.post<{ message: string }>(`/recipes/${id}/start-cooking`);
+    return response.data;
   }
 };
