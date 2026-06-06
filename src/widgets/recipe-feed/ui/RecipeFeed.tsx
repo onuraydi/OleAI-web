@@ -1,7 +1,7 @@
 import { Heart, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { recipeApi } from "@/entities/recipe";
+import { recipeApi } from "@/entities/recipe/api/recipeApi";
 
 export const RecipeFeed = () => {
   const { data: recipeData, isLoading, isError } = useQuery({

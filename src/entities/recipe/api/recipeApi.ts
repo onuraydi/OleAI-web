@@ -8,18 +8,14 @@ export interface RecipeListItem {
   statusName: string;
 }
 
-/**
- * Matches backend's Paginate<T> response structure.
- * Backend uses: pageNumber, pageSize, totalItems, totalPages, hasPreviousPage, hasNextPage
- */
 export interface PaginatedResponse<T> {
   items: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalItems: number;
-  totalPages: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
+  index: number;
+  size: number;
+  count: number;
+  pages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
 }
 
 export const recipeApi = {

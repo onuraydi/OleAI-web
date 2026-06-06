@@ -20,7 +20,7 @@ export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const initialize = useSessionStore((state) => state.initialize);
+  const setAuth = useSessionStore((state) => state.setAuth);
   const navigate = useNavigate();
 
   const {
@@ -38,14 +38,13 @@ export const LoginForm = () => {
     setIsLoading(true);
     setError(null);
     try {
-      await sessionApi.login({
+      const response = await sessionApi.login({
         request: {
           email: data.email,
           password: data.password,
         },
       });
-      // Fetch full profile to determine onboarding status
-      await initialize();
+      setAuth(true, response.user);
       navigate("/home");
     } catch (err: unknown) {
       if (err instanceof AxiosError) {

@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage } from '@/pages';
+import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage, PantryPage } from '@/pages';
 import { ProtectedRoute } from './ProtectedRoute';
 
 const router = createBrowserRouter([
@@ -20,6 +20,10 @@ const router = createBrowserRouter([
     element: <VerifyEmailPage />,
   },
   {
+    path: '/onboarding',
+    element: <OnboardingPage />,
+  },
+  {
     path: '/forgot-password',
     element: <ForgotPasswordPage />,
   },
@@ -37,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: '/preferences',
         element: <PreferencesPage />,
+      },
+      {
+        path: '/pantry',
+        element: <PantryPage />,
       },
     ],
   },
