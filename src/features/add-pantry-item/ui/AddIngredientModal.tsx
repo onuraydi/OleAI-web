@@ -23,6 +23,7 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
   const [quantity, setQuantity] = useState<string>("1");
   const [unit, setUnit] = useState<MeasurementUnit>(MeasurementUnit.Piece);
   const [expirationDate, setExpirationDate] = useState<string>("");
+  const [suggestedCategoryId, setSuggestedCategoryId] = useState<string>("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -35,6 +36,11 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
     queryKey: ["search-ingredients", debouncedKeyword],
     queryFn: () => pantryApi.searchIngredients(debouncedKeyword),
     enabled: debouncedKeyword.length >= 2,
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => pantryApi.getCategories(),
   });
 
   const addMutation = useMutation({
@@ -71,6 +77,7 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
     setSelectedIngredient(null);
     setIsDropdownOpen(false);
     setUnit(MeasurementUnit.Piece);
+    setSuggestedCategoryId("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -86,6 +93,9 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
       request.ingredientId = selectedIngredient.masterIngredientId;
     } else {
       request.requestedName = keyword.trim();
+      if (suggestedCategoryId) {
+        request.suggestedCategoryId = suggestedCategoryId;
+      }
     }
 
     if (expirationDate) {
@@ -101,6 +111,7 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
     setQuantity("1");
     setUnit(MeasurementUnit.Piece);
     setExpirationDate("");
+    setSuggestedCategoryId("");
     setIsDropdownOpen(false);
     addMutation.reset();
     onClose();
@@ -220,6 +231,23 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
                   )}
                 </AnimatePresence>
               </div>
+
+              {/* Category Dropdown (Only for custom/new items) */}
+              {!selectedIngredient && keyword.trim().length > 0 && (
+                <div className="space-y-2 relative z-0">
+                  <label className="text-sm font-bold text-foreground">Kategori <span className="text-muted-foreground font-normal">(Opsiyonel)</span></label>
+                  <select
+                    value={suggestedCategoryId}
+                    onChange={(e) => setSuggestedCategoryId(e.target.value)}
+                    className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-muted/50 focus:border-primary outline-none transition-all font-medium text-sm appearance-none cursor-pointer"
+                  >
+                    <option value="">-- Kategori Seçiniz --</option>
+                    {categories?.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Quantity and Unit */}
               <div className="flex gap-4">

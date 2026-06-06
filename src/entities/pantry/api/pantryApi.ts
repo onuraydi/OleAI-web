@@ -22,9 +22,15 @@ export interface IngredientSearchResultResponse {
   categoryName: string;
 }
 
+export interface CategoryResponse {
+  id: string;
+  name: string;
+}
+
 export interface AddUserIngredientRequest {
   ingredientId?: string;
   requestedName?: string;
+  suggestedCategoryId?: string;
   quantity: number;
   unit: MeasurementUnit;
   expirationDate?: string;
@@ -40,6 +46,11 @@ export const pantryApi = {
     const response = await apiInstance.get<IngredientSearchResultResponse[]>("/Pantry/search", {
       params: { keyword }
     });
+    return response.data;
+  },
+
+  getCategories: async (): Promise<CategoryResponse[]> => {
+    const response = await apiInstance.get<CategoryResponse[]>("/IngredientCategories");
     return response.data;
   },
 
