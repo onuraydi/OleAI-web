@@ -1,4 +1,4 @@
-import { apiInstance } from "@/shared/api";
+import { apiInstance } from "@/shared/api/base";
 
 export interface AllergyRestriction {
   id: string;

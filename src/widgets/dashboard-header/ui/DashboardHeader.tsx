@@ -1,7 +1,17 @@
 import { Search, Bell, Menu } from "lucide-react";
 import { useSessionStore } from "@/entities/session";
 
-export const DashboardHeader = () => {
+interface DashboardHeaderProps {
+  searchPlaceholder?: string;
+  searchTerm?: string;
+  onSearchChange?: (val: string) => void;
+}
+
+export const DashboardHeader = ({ 
+  searchPlaceholder = "Tarif, malzeme veya mutfak ara...",
+  searchTerm,
+  onSearchChange
+}: DashboardHeaderProps) => {
   const user = useSessionStore((state) => state.user);
 
   return (
@@ -12,11 +22,14 @@ export const DashboardHeader = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <input 
             type="text" 
-            placeholder="Tarif, malzeme veya mutfak ara..."
+            placeholder={searchPlaceholder}
+            value={searchTerm !== undefined ? searchTerm : undefined}
+            onChange={(e) => onSearchChange?.(e.target.value)}
             className="w-full h-12 pl-12 pr-4 rounded-2xl bg-muted/30 dark:bg-neutral-900/50 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-neutral-900 outline-none transition-all font-medium text-sm"
           />
         </div>
       </div>
+
 
       {/* Right Actions */}
       <div className="flex items-center gap-4">

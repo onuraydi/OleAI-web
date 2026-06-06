@@ -7,27 +7,18 @@ export interface LoginRequest {
   };
 }
 
-/**
- * Backend login response — tokens are set via HttpOnly cookies.
- * The response body contains token metadata but we don't consume it;
- * session state is established via initialize() → GET /users/me.
- */
 export interface LoginResponse {
-  accessToken: {
-    token: string;
-    expiration: string;
-  };
-  refreshToken: {
-    token: string;
-    expiration: string;
+  user: {
+    id: string;
+    email: string;
+    role: string;
   };
 }
 
 export const sessionApi = {
-  login: async (data: LoginRequest): Promise<void> => {
-    // We don't need the response body — cookies are set by the server.
-    // Session state is established via store.initialize() after login.
-    await apiInstance.post("/auth/login", data);
+  login: async (data: LoginRequest): Promise<LoginResponse> => {
+    const response = await apiInstance.post<LoginResponse>("/auth/login", data);
+    return response.data;
   },
   logout: async (): Promise<void> => {
     await apiInstance.post("/auth/logout");

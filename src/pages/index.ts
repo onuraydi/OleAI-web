@@ -7,3 +7,4 @@ export * from './register';
 export * from './verify-email';
 export * from './onboarding';
 export * from './preferences';
+export * from './pantry';

@@ -1,34 +1,9 @@
 import { apiInstance } from "@/shared/api";
 
-/**
- * Matches backend's UserProfileResponse exactly.
- * Note: Backend does NOT include 'role' in the profile response.
- */
 export interface UserProfileResponse {
   id: string;
-  firstName: string;
-  lastName: string;
   email: string;
-  isEmailVerified: boolean;
-  createdDate: string;
-  dietaryPreferences: DietaryPreferenceItemResponse[];
-  allergies: AllergyRestrictionItemResponse[];
-  dislikedIngredients: DislikedIngredientItemResponse[];
-}
-
-export interface DietaryPreferenceItemResponse {
-  id: string;
-  name: string;
-}
-
-export interface AllergyRestrictionItemResponse {
-  id: string;
-  name: string;
-}
-
-export interface DislikedIngredientItemResponse {
-  ingredientId: string;
-  displayName: string;
+  role: string;
 }
 
 export interface UpdateUserPreferencesRequest {

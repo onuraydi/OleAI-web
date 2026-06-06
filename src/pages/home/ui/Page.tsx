@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { Sidebar } from "@/widgets/sidebar";
-import { DashboardHeader } from "@/widgets/dashboard-header";
-import { PantryStatus } from "@/widgets/pantry-status";
-import { RecipeFeed } from "@/widgets/recipe-feed";
+import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
+import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
+import { PantryStatus } from "@/widgets/pantry-status/ui/PantryStatus";
+import { RecipeFeed } from "@/widgets/recipe-feed/ui/RecipeFeed";
 import { Sparkles } from "lucide-react";
 import { useSessionStore } from "@/entities/session";
 import { ErrorBoundary } from "@/shared/ui/ErrorBoundary";

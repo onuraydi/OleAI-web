@@ -1,11 +1,19 @@
-import { apiInstance } from "@/shared/api";
+import { apiInstance } from "@/shared/api/base";
+import { MeasurementCategory, MeasurementUnit } from "@/shared/constants/measurement";
 
-/**
- * Backend MeasurementCategory enum — serialized as string via JsonStringEnumConverter.
- */
-type MeasurementCategory = 'Weight' | 'Volume' | 'Count' | 'Other';
+export interface PantryItemResponse {
+  id: string;
+  ingredientId: string;
+  name: string;
+  categoryId: string;
+  categoryName: string;
+  quantity: number;
+  unit: string;
+  expirationDate: string | null;
+  isPendingApproval: boolean;
+}
 
-export interface IngredientSearchResult {
+export interface IngredientSearchResultResponse {
   masterIngredientId: string;
   displayName: string;
   isAlias: boolean;
@@ -14,10 +22,29 @@ export interface IngredientSearchResult {
   categoryName: string;
 }
 
+export interface AddUserIngredientRequest {
+  ingredientId?: string;
+  requestedName?: string;
+  quantity: number;
+  unit: MeasurementUnit;
+  expirationDate?: string;
+}
+
 export const pantryApi = {
-  searchIngredients: async (keyword: string): Promise<IngredientSearchResult[]> => {
-    if (keyword.length < 2) return [];
-    const response = await apiInstance.get<IngredientSearchResult[]>('/pantry/search', { params: { keyword } });
+  getMyPantry: async (): Promise<PantryItemResponse[]> => {
+    const response = await apiInstance.get<PantryItemResponse[]>("/Pantry");
     return response.data;
   },
+
+  searchIngredients: async (keyword: string): Promise<IngredientSearchResultResponse[]> => {
+    const response = await apiInstance.get<IngredientSearchResultResponse[]>("/Pantry/search", {
+      params: { keyword }
+    });
+    return response.data;
+  },
+
+  addIngredient: async (request: AddUserIngredientRequest): Promise<void> => {
+    await apiInstance.post("/Pantry", { request });
+  }
 };
+
