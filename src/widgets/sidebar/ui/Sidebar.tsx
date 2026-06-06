@@ -37,7 +37,10 @@ export const Sidebar = () => {
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2 mt-4">
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          // Check if current path starts with item.path to keep menu active on sub-routes
+          const isActive = location.pathname === item.path || 
+                          (item.path !== '/' && item.path !== '/home' && location.pathname.startsWith(item.path));
+                          
           return (
             <Link 
               key={item.path} 

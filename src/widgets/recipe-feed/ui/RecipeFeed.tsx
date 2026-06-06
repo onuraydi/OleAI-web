@@ -2,8 +2,10 @@ import { Heart, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
+import { useNavigate } from "react-router-dom";
 
 export const RecipeFeed = () => {
+  const navigate = useNavigate();
   const { data: recipeData, isLoading, isError } = useQuery({
     queryKey: ["recipes", "published"],
     queryFn: () => recipeApi.getPublishedRecipes(0, 6),
@@ -60,6 +62,7 @@ export const RecipeFeed = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
+            onClick={() => navigate(`/recipes/${recipe.id}`)}
             className="group cursor-pointer"
           >
             <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden mb-4 shadow-xl shadow-black/5">

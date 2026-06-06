@@ -8,3 +8,4 @@ export * from './verify-email';
 export * from './onboarding';
 export * from './preferences';
 export * from './pantry';
+export * from './recipe-detail';
