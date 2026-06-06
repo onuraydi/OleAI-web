@@ -34,6 +34,16 @@ export const Sidebar = () => {
         <span className="font-outfit font-black text-2xl tracking-tighter text-foreground">OleAI</span>
       </div>
 
+      {/* Primary Action */}
+      <div className="px-6 mb-4">
+        <Link 
+          to="/recipes/create"
+          className="w-full bg-[#588157] hover:bg-[#3a5a39] text-white flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold shadow-lg shadow-[#588157]/20 transition-all hover:scale-105 active:scale-95 group"
+        >
+          <span className="text-xl leading-none group-hover:rotate-90 transition-transform duration-300">+</span> Yeni Tarif Ekle
+        </Link>
+      </div>
+
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2 mt-4">
         {menuItems.map((item) => {

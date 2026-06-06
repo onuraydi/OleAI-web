@@ -130,5 +130,13 @@ export const recipeApi = {
   startCooking: async (id: string) => {
     const response = await apiInstance.post<{ message: string }>(`/recipes/${id}/start-cooking`);
     return response.data;
+  },
+  createRecipe: async (formData: FormData) => {
+    const response = await apiInstance.post<{ message: string; id: string }>('/recipes', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
   }
 };
