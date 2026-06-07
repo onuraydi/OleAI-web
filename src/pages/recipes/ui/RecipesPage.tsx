@@ -1,0 +1,352 @@
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { recipeApi } from "@/entities/recipe/api/recipeApi";
+import { useNavigate } from "react-router-dom";
+import { Search, Loader2, Sparkles, Heart, Clock, Star, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { useDebounce } from "@/shared/hooks/useDebounce";
+
+import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
+import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
+
+export const RecipesPage = () => {
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 500);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(12);
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState("Popular");
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["recipes", "published", page, size, debouncedSearch],
+    queryFn: () => recipeApi.getPublishedRecipes(page, size, debouncedSearch || undefined),
+  });
+
+  // Reset page when search or size changes
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearch, size]);
+
+  return (
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-500">
+      <Sidebar />
+      <main className="lg:ml-72 min-h-screen flex flex-col">
+        <DashboardHeader />
+        
+        <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {/* Header section */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <span className="hover:text-foreground cursor-pointer transition-colors" onClick={() => navigate('/home')}>Ana Sayfa</span>
+            <span>/</span>
+            <span className="text-foreground font-medium">Tarifler</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black text-foreground">Tarifleri Keşfet</h1>
+        </div>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative flex-1 md:flex-none">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Tarif ara..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full md:w-64 lg:w-80 pl-10 pr-4 py-2.5 bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-2xl outline-none transition-all shadow-sm"
+            />
+          </div>
+          
+          <div className="relative">
+            <select 
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="appearance-none pl-4 pr-10 py-2.5 bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-2xl outline-none transition-all shadow-sm font-medium cursor-pointer"
+            >
+              <option value="Popular">Popüler</option>
+              <option value="Newest">En Yeni</option>
+              <option value="Highest Rated">En Çok Oylanan</option>
+              <option value="Quickest">En Hızlı</option>
+            </select>
+            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground rotate-90 pointer-events-none" />
+          </div>
+
+          <button 
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl shadow-sm transition-colors font-medium border-2 ${
+              showFilters 
+                ? "bg-primary text-primary-foreground border-primary" 
+                : "bg-white dark:bg-neutral-900 text-foreground border-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800"
+            }`}
+          >
+            <SlidersHorizontal className="w-5 h-5" />
+            <span className="hidden sm:inline">Filtreler</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Expanded Filters Panel (UI Only) */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: "auto", marginTop: 24 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white dark:bg-neutral-900 p-6 rounded-[2rem] shadow-sm border border-muted/30">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                {/* Category Filter */}
+                <div className="space-y-3">
+                  <h3 className="font-bold text-foreground">Kategori</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {["Tümü", "Kahvaltı", "Ana Yemek", "Tatlı", "Atıştırmalık"].map(cat => (
+                      <button 
+                        key={cat}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                          cat === "Tümü" 
+                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
+                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Difficulty Filter */}
+                <div className="space-y-3">
+                  <h3 className="font-bold text-foreground">Zorluk</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {["Tümü", "Kolay", "Orta", "Zor"].map(level => (
+                      <button 
+                        key={level}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                          level === "Tümü" 
+                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
+                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                        }`}
+                      >
+                        {level}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cook Time Filter */}
+                <div className="space-y-3">
+                  <h3 className="font-bold text-foreground">Hazırlama Süresi</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {["Tümü", "< 15 dk", "< 30 dk", "< 60 dk", "1s+"].map(time => (
+                      <button 
+                        key={time}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                          time === "Tümü" 
+                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
+                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dietary Preferences Filter */}
+                <div className="space-y-3">
+                  <h3 className="font-bold text-foreground">Diyet</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {["Yok", "Vejetaryen", "Vegan", "Glutensiz", "Keto"].map(diet => (
+                      <button 
+                        key={diet}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                          diet === "Yok" 
+                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
+                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                        }`}
+                      >
+                        {diet}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-muted/30">
+                <button className="px-5 py-2.5 text-muted-foreground font-medium hover:text-foreground transition-colors">
+                  Temizle
+                </button>
+                <button className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 transition-opacity shadow-sm">
+                  Filtreleri Uygula
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Decorative Categories (Static for aesthetic, to match design) */}
+      <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        <button className="px-5 py-2 rounded-full bg-primary text-primary-foreground font-bold whitespace-nowrap shadow-md shadow-primary/20">
+          Tümü
+        </button>
+        {["Kahvaltı", "Vegan", "Keto", "Tatlı", "Hızlı ve Kolay", "Öğle Yemeği"].map((cat) => (
+          <button 
+            key={cat}
+            className="px-5 py-2 rounded-full bg-white dark:bg-neutral-900 text-muted-foreground font-medium whitespace-nowrap hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="space-y-4">
+              <div className="aspect-square rounded-3xl bg-white dark:bg-neutral-900 shadow-sm animate-pulse" />
+            </div>
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="py-20 text-center space-y-4 bg-white dark:bg-neutral-900 rounded-[3rem] shadow-sm">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 text-red-500 rounded-2xl flex items-center justify-center mx-auto">
+            <Sparkles className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold">Bir hata oluştu</h2>
+          <p className="text-muted-foreground">Tarifler yüklenemedi. Lütfen tekrar deneyin.</p>
+        </div>
+      ) : data?.items.length === 0 ? (
+        <div className="py-20 text-center space-y-4 bg-white dark:bg-neutral-900 rounded-[3rem] shadow-sm">
+          <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto text-muted-foreground">
+            <Search className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">Sonuç Bulunamadı</h2>
+          <p className="text-muted-foreground max-w-xs mx-auto">
+            Arama kriterlerinize uygun tarif bulunamadı. Lütfen başka kelimeler deneyin.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <AnimatePresence mode="popLayout">
+              {data?.items.map((recipe, index) => (
+                <motion.div 
+                  key={recipe.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => navigate(`/recipes/${recipe.id}`)}
+                  className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                    <img 
+                      src={recipe.mainImageUrl || "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w=1776&auto=format&fit=crop"} 
+                      alt={recipe.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary hover:text-white transition-colors">
+                      <Heart className="w-5 h-5" />
+                    </button>
+                    
+                    {recipe.statusName && (
+                      <div className="absolute top-4 left-4">
+                        <span className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-foreground shadow-sm">
+                          {recipe.statusName}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                      {recipe.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
+                      {recipe.description}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-muted/50">
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                        <Clock className="w-4 h-4" />
+                        <span>-- dk</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-amber-500">
+                        <Star className="w-4 h-4 fill-current" />
+                        <span>--</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Pagination & Footer */}
+          {data && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-muted/50 mt-8">
+              
+              <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                <span>Göster:</span>
+                <select 
+                  value={size}
+                  onChange={(e) => setSize(Number(e.target.value))}
+                  className="bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-xl px-2 py-1 outline-none transition-all shadow-sm cursor-pointer"
+                >
+                  <option value={12}>12</option>
+                  <option value={24}>24</option>
+                  <option value={48}>48</option>
+                </select>
+                <span className="ml-2 border-l border-muted/50 pl-4">Toplam {data.totalItems} tarif ({data.totalPages} sayfa)</span>
+              </div>
+
+              {data.totalPages > 0 && (
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setPage(p => Math.max(0, p - 1))}
+                    disabled={!data.hasPreviousPage}
+                    className="p-2 rounded-xl bg-white dark:bg-neutral-900 text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  
+                  <div className="flex items-center gap-2">
+                    {[...Array(data.totalPages)].map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setPage(i)}
+                        className={`w-10 h-10 rounded-xl font-bold transition-colors shadow-sm ${
+                          page === i 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-white dark:bg-neutral-900 text-muted-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                        }`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button 
+                    onClick={() => setPage(p => Math.min(data.totalPages - 1, p + 1))}
+                    disabled={!data.hasNextPage}
+                    className="p-2 rounded-xl bg-white dark:bg-neutral-900 text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+        </div>
+      </main>
+    </div>
+  );
+};

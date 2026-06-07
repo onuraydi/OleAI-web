@@ -52,7 +52,7 @@ export const RecipeFeed = () => {
           <h2 className="text-2xl font-black text-foreground">Sana Özel Öneriler</h2>
           <p className="text-muted-foreground font-medium">Mevcut malzemelerinle yapabileceğin en iyi tarifler</p>
         </div>
-        <button className="text-primary font-bold hover:underline">Tümünü Gör</button>
+        <button onClick={() => navigate('/recipes')} className="text-primary font-bold hover:underline">Tümünü Gör</button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">

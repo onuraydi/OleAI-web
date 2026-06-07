@@ -96,8 +96,8 @@ export interface RecipeDetailResponse {
 }
 
 export const recipeApi = {
-  getPublishedRecipes: async (page = 0, size = 10, searchTerm = "") => {
-    const response = await apiInstance.get<PaginatedResponse<RecipeListItem>>("/recipes", {
+  getPublishedRecipes: async (page = 0, size = 10, searchTerm = ""): Promise<Paginate<RecipeListItem>> => {
+    const response = await apiInstance.get<Paginate<RecipeListItem>>("/recipes", {
       params: { page, size, searchTerm }
     });
     return response.data;

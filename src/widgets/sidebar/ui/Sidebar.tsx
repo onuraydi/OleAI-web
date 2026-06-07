@@ -14,8 +14,8 @@ import { useSessionStore } from "@/entities/session";
 
 const menuItems = [
   { icon: Home, label: "Ana Sayfa", path: "/home" },
+  { icon: ChefHat, label: "Keşfet", path: "/recipes" },
   { icon: Refrigerator, label: "Mutfak Dolabım", path: "/pantry" },
-  { icon: ChefHat, label: "Tariflerim", path: "/recipes" },
   { icon: ShoppingBag, label: "Alışveriş Listesi", path: "/shopping-list" },
   { icon: Settings, label: "Ayarlar", path: "/settings" },
 ];
