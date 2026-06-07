@@ -27,6 +27,7 @@ export interface RecipeIngredientResponse {
 }
 
 export interface RecipeStepResponse {
+  id: string;
   stepNumber: number;
   instruction: string;
 }

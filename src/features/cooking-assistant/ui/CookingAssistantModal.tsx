@@ -61,6 +61,7 @@ export const CookingAssistantModal = ({ isOpen, onClose, recipe }: CookingAssist
 
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
   const currentStep = steps[currentStepIndex];
+  const currentStepImage = recipe.images?.find(img => img.stepId === currentStep?.id);
 
   return (
     <AnimatePresence>
@@ -79,7 +80,7 @@ export const CookingAssistantModal = ({ isOpen, onClose, recipe }: CookingAssist
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-4xl bg-white dark:bg-[#111111] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          className="relative w-full max-w-4xl h-[85vh] md:h-[650px] bg-white dark:bg-[#111111] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-6 border-b border-muted/20">
@@ -144,7 +145,18 @@ export const CookingAssistantModal = ({ isOpen, onClose, recipe }: CookingAssist
                   <span className="text-primary font-black text-2xl mb-6 bg-primary/10 px-6 py-2 rounded-full">
                     Adım {currentStep.stepNumber} / {steps.length}
                   </span>
-                  <p className="text-2xl md:text-4xl font-medium text-foreground leading-relaxed">
+                  
+                  {currentStepImage && (
+                    <div className="w-full max-w-md h-64 mb-8 rounded-3xl overflow-hidden shadow-lg border border-muted/20 relative group">
+                      <img 
+                        src={currentStepImage.imageUrl} 
+                        alt={`Adım ${currentStep.stepNumber}`} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+
+                  <p className="text-2xl md:text-3xl font-medium text-foreground leading-relaxed">
                     {currentStep.instruction}
                   </p>
                 </motion.div>

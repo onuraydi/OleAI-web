@@ -530,7 +530,7 @@ export const CreateRecipeForm = () => {
                       )}
 
                       <AnimatePresence>
-                        {(ing.searchResults.length > 0 || (ing.name.length >= 2 && !ing.isSearching && !ing.ingredientId)) && (
+                        {(ing.searchResults.length > 0 || (ing.name.length >= 2 && !ing.isSearching && !ing.ingredientId && !ing.isPending)) && (
                           <motion.div 
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
