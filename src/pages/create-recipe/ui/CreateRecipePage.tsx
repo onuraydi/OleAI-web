@@ -10,7 +10,7 @@ export const CreateRecipePage = () => {
       <main className="lg:ml-72 min-h-screen flex flex-col">
         <DashboardHeader />
         
-        <div className="w-full flex-1 p-4 md:p-8">
+        <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

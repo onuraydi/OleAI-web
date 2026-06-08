@@ -7,6 +7,7 @@ import { Mail, Lock, Eye, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useSessionStore, sessionApi } from "@/entities/session";
 import { useNavigate, Link } from "react-router-dom";
+import { userApi } from "@/entities/user/api/userApi";
 
 const loginSchema = z.object({
   email: z.string().email("Geçerli bir e-posta adresi giriniz"),
@@ -38,14 +39,26 @@ export const LoginForm = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await sessionApi.login({
+      await sessionApi.login({
         request: {
           email: data.email,
           password: data.password,
         },
       });
-      setAuth(true, response.user);
-      navigate("/home");
+      
+      const userData = await userApi.getProfile();
+      setAuth(true, userData);
+      
+      if (userData.role === 'Admin') {
+        navigate('/admin/dashboard');
+      } else {
+        const hasCompletedOnboarding = localStorage.getItem(`onboarding_${userData.id}`);
+        if (!hasCompletedOnboarding) {
+          navigate("/onboarding");
+        } else {
+          navigate("/home");
+        }
+      }
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         const errorData = err.response?.data;

@@ -36,6 +36,7 @@ import { allergyApi } from "@/entities/allergy/api/allergyApi";
 import { userApi } from "@/entities/user/api/userApi";
 import { pantryApi } from "@/entities/pantry/api/pantryApi";
 import { useDebouncedValue } from '@/shared/lib/hooks/useDebouncedValue';
+import { useSessionStore } from "@/entities/session";
 
 const getDietIcon = (name: string) => {
   const n = name.toLowerCase();
@@ -84,6 +85,7 @@ export default function PreferencesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFinishing, setIsFinishing] = useState(false);
   const navigate = useNavigate();
+  const user = useSessionStore((state) => state.user);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -147,6 +149,9 @@ export default function PreferencesPage() {
       const ingredientIds = selectedDislikedIngredients.map(i => i.id);
       await userApi.updateDislikedIngredients({ ingredientIds });
 
+      if (user) {
+        localStorage.setItem(`onboarding_${user.id}`, "true");
+      }
       navigate("/home");
     } catch (error) {
       console.error("Tercihler kaydedilirken hata oluştu:", error);

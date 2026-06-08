@@ -17,7 +17,7 @@ export default function PantryPage() {
           onSearchChange={setSearchTerm}
         />
         
-        <div className="p-8 md:p-12 max-w-7xl mx-auto w-full">
+        <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
           <PantryFeed externalSearchTerm={searchTerm} />
         </div>
       </main>

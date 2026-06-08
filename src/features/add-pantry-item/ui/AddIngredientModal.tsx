@@ -9,14 +9,24 @@ import { getCategoryIcon } from "@/shared/lib/icon-helpers";
 interface AddIngredientModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialKeyword?: string;
+  onSubmitOverride?: (request: any) => void;
+  isLoadingOverride?: boolean;
 }
 
-export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps) => {
+export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSubmitOverride, isLoadingOverride }: AddIngredientModalProps) => {
   const queryClient = useQueryClient();
-  const [keyword, setKeyword] = useState("");
-  const [debouncedKeyword, setDebouncedKeyword] = useState("");
+  const [keyword, setKeyword] = useState(initialKeyword);
+  const [debouncedKeyword, setDebouncedKeyword] = useState(initialKeyword);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Update keyword when modal opens with a new initialKeyword
+  useEffect(() => {
+    if (isOpen && initialKeyword) {
+      setKeyword(initialKeyword);
+    }
+  }, [isOpen, initialKeyword]);
 
   // Form State
   const [selectedIngredient, setSelectedIngredient] = useState<IngredientSearchResultResponse | null>(null);
@@ -100,6 +110,11 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
 
     if (expirationDate) {
       request.expirationDate = new Date(expirationDate).toISOString();
+    }
+
+    if (onSubmitOverride) {
+      onSubmitOverride(request);
+      return;
     }
 
     addMutation.mutate(request);
@@ -296,10 +311,10 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={addMutation.isPending || !keyword.trim() || !quantity}
+                disabled={isLoadingOverride ?? (addMutation.isPending || !keyword.trim() || !quantity)}
                 className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-lg flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
               >
-                {addMutation.isPending ? (
+                {(isLoadingOverride ?? addMutation.isPending) ? (
                   <>
                     <Loader2 className="w-6 h-6 animate-spin" />
                     <span>Ekleniyor...</span>
@@ -307,7 +322,7 @@ export const AddIngredientModal = ({ isOpen, onClose }: AddIngredientModalProps)
                 ) : (
                   <>
                     <Plus className="w-6 h-6" />
-                    <span>Dolaba Ekle</span>
+                    <span>Listeye Ekle</span>
                   </>
                 )}
               </button>
