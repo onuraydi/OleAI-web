@@ -7,7 +7,8 @@ import {
   Settings, 
   LogOut,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  LayoutDashboard
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
@@ -23,6 +24,13 @@ const menuItems = [
 export const Sidebar = () => {
   const location = useLocation();
   const logout = useSessionStore((state) => state.logout);
+  const userRole = useSessionStore((state) => state.user?.role);
+
+  // Determine which menu items to show based on role
+  const displayMenuItems = [...menuItems];
+  if (userRole === 'Admin') {
+    displayMenuItems.push({ icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" });
+  }
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-72 bg-white dark:bg-neutral-950 border-r border-muted/30 hidden lg:flex flex-col z-50 transition-colors duration-500">
@@ -46,7 +54,7 @@ export const Sidebar = () => {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2 mt-4">
-        {menuItems.map((item) => {
+        {displayMenuItems.map((item) => {
           // Check if current path starts with item.path to keep menu active on sub-routes
           const isActive = location.pathname === item.path || 
                           (item.path !== '/' && item.path !== '/home' && location.pathname.startsWith(item.path));

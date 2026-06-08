@@ -1,36 +1,49 @@
-import { useSessionStore } from "@/entities/session";
-import { Button } from "@/shared/ui";
+import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
+import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
+import { StatCards, UserGrowthChart, RecentActivityTimeline } from "@/widgets/admin-overview";
+import { Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 export const AdminDashboardPage = () => {
-  const user = useSessionStore((state) => state.user);
-  const logout = useSessionStore((state) => state.logout);
-
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <header className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Hoş geldiniz, {user?.email}</p>
-          </div>
-          <Button variant="outline" onClick={logout}>Çıkış Yap</Button>
-        </header>
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-500">
+      <Sidebar />
+      
+      <main className="lg:ml-72 min-h-screen flex flex-col">
+        <DashboardHeader searchPlaceholder="Kullanıcı, tarif veya log ara..." />
+        
+        <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full">
+          {/* Welcome Section */}
+          <section>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4 mb-2"
+            >
+              <div className="px-3 py-1 bg-primary/10 rounded-full text-xs font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                <Sparkles className="w-3 h-3" /> Sistem Kontrol Paneli
+              </div>
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight">
+              Admin <span className="text-primary">Dashboard</span>
+            </h1>
+            <p className="text-muted-foreground text-lg mt-2 font-medium">
+              Sistem sağlığını, kullanıcı istatistiklerini ve son aktiviteleri buradan yönetin.
+            </p>
+          </section>
 
-        <main className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-card p-6 rounded-2xl border border-border/50 shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Sistem Durumu</h2>
-            <p className="text-muted-foreground">Tüm sistemler aktif ve sorunsuz çalışıyor.</p>
-          </div>
-          <div className="bg-card p-6 rounded-2xl border border-border/50 shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Kullanıcı İstatistikleri</h2>
-            <p className="text-muted-foreground">Kullanıcı verileri yükleniyor...</p>
-          </div>
-          <div className="bg-card p-6 rounded-2xl border border-border/50 shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Bekleyen Onaylar</h2>
-            <p className="text-muted-foreground">LLM onayından geçen tarifler bekleniyor...</p>
-          </div>
-        </main>
-      </div>
+          {/* Top Stats Cards */}
+          <section>
+            <StatCards />
+          </section>
+
+          {/* Main Content Area */}
+          <section className="flex flex-col lg:flex-row gap-6 pb-20">
+            <UserGrowthChart />
+            <RecentActivityTimeline />
+          </section>
+        </div>
+      </main>
     </div>
   );
 };
