@@ -8,10 +8,21 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  user: {
-    id: string;
-    email: string;
-    role: string;
+  accessToken?: {
+    token: string;
+    expiration: string;
+  };
+  refreshToken?: {
+    token: string;
+    expiration: string;
+  };
+  AccessToken?: {
+    Token: string;
+    Expiration: string;
+  };
+  RefreshToken?: {
+    Token: string;
+    Expiration: string;
   };
 }
 

@@ -1,35 +1,35 @@
-import { useSessionStore } from '@/entities/session';
-import { Button } from '@/shared/ui/button';
+import { useSessionStore } from "@/entities/session";
+import { Button } from "@/shared/ui";
 
 export const AdminDashboardPage = () => {
   const user = useSessionStore((state) => state.user);
   const logout = useSessionStore((state) => state.logout);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="p-8 space-y-6 bg-white rounded-xl shadow-lg w-full max-w-2xl">
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Admin Paneli</h1>
-          <p className="text-muted-foreground">
-            Hoş geldin, <span className="font-semibold text-primary">{user?.email}</span>
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 mt-8">
-          {/* Gelecekte eklenecek widget'lar için yer tutucular */}
-          <div className="p-6 border rounded-lg bg-card text-card-foreground shadow-sm flex flex-col items-center justify-center min-h-[150px]">
-            <p className="text-sm text-muted-foreground">İstatistikler Çok Yakında</p>
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <header className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+            <p className="text-muted-foreground mt-1">Hoş geldiniz, {user?.email}</p>
           </div>
-          <div className="p-6 border rounded-lg bg-card text-card-foreground shadow-sm flex flex-col items-center justify-center min-h-[150px]">
-            <p className="text-sm text-muted-foreground">Kullanıcı Yönetimi Çok Yakında</p>
-          </div>
-        </div>
+          <Button variant="outline" onClick={logout}>Çıkış Yap</Button>
+        </header>
 
-        <div className="flex justify-center mt-8">
-          <Button variant="destructive" onClick={logout}>
-            Çıkış Yap
-          </Button>
-        </div>
+        <main className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-card p-6 rounded-2xl border border-border/50 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4">Sistem Durumu</h2>
+            <p className="text-muted-foreground">Tüm sistemler aktif ve sorunsuz çalışıyor.</p>
+          </div>
+          <div className="bg-card p-6 rounded-2xl border border-border/50 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4">Kullanıcı İstatistikleri</h2>
+            <p className="text-muted-foreground">Kullanıcı verileri yükleniyor...</p>
+          </div>
+          <div className="bg-card p-6 rounded-2xl border border-border/50 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4">Bekleyen Onaylar</h2>
+            <p className="text-muted-foreground">LLM onayından geçen tarifler bekleniyor...</p>
+          </div>
+        </main>
       </div>
     </div>
   );

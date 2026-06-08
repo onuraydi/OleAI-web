@@ -58,7 +58,7 @@ export const AddShoppingListItem = () => {
   const handleSelect = (result: SearchResult) => {
     setSelectedIngredient(result);
     setSearchTerm(result.displayName);
-    const allowedUnits = result.unitFamily ? MEASUREMENT_CATEGORY_UNITS[result.unitFamily as unknown as keyof typeof MEASUREMENT_CATEGORY_UNITS] : ALL_UNITS;
+    const allowedUnits = result.unitFamily ? MEASUREMENT_CATEGORY_UNITS[result.unitFamily] : ALL_UNITS;
     setUnit(allowedUnits ? allowedUnits[0] : MeasurementUnit.Piece);
     setIsFocused(false);
   };
@@ -122,7 +122,7 @@ export const AddShoppingListItem = () => {
               onChange={(e) => setUnit(Number(e.target.value) as MeasurementUnit)}
               className="px-3 py-2 bg-neutral-50 dark:bg-neutral-950 border border-muted rounded-xl text-sm outline-none focus:border-primary max-w-[120px]"
             >
-              {(selectedIngredient.unitFamily ? MEASUREMENT_CATEGORY_UNITS[selectedIngredient.unitFamily as unknown as keyof typeof MEASUREMENT_CATEGORY_UNITS] || ALL_UNITS : ALL_UNITS).map((u: MeasurementUnit) => (
+              {(selectedIngredient.unitFamily ? MEASUREMENT_CATEGORY_UNITS[selectedIngredient.unitFamily] || ALL_UNITS : ALL_UNITS).map(u => (
                 <option key={u} value={u}>{MEASUREMENT_UNIT_LABELS[u as MeasurementUnit]}</option>
               ))}
             </select>
