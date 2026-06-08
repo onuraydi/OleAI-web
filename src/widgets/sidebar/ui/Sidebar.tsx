@@ -10,7 +10,8 @@ import {
   ChevronRight,
   LayoutDashboard,
   Database,
-  Tags
+  Tags,
+  ShieldAlert
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
@@ -27,6 +28,7 @@ const adminMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
   { icon: Database, label: "Malzemeler", path: "/admin/ingredients" },
   { icon: Tags, label: "Kategoriler", path: "/admin/categories" },
+  { icon: ShieldAlert, label: "Alerjiler", path: "/admin/allergies" },
 ];
 
 export const Sidebar = () => {

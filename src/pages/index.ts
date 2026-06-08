@@ -15,3 +15,4 @@ export * from './shopping-list';
 export * from './admin/dashboard/AdminDashboardPage';
 export * from './admin/ingredients/AdminIngredientsPage';
 export * from '../pages/admin-category/ui/AdminCategoriesPage';
+export * from '../pages/admin-allergy/ui/AdminAllergiesPage';
