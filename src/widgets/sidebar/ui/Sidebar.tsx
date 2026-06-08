@@ -9,7 +9,8 @@ import {
   Sparkles,
   ChevronRight,
   LayoutDashboard,
-  Database
+  Database,
+  Tags
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
@@ -25,6 +26,7 @@ const menuItems = [
 const adminMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
   { icon: Database, label: "Malzemeler", path: "/admin/ingredients" },
+  { icon: Tags, label: "Kategoriler", path: "/admin/categories" },
 ];
 
 export const Sidebar = () => {

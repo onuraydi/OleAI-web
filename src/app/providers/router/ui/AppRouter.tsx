@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage, PantryPage, RecipeDetailPage, CreateRecipePage, RecipesPage, ShoppingListPage, AdminDashboardPage, AdminIngredientsPage } from '@/pages';
+import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage, PantryPage, RecipeDetailPage, CreateRecipePage, RecipesPage, ShoppingListPage, AdminDashboardPage, AdminIngredientsPage, AdminCategoriesPage } from '@/pages';
 import { ProtectedRoute } from './ProtectedRoute';
 
 
@@ -72,6 +72,10 @@ const router = createBrowserRouter([
       {
         path: 'ingredients',
         element: <AdminIngredientsPage />,
+      },
+      {
+        path: 'categories',
+        element: <AdminCategoriesPage />,
       },
     ],
   },

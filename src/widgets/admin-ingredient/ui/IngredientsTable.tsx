@@ -103,7 +103,7 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
                   </td>
                   <td className="px-6 py-4">
                     <span className="bg-muted/50 px-3 py-1.5 rounded-xl text-xs font-bold text-muted-foreground border border-muted-foreground/10">
-                      {ingredient.categoryName}
+                      {ingredient.categoryName || "Kategorisiz"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
