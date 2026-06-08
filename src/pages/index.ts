@@ -12,4 +12,5 @@ export * from './recipe-detail';
 export * from './create-recipe';
 export * from './recipes';
 export * from './shopping-list';
-export * from './admin';
+export * from './admin/dashboard/AdminDashboardPage';
+export * from './admin/ingredients/AdminIngredientsPage';

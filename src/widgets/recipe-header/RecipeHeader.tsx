@@ -42,7 +42,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           ...old,
           statistics: {
             ...old.statistics,
-            totalLikes: isCurrentlyLiked ? old.statistics.totalLikes - 1 : old.statistics.totalLikes + 1
+            likes: isCurrentlyLiked ? old.statistics.likes - 1 : old.statistics.likes + 1
           },
           userInteraction: {
             ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
@@ -74,7 +74,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           ...old,
           statistics: {
             ...old.statistics,
-            totalDislikes: isCurrentlyDisliked ? old.statistics.totalDislikes - 1 : old.statistics.totalDislikes + 1
+            dislikes: isCurrentlyDisliked ? old.statistics.dislikes - 1 : old.statistics.dislikes + 1
           },
           userInteraction: {
             ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
@@ -106,7 +106,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           ...old,
           statistics: {
             ...old.statistics,
-            totalSaves: isCurrentlySaved ? old.statistics.totalSaves - 1 : old.statistics.totalSaves + 1
+            saves: isCurrentlySaved ? old.statistics.saves - 1 : old.statistics.saves + 1
           },
           userInteraction: {
             ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
@@ -226,7 +226,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
             <span className="font-bold text-foreground">{mockRating}</span>
-            <span>({recipe.statistics.totalComments} Değerlendirme)</span>
+            <span>({recipe.statistics.comments} Değerlendirme)</span>
           </div>
           <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
           <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           >
             <ThumbsUp className={`w-5 h-5 ${recipe.userInteraction?.isLiked ? "fill-primary text-primary" : "text-muted-foreground group-hover:text-primary transition-colors"}`} />
             <span className={`font-bold text-xs md:text-base ${recipe.userInteraction?.isLiked ? "text-primary" : "text-foreground"}`}>
-              {recipe.statistics.totalLikes >= 1000 ? (recipe.statistics.totalLikes / 1000).toFixed(1) + 'k' : recipe.statistics.totalLikes}
+              {recipe.statistics.likes >= 1000 ? (recipe.statistics.likes / 1000).toFixed(1) + 'k' : recipe.statistics.likes}
             </span>
           </button>
           
@@ -278,7 +278,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           >
             <ThumbsDown className={`w-5 h-5 ${recipe.userInteraction?.isDisliked ? "fill-foreground text-foreground" : "text-muted-foreground group-hover:text-foreground transition-colors"}`} />
             <span className={`font-bold text-xs md:text-base ${recipe.userInteraction?.isDisliked ? "text-foreground" : "text-muted-foreground group-hover:text-foreground transition-colors"}`}>
-              {recipe.statistics.totalDislikes >= 1000 ? (recipe.statistics.totalDislikes / 1000).toFixed(1) + 'k' : recipe.statistics.totalDislikes}
+              {recipe.statistics.dislikes >= 1000 ? (recipe.statistics.dislikes / 1000).toFixed(1) + 'k' : recipe.statistics.dislikes}
             </span>
           </button>
 
@@ -290,7 +290,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
             className="flex flex-col md:flex-row items-center gap-1 md:gap-3 hover:text-primary transition-colors px-2 md:px-4 text-muted-foreground"
           >
             <MessageSquare className="w-5 h-5 fill-current" />
-            <span className="font-bold text-foreground text-xs md:text-base">{recipe.statistics.totalComments}</span>
+            <span className="font-bold text-foreground text-xs md:text-base">{recipe.statistics.comments}</span>
           </button>
 
           <div className="w-px h-6 bg-muted/50 hidden md:block" />

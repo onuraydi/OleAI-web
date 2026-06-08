@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { pantryApi } from "@/entities/pantry/api/pantryApi";
 import { shoppingListApi } from "@/entities/shopping-list/api/shoppingListApi";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import { MeasurementUnit, MEASUREMENT_UNIT_LABELS, MEASUREMENT_CATEGORY_UNITS, ALL_UNITS } from "@/shared/constants/measurement";
+import { MeasurementUnit, MEASUREMENT_UNIT_LABELS, MEASUREMENT_CATEGORY_UNITS, ALL_UNITS, MeasurementCategory } from "@/shared/constants/measurement";
 import { AddIngredientModal } from "@/features/add-pantry-item/ui/AddIngredientModal";
 
 interface SearchResult {
@@ -58,7 +58,7 @@ export const AddShoppingListItem = () => {
   const handleSelect = (result: SearchResult) => {
     setSelectedIngredient(result);
     setSearchTerm(result.displayName);
-    const allowedUnits = result.unitFamily ? MEASUREMENT_CATEGORY_UNITS[result.unitFamily] : ALL_UNITS;
+    const allowedUnits = result.unitFamily ? MEASUREMENT_CATEGORY_UNITS[result.unitFamily as MeasurementCategory] : ALL_UNITS;
     setUnit(allowedUnits ? allowedUnits[0] : MeasurementUnit.Piece);
     setIsFocused(false);
   };
@@ -122,8 +122,8 @@ export const AddShoppingListItem = () => {
               onChange={(e) => setUnit(Number(e.target.value) as MeasurementUnit)}
               className="px-3 py-2 bg-neutral-50 dark:bg-neutral-950 border border-muted rounded-xl text-sm outline-none focus:border-primary max-w-[120px]"
             >
-              {(selectedIngredient.unitFamily ? MEASUREMENT_CATEGORY_UNITS[selectedIngredient.unitFamily] || ALL_UNITS : ALL_UNITS).map(u => (
-                <option key={u} value={u}>{MEASUREMENT_UNIT_LABELS[u as MeasurementUnit]}</option>
+              {(selectedIngredient.unitFamily ? MEASUREMENT_CATEGORY_UNITS[selectedIngredient.unitFamily as MeasurementCategory] || ALL_UNITS : ALL_UNITS).map((u: MeasurementUnit) => (
+                <option key={u} value={u}>{MEASUREMENT_UNIT_LABELS[u]}</option>
               ))}
             </select>
           </motion.div>

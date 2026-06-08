@@ -8,7 +8,8 @@ import {
   LogOut,
   Sparkles,
   ChevronRight,
-  LayoutDashboard
+  LayoutDashboard,
+  Database
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
@@ -21,16 +22,46 @@ const menuItems = [
   { icon: Settings, label: "Ayarlar", path: "/settings" },
 ];
 
+const adminMenuItems = [
+  { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+  { icon: Database, label: "Malzemeler", path: "/admin/ingredients" },
+];
+
 export const Sidebar = () => {
   const location = useLocation();
   const logout = useSessionStore((state) => state.logout);
   const userRole = useSessionStore((state) => state.user?.role);
 
-  // Determine which menu items to show based on role
-  const displayMenuItems = [...menuItems];
-  if (userRole === 'Admin') {
-    displayMenuItems.push({ icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" });
-  }
+  const renderMenuItem = (item: any) => {
+    const isActive = location.pathname === item.path || 
+                    (item.path !== '/' && item.path !== '/home' && location.pathname.startsWith(item.path));
+                    
+    return (
+      <Link 
+        key={item.path} 
+        to={item.path}
+        className="relative group block"
+      >
+        <div className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 ${
+          isActive 
+            ? "bg-primary/10 text-primary" 
+            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+        }`}>
+          <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : "group-hover:scale-110 transition-transform"}`} />
+          <span className="font-bold">{item.label}</span>
+          {isActive && (
+            <motion.div 
+              layoutId="active-pill"
+              className="absolute right-4 w-1.5 h-1.5 rounded-full bg-primary"
+            />
+          )}
+          {!isActive && (
+            <ChevronRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+          )}
+        </div>
+      </Link>
+    );
+  };
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-72 bg-white dark:bg-neutral-950 border-r border-muted/30 hidden lg:flex flex-col z-50 transition-colors duration-500">
@@ -53,38 +84,19 @@ export const Sidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-2 mt-4">
-        {displayMenuItems.map((item) => {
-          // Check if current path starts with item.path to keep menu active on sub-routes
-          const isActive = location.pathname === item.path || 
-                          (item.path !== '/' && item.path !== '/home' && location.pathname.startsWith(item.path));
-                          
-          return (
-            <Link 
-              key={item.path} 
-              to={item.path}
-              className="relative group block"
-            >
-              <div className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 ${
-                isActive 
-                  ? "bg-primary/10 text-primary" 
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-              }`}>
-                <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : "group-hover:scale-110 transition-transform"}`} />
-                <span className="font-bold">{item.label}</span>
-                {isActive && (
-                  <motion.div 
-                    layoutId="active-pill"
-                    className="absolute right-4 w-1.5 h-1.5 rounded-full bg-primary"
-                  />
-                )}
-                {!isActive && (
-                  <ChevronRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
-                )}
-              </div>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
+        {menuItems.map(renderMenuItem)}
+        
+        {userRole === 'Admin' && (
+          <div className="pt-4 pb-2">
+            <div className="flex items-center gap-3 px-4 mb-3">
+              <div className="h-px bg-muted flex-1"></div>
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Admin</span>
+              <div className="h-px bg-muted flex-1"></div>
+            </div>
+            {adminMenuItems.map(renderMenuItem)}
+          </div>
+        )}
       </nav>
 
       {/* Footer / Logout */}

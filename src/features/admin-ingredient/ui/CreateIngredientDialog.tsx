@@ -1,0 +1,142 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Plus, Loader2 } from "lucide-react";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shared/ui/dialog";
+import { Input } from "@/shared/ui/input";
+import { Button } from "@/shared/ui/button";
+import { Label } from "@/shared/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { MeasurementCategory, useCreateIngredientMutation, useIngredientCategories } from "@/entities/admin-ingredient";
+import { getCategoryIcon } from "@/shared/lib/icon-helpers";
+import { toast } from "sonner";
+
+const createIngredientSchema = z.object({
+  name: z.string().min(2, "Malzeme adı en az 2 karakter olmalıdır"),
+  categoryId: z.string().min(1, "Lütfen bir kategori seçin"),
+  unitFamily: z.nativeEnum(MeasurementCategory, {
+    message: "Lütfen geçerli bir ölçü birimi ailesi seçin"
+  }),
+});
+
+type CreateIngredientFormValues = z.infer<typeof createIngredientSchema>;
+
+export const CreateIngredientDialog = () => {
+  const [open, setOpen] = useState(false);
+  
+  const { data: categories, isLoading: isLoadingCategories } = useIngredientCategories();
+  const createMutation = useCreateIngredientMutation();
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors }
+  } = useForm<CreateIngredientFormValues>({
+    resolver: zodResolver(createIngredientSchema),
+    defaultValues: {
+      name: "",
+      categoryId: "",
+      unitFamily: MeasurementCategory.Other
+    }
+  });
+
+  const onSubmit = async (data: CreateIngredientFormValues) => {
+    try {
+      await createMutation.mutateAsync({
+        name: data.name,
+        categoryId: data.categoryId,
+        unitFamily: data.unitFamily
+      });
+      toast.success("Malzeme başarıyla eklendi");
+      reset();
+      setOpen(false);
+    } catch (error) {
+      toast.error("Malzeme eklenirken bir hata oluştu");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="gap-2">
+          <Plus className="w-4 h-4" /> Yeni Malzeme
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Yeni Malzeme Ekle</DialogTitle>
+          <DialogDescription>
+            Sisteme yeni bir master malzeme ekleyin. Eş anlamlıları (alias) malzeme oluştuktan sonra ekleyebilirsiniz.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Malzeme Adı</Label>
+            <Input id="name" placeholder="Örn: Sızma Zeytinyağı" {...register("name")} />
+            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Kategori</Label>
+            <Select 
+              onValueChange={(val) => setValue("categoryId", val)} 
+              disabled={isLoadingCategories}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Kategori Seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories?.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    <div className="flex items-center gap-2">
+                      {getCategoryIcon(cat.iconName, cat.name, "w-4 h-4")}
+                      <span>{cat.name}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.categoryId && <p className="text-sm text-destructive">{errors.categoryId.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Ölçü Birimi Ailesi (Unit Family)</Label>
+            <Select 
+              onValueChange={(val) => setValue("unitFamily", val as MeasurementCategory)}
+              defaultValue={MeasurementCategory.Other}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Birim Seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={MeasurementCategory.Weight}>Ağırlık (Gram, Kilogram)</SelectItem>
+                <SelectItem value={MeasurementCategory.Volume}>Hacim (Mililitre, Litre)</SelectItem>
+                <SelectItem value={MeasurementCategory.Count}>Adet / Tane</SelectItem>
+                <SelectItem value={MeasurementCategory.Other}>Diğer</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.unitFamily && <p className="text-sm text-destructive">{errors.unitFamily.message}</p>}
+          </div>
+
+          <div className="flex justify-end pt-4">
+            <Button type="submit" disabled={createMutation.isPending}>
+              {createMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Kaydet
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
