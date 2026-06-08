@@ -13,15 +13,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCreateAllergy } from "@/entities/admin-allergy";
 import { useAdminIngredients } from "@/entities/admin-ingredient/api/adminIngredientQueries";
 import { useAdminCategories } from "@/entities/admin-category/api/adminCategoryQueries";
-import { MultiSelectBox } from "./MultiSelectBox";
-
-// PascalCase'e çevirme fonksiyonu (kullanıcı "apple" girerse "Apple" yapar)
-const toPascalCase = (str: string) => {
-  return str
-    .split(/[-_]+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join("");
-};
+import { MultiSelectBox } from "@/shared/ui/multi-select-box";
+import { toPascalCase } from "@/shared/lib/icon-helpers";
 
 const formSchema = z.object({
   name: z.string().min(2, "Alerji adı en az 2 karakter olmalıdır"),

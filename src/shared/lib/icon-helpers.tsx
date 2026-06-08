@@ -62,3 +62,11 @@ export const getCategoryColorClass = (identifier: string | null | undefined) => 
   
   return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400";
 };
+
+export const toPascalCase = (str: string) => {
+  if (!str) return "";
+  return str
+    .split(/[-_]+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join("");
+};

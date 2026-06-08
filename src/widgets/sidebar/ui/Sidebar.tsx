@@ -11,7 +11,8 @@ import {
   LayoutDashboard,
   Database,
   Tags,
-  ShieldAlert
+  ShieldAlert,
+  Leaf
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
@@ -29,6 +30,7 @@ const adminMenuItems = [
   { icon: Database, label: "Malzemeler", path: "/admin/ingredients" },
   { icon: Tags, label: "Kategoriler", path: "/admin/categories" },
   { icon: ShieldAlert, label: "Alerjiler", path: "/admin/allergies" },
+  { icon: Leaf, label: "Diyetler", path: "/admin/diets" },
 ];
 
 export const Sidebar = () => {
