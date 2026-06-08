@@ -17,3 +17,4 @@ export * from './admin/ingredients/AdminIngredientsPage';
 export * from './admin-category/ui/AdminCategoriesPage';
 export * from './admin-allergy/ui/AdminAllergiesPage';
 export * from './admin-diet/ui/AdminDietsPage';
+export * from './admin-user';

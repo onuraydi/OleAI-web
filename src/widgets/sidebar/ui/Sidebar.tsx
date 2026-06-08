@@ -12,7 +12,8 @@ import {
   Database,
   Tags,
   ShieldAlert,
-  Leaf
+  Leaf,
+  Users
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
@@ -31,6 +32,7 @@ const adminMenuItems = [
   { icon: Tags, label: "Kategoriler", path: "/admin/categories" },
   { icon: ShieldAlert, label: "Alerjiler", path: "/admin/allergies" },
   { icon: Leaf, label: "Diyetler", path: "/admin/diets" },
+  { icon: Users, label: "Kullanıcılar", path: "/admin/users" },
 ];
 
 export const Sidebar = () => {
