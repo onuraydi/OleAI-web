@@ -16,7 +16,7 @@ export const AdminDietsPage = () => {
       <Sidebar />
       
       <main className="lg:ml-72 min-h-screen flex flex-col">
-        <DashboardHeader searchPlaceholder="Diyet ara..." />
+        <DashboardHeader />
         
         <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full">
           {/* Welcome Section */}
