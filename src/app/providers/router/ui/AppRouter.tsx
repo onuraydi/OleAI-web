@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage, PantryPage, RecipeDetailPage, CreateRecipePage, RecipesPage, ShoppingListPage, AdminDashboardPage, AdminIngredientsPage, AdminCategoriesPage, AdminAllergiesPage, AdminDietsPage, AdminUsersPage } from '@/pages';
+import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage, PantryPage, RecipeDetailPage, CreateRecipePage, RecipesPage, ShoppingListPage, AdminDashboardPage, AdminIngredientsPage, AdminCategoriesPage, AdminAllergiesPage, AdminDietsPage, AdminUsersPage, AdminRecipesPage, AdminRecipeDetailPage, AdminEditRecipePage } from '@/pages';
 import { ProtectedRoute } from './ProtectedRoute';
 
 
@@ -88,6 +88,18 @@ const router = createBrowserRouter([
       {
         path: 'users',
         element: <AdminUsersPage />,
+      },
+      {
+        path: 'recipes',
+        element: <AdminRecipesPage />,
+      },
+      {
+        path: 'recipes/:id',
+        element: <AdminRecipeDetailPage />,
+      },
+      {
+        path: 'recipes/edit/:id',
+        element: <AdminEditRecipePage />,
       },
     ],
   },

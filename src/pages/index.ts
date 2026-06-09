@@ -18,3 +18,5 @@ export * from './admin-category/ui/AdminCategoriesPage';
 export * from './admin-allergy/ui/AdminAllergiesPage';
 export * from './admin-diet/ui/AdminDietsPage';
 export * from './admin-user';
+export * from './admin-recipe';
+export { AdminEditRecipePage } from './admin-recipe';

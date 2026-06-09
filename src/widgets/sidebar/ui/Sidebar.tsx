@@ -33,6 +33,7 @@ const adminMenuItems = [
   { icon: ShieldAlert, label: "Alerjiler", path: "/admin/allergies" },
   { icon: Leaf, label: "Diyetler", path: "/admin/diets" },
   { icon: Users, label: "Kullanıcılar", path: "/admin/users" },
+  { icon: ChefHat, label: "Tarifler", path: "/admin/recipes" },
 ];
 
 export const Sidebar = () => {

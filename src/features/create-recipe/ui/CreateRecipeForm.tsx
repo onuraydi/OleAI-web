@@ -209,7 +209,7 @@ export const CreateRecipeForm = () => {
     mutationFn: (formData: FormData) => recipeApi.createRecipe(formData),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
-      navigate("/");
+      navigate("/home");
     },
     onError: (error) => {
       console.error("Failed to create recipe", error);

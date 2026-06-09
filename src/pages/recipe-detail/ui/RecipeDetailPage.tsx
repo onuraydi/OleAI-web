@@ -5,6 +5,8 @@ import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { RecipeHeader } from "@/widgets/recipe-header/RecipeHeader";
 import { RecipeIngredients } from "@/features/recipe-ingredients/RecipeIngredients";
 import { RecipeComments } from "@/features/recipe-comments/RecipeComments";
+import { ApproveRecipeDialog, RejectRecipeDialog } from "@/features/admin-recipe";
+import { useSessionStore } from "@/entities/session";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { motion } from "framer-motion";
@@ -12,6 +14,8 @@ import { motion } from "framer-motion";
 export const RecipeDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const user = useSessionStore((state) => state.user);
+  const isAdmin = user?.role === 'Admin';
 
   const { data: recipe, isLoading, isError } = useQuery({
     queryKey: ["recipe-detail", id],
@@ -63,22 +67,31 @@ export const RecipeDetailPage = () => {
         
         <div className="w-full flex-1 p-4 md:p-8">
           <div className="max-w-6xl mx-auto pb-12">
-            {/* Breadcrumb / Back Button */}
-            <div className="flex items-center gap-4 mb-8 pt-4">
-              <button 
-                onClick={() => navigate(-1)}
-                className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
-              >
-                <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                <span className="font-medium">Geri</span>
-              </button>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Tarifler</span>
-                <span>/</span>
-                <span className="text-foreground font-bold truncate max-w-[200px] md:max-w-md">
-                  {recipe.title}
-                </span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pt-4">
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => navigate(-1)}
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
+                >
+                  <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                  <span className="font-medium">Geri</span>
+                </button>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>Tarifler</span>
+                  <span>/</span>
+                  <span className="text-foreground font-bold truncate max-w-[200px] md:max-w-md">
+                    {recipe.title}
+                  </span>
+                </div>
               </div>
+
+              {/* Admin Actions */}
+              {isAdmin && (recipe.status === 1 || recipe.status === 2) && (
+                <div className="flex items-center gap-3">
+                  <ApproveRecipeDialog recipeId={recipe.id} recipeTitle={recipe.title} />
+                  <RejectRecipeDialog recipeId={recipe.id} recipeTitle={recipe.title} />
+                </div>
+              )}
             </div>
 
             <motion.div
@@ -113,7 +126,7 @@ export const RecipeDetailPage = () => {
               {/* Comments Section */}
               <RecipeComments 
                 recipeId={recipe.id} 
-                totalComments={recipe.statistics.comments} 
+                totalComments={recipe.statistics.totalComments} 
               />
             </motion.div>
           </div>
