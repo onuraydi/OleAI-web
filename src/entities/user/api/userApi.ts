@@ -7,6 +7,13 @@ export interface UserProfileResponse {
   isOnboarded: boolean;
 }
 
+export interface UserStatisticsResponse {
+  totalRecipesCreated: number;
+  totalRecipesSaved: number;
+  totalPantryItems: number;
+  totalRecipesLiked: number;
+}
+
 export interface UpdateUserPreferencesRequest {
   dietaryPreferenceIds: string[];
 }
@@ -42,6 +49,10 @@ export const userApi = {
         "Content-Type": "multipart/form-data",
       },
     });
+    return response.data;
+  },
+  getStatistics: async (): Promise<UserStatisticsResponse> => {
+    const response = await apiInstance.get<UserStatisticsResponse>("/users/me/statistics");
     return response.data;
   },
 };

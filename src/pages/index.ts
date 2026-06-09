@@ -12,6 +12,7 @@ export * from './recipe-detail';
 export * from './create-recipe';
 export * from './recipes';
 export * from './shopping-list';
+export * from './profile';
 export * from './admin/dashboard/AdminDashboardPage';
 export * from './admin/ingredients/AdminIngredientsPage';
 export * from './admin-category/ui/AdminCategoriesPage';

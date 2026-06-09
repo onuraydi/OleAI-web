@@ -23,7 +23,7 @@ const menuItems = [
   { icon: ChefHat, label: "Keşfet", path: "/recipes" },
   { icon: Refrigerator, label: "Mutfak Dolabım", path: "/pantry" },
   { icon: ShoppingBag, label: "Alışveriş Listesi", path: "/shopping-list" },
-  { icon: Settings, label: "Ayarlar", path: "/settings" },
+  { icon: Settings, label: "Profilim", path: "/profile" },
 ];
 
 const adminMenuItems = [
