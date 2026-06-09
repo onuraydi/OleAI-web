@@ -78,18 +78,22 @@ export default function PreferencesPage() {
   const [username, setUsername] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileFile, setProfileFile] = useState<File | null>(null);
   
   const [selectedDiet, setSelectedDiet] = useState<string | null>(null);
   const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
   const [selectedDislikedIngredients, setSelectedDislikedIngredients] = useState<{id: string, name: string}[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPopularCategory, setSelectedPopularCategory] = useState<string>("Tümü");
   const [isFinishing, setIsFinishing] = useState(false);
   const navigate = useNavigate();
   const user = useSessionStore((state) => state.user);
+  const initializeSession = useSessionStore((state) => state.initialize);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setProfileFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result as string);
@@ -107,6 +111,12 @@ export default function PreferencesPage() {
   const { data: allergies, isLoading: isLoadingAllergies } = useQuery({
     queryKey: ["allergy-restrictions"],
     queryFn: allergyApi.getList,
+    staleTime: Infinity,
+  });
+
+  const { data: popularDislikes, isLoading: isLoadingPopular } = useQuery({
+    queryKey: ["popular-dislikes"],
+    queryFn: pantryApi.getPopularDislikes,
     staleTime: Infinity,
   });
 
@@ -132,13 +142,28 @@ export default function PreferencesPage() {
     );
   };
 
+  const popularCategories = popularDislikes 
+    ? ["Tümü", ...Array.from(new Set(popularDislikes.map(i => i.categoryName)))]
+    : ["Tümü"];
+
+  const filteredPopular = popularDislikes
+    ? popularDislikes.filter(i => selectedPopularCategory === "Tümü" || i.categoryName === selectedPopularCategory)
+    : [];
+
   const handleFinish = async () => {
     setIsFinishing(true);
     try {
-      // Backend entegrasyonu profil için sonra yapılacak
+      // 1. Profil bilgilerini kaydet
+      const formData = new FormData();
+      if (username) formData.append("Username", username);
+      if (birthDate) formData.append("BirthDate", birthDate);
+      formData.append("IsOnboarded", "true");
+      if (profileFile) {
+        formData.append("ProfileImage", profileFile);
+      }
+      await userApi.updateProfile(formData);
 
-
-      // 1. Diyet tercihini kaydet
+      // 2. Diyet tercihini kaydet
       const dietaryPreferenceIds = selectedDiet === "none" ? [] : (selectedDiet ? [selectedDiet] : []);
       await userApi.updateDietaryPreferences({ dietaryPreferenceIds });
       
@@ -149,9 +174,7 @@ export default function PreferencesPage() {
       const ingredientIds = selectedDislikedIngredients.map(i => i.id);
       await userApi.updateDislikedIngredients({ ingredientIds });
 
-      if (user) {
-        localStorage.setItem(`onboarding_${user.id}`, "true");
-      }
+      await initializeSession();
       navigate("/home");
     } catch (error) {
       console.error("Tercihler kaydedilirken hata oluştu:", error);
@@ -478,30 +501,54 @@ export default function PreferencesPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                      <Flame className="w-4 h-4" /> Popüler Seçimler
-                    </h3>
+                    <div className="flex justify-between items-end">
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                        <Flame className="w-4 h-4" /> Popüler Seçimler
+                      </h3>
+                      {popularCategories.length > 1 && (
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                          {popularCategories.map(cat => (
+                            <button
+                              key={cat}
+                              onClick={() => setSelectedPopularCategory(cat)}
+                              className={`text-xs font-bold px-3 py-1.5 rounded-full transition-colors whitespace-nowrap ${
+                                selectedPopularCategory === cat
+                                  ? "bg-foreground text-background"
+                                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                              }`}
+                            >
+                              {cat}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
                     <div className="flex flex-wrap gap-3">
-                      {[
-                        { name: "Soğan", category: "Sebze" },
-                        { name: "Sarımsak", category: "Sebze" },
-                        { name: "Mantar", category: "Sebze" },
-                        { name: "Patlıcan", category: "Sebze" },
-                        { name: "Brokoli", category: "Sebze" },
-                        { name: "Tavuk", category: "Et" },
-                        { name: "Süt", category: "Süt Ürünleri" }
-                      ].map((item) => (
-                        <button
-                          key={item.name}
-                          onClick={() => setSearchQuery(item.name)}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-transparent hover:border-primary/50 text-foreground font-medium shadow-sm transition-all group/pop"
-                        >
-                          <span className="text-primary group-hover/pop:scale-110 transition-transform">
-                            {getCategoryIcon(item.category)}
-                          </span>
-                          {item.name}
-                        </button>
-                      ))}
+                      {isLoadingPopular ? (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Loader2 className="w-4 h-4 animate-spin" /> Yükleniyor...
+                        </div>
+                      ) : filteredPopular.length > 0 ? (
+                        filteredPopular.map((item) => (
+                          <button
+                            key={item.id}
+                            onClick={() => toggleDislikedIngredient(item.id, item.name)}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl border-2 font-medium shadow-sm transition-all group/pop ${
+                              selectedDislikedIngredients.some(i => i.id === item.id)
+                                ? "bg-primary/10 border-primary text-primary"
+                                : "bg-white dark:bg-neutral-900 border-transparent hover:border-primary/50 text-foreground"
+                            }`}
+                          >
+                            <span className={`${selectedDislikedIngredients.some(i => i.id === item.id) ? "text-primary" : "text-primary group-hover/pop:scale-110"} transition-transform`}>
+                              {getCategoryIcon(item.categoryName)}
+                            </span>
+                            {item.name}
+                          </button>
+                        ))
+                      ) : (
+                        <div className="text-sm text-muted-foreground">Bu kategoride malzeme bulunamadı.</div>
+                      )}
                     </div>
                   </div>
                 </div>

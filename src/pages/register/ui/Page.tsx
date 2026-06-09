@@ -40,18 +40,15 @@ export default function RegisterPage() {
       </div>
 
       {/* Sağ Panel - Kayıt Formu */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 md:p-16 bg-background">
-        <div className="flex justify-between items-center mb-8">
+      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 md:p-20 bg-background">
+        <div className="flex justify-between items-center mb-12 lg:mb-0">
           <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-primary">
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <Utensils className="w-6 h-6" />
-            </div>
             OleAI
           </Link>
         </div>
 
-        <div className="flex flex-col justify-center max-w-md mx-auto w-full">
-          <div className="mb-8">
+        <div className="flex flex-col justify-center max-w-lg mx-auto w-full bg-card/40 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] border border-border/50 shadow-2xl shadow-primary/5">
+          <div className="mb-10">
             <h1 className="text-4xl font-bold mb-3 tracking-tight">Hesap Oluştur</h1>
             <p className="text-muted-foreground text-lg">
               Mutfak yolculuğunuza hassasiyetle başlayın.
@@ -61,8 +58,8 @@ export default function RegisterPage() {
           <RegisterForm />
         </div>
 
-        <div className="mt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-muted-foreground gap-4">
-          <p>© 2024 OleAI Inc.</p>
+        <div className="mt-12 flex flex-col sm:flex-row justify-between items-center text-xs text-muted-foreground gap-4">
+          <p>© 2026 OleAI Inc.</p>
           <div className="flex gap-6">
             <Link to="/privacy" className="hover:text-primary transition-colors">Gizlilik</Link>
             <Link to="/terms" className="hover:text-primary transition-colors">Şartlar</Link>

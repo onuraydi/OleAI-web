@@ -14,6 +14,7 @@ import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Checkbox } from "@/shared/ui/checkbox";
 import { type Ingredient, MeasurementCategory, useIngredientCategories, useUpdateIngredientMutation } from "@/entities/admin-ingredient";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ const updateIngredientSchema = z.object({
   unitFamily: z.nativeEnum(MeasurementCategory, {
     message: "Lütfen geçerli bir ölçü birimi ailesi seçin"
   }),
+  isPolarizing: z.boolean().default(false),
 });
 
 type UpdateIngredientFormValues = z.infer<typeof updateIngredientSchema>;
@@ -50,7 +52,8 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
     defaultValues: {
       name: "",
       categoryId: "",
-      unitFamily: MeasurementCategory.Other
+      unitFamily: MeasurementCategory.Other,
+      isPolarizing: false
     }
   });
 
@@ -62,7 +65,8 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
       reset({
         name: ingredient.name,
         categoryId: cat?.id || "",
-        unitFamily: ingredient.unitFamily
+        unitFamily: ingredient.unitFamily,
+        isPolarizing: ingredient.isPolarizing
       });
     }
   }, [ingredient, categories, open, reset]);
@@ -73,7 +77,8 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
       await updateMutation.mutateAsync({
         name: data.name,
         categoryId: data.categoryId,
-        unitFamily: data.unitFamily
+        unitFamily: data.unitFamily,
+        isPolarizing: data.isPolarizing
       });
       toast.success("Malzeme başarıyla güncellendi");
       onOpenChange(false);
@@ -142,6 +147,22 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
               </SelectContent>
             </Select>
             {errors.unitFamily && <p className="text-sm text-destructive">{errors.unitFamily.message}</p>}
+          </div>
+
+          <div className="flex items-center space-x-2 pt-2">
+            <Checkbox 
+              id="update-isPolarizing" 
+              checked={watch("isPolarizing")}
+              onCheckedChange={(checked) => setValue("isPolarizing", checked as boolean)}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label htmlFor="update-isPolarizing" className="font-bold text-foreground cursor-pointer">
+                Yaygın Olarak Sevilmeyen Malzeme
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Bamya, kişniş veya sakatat gibi toplumda sıkça sevilmeyen bir malzemeyse işaretleyin.
+              </p>
+            </div>
           </div>
 
           <div className="flex justify-end pt-4">

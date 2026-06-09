@@ -47,7 +47,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <div className="flex flex-col justify-center max-w-md mx-auto w-full">
+        <div className="flex flex-col justify-center max-w-lg mx-auto w-full bg-card/40 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] border border-border/50 shadow-2xl shadow-primary/5">
           <div className="mb-10">
             <h1 className="text-4xl font-bold mb-3 tracking-tight">Tekrar Hoş Geldiniz</h1>
             <p className="text-muted-foreground text-lg">
@@ -59,7 +59,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-12 flex flex-col sm:flex-row justify-between items-center text-xs text-muted-foreground gap-4">
-          <p>© 2024 OleAI Inc.</p>
+          <p>© 2026 OleAI Inc.</p>
           <div className="flex gap-6">
             <Link to="/privacy" className="hover:text-primary transition-colors">Gizlilik</Link>
             <Link to="/terms" className="hover:text-primary transition-colors">Şartlar</Link>

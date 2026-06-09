@@ -44,7 +44,7 @@ export const sessionApi = {
       request: data,
     });
   },
-  register: async (data: { firstName: string; lastName: string; email: string; password: string }): Promise<void> => {
+  register: async (data: { firstName: string; lastName: string; email: string; password: string; acceptTerms: boolean }): Promise<void> => {
     await apiInstance.post("/auth/register", {
       request: data,
     });

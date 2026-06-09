@@ -92,7 +92,14 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
                         {getCategoryIcon(ingredient.categoryIconName, ingredient.categoryName, "w-6 h-6")}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-base">{ingredient.name}</span>
+                        <span className="text-base flex items-center gap-2">
+                          {ingredient.name}
+                          {ingredient.isPolarizing && (
+                            <span className="bg-orange-500/10 text-orange-600 border border-orange-500/20 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider">
+                              Yaygın Olarak Sevilmeyen
+                            </span>
+                          )}
+                        </span>
                         {ingredient.deletedDate && (
                           <span className="flex items-center gap-1 text-[10px] text-destructive uppercase tracking-widest mt-1 font-black">
                             <Archive className="w-3 h-3" /> Pasif / Silinmiş

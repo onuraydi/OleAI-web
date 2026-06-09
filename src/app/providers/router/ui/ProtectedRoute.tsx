@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useSessionStore } from '@/entities/session';
 
 interface ProtectedRouteProps {
@@ -10,6 +10,7 @@ export const ProtectedRoute = ({ redirectPath = '/login', allowedRoles }: Protec
   const isAuth = useSessionStore((state) => state.isAuth);
   const isInitialized = useSessionStore((state) => state.isInitialized);
   const user = useSessionStore((state) => state.user);
+  const location = useLocation();
 
   if (!isInitialized) {
     return null; // Return null to avoid flickering before session check is done
@@ -24,15 +25,17 @@ export const ProtectedRoute = ({ redirectPath = '/login', allowedRoles }: Protec
     return <Navigate to="/404" replace />;
   }
 
-  // Check onboarding completion for non-admin users
-  if (user.role !== 'Admin') {
-    const hasCompletedOnboarding = localStorage.getItem(`onboarding_${user.id}`);
-    const currentPath = window.location.pathname;
-    const isAllowedPaths = currentPath === '/onboarding' || currentPath === '/preferences';
+  // Check onboarding completion for all users
+  const hasCompletedOnboarding = user.isOnboarded;
+  const currentPath = location.pathname;
+  const isAllowedPaths = currentPath === '/onboarding' || currentPath === '/preferences';
 
-    if (!hasCompletedOnboarding && !isAllowedPaths) {
-      return <Navigate to="/onboarding" replace />;
-    }
+  if (!hasCompletedOnboarding && !isAllowedPaths) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  if (hasCompletedOnboarding && isAllowedPaths) {
+    return <Navigate to="/home" replace />;
   }
 
   return <Outlet />;

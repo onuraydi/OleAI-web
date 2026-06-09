@@ -4,6 +4,7 @@ export interface UserProfileResponse {
   id: string;
   email: string;
   role: string;
+  isOnboarded: boolean;
 }
 
 export interface UpdateUserPreferencesRequest {
@@ -33,6 +34,14 @@ export const userApi = {
   },
   updateDislikedIngredients: async (request: UpdateUserDislikedIngredientsRequest): Promise<{ message: string }> => {
     const response = await apiInstance.put<{ message: string }>("/users/me/disliked-ingredients", request);
+    return response.data;
+  },
+  updateProfile: async (formData: FormData): Promise<{ message: string }> => {
+    const response = await apiInstance.put<{ message: string }>("/users/me", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   },
 };

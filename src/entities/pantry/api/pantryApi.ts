@@ -36,6 +36,12 @@ export interface AddUserIngredientRequest {
   expirationDate?: string;
 }
 
+export interface PopularDislikedIngredientResponse {
+  id: string;
+  name: string;
+  categoryName: string;
+}
+
 export const pantryApi = {
   getMyPantry: async (): Promise<PantryItemResponse[]> => {
     const response = await apiInstance.get<PantryItemResponse[]>("/Pantry");
@@ -46,6 +52,11 @@ export const pantryApi = {
     const response = await apiInstance.get<IngredientSearchResultResponse[]>("/Pantry/search", {
       params: { keyword }
     });
+    return response.data;
+  },
+
+  getPopularDislikes: async (): Promise<PopularDislikedIngredientResponse[]> => {
+    const response = await apiInstance.get<PopularDislikedIngredientResponse[]>("/Pantry/popular-dislikes");
     return response.data;
   },
 

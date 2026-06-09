@@ -58,11 +58,9 @@ export const LoginForm = () => {
       
       setAuth(true, userData);
       
-      const hasCompletedOnboarding = localStorage.getItem(`onboarding_${userData.id}`);
-      
       if (userData.role === 'Admin') {
         navigate("/admin/dashboard");
-      } else if (!hasCompletedOnboarding) {
+      } else if (!userData.isOnboarded) {
         navigate("/onboarding");
       } else {
         navigate("/home");

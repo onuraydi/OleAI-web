@@ -23,6 +23,7 @@ export interface Ingredient {
   categoryName: string;
   categoryIconName: string;
   unitFamily: MeasurementCategory;
+  isPolarizing: boolean;
   deletedDate: string | null;
 }
 
@@ -65,6 +66,14 @@ export interface CreateIngredientRequest {
   name: string;
   categoryId: string;
   unitFamily: MeasurementCategory;
+  isPolarizing: boolean;
+}
+
+export interface UpdateIngredientRequest {
+  name: string;
+  categoryId: string;
+  unitFamily: MeasurementCategory;
+  isPolarizing: boolean;
 }
 
 export interface ResolveIngredientRequestDto {

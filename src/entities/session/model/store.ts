@@ -6,6 +6,7 @@ interface User {
   id: string;
   email: string;
   role: string;
+  isOnboarded?: boolean;
 }
 
 interface SessionState {

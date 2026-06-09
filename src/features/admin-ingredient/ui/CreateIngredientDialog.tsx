@@ -15,6 +15,7 @@ import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Checkbox } from "@/shared/ui/checkbox";
 import { MeasurementCategory, useCreateIngredientMutation, useIngredientCategories } from "@/entities/admin-ingredient";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ const createIngredientSchema = z.object({
   unitFamily: z.nativeEnum(MeasurementCategory, {
     message: "Lütfen geçerli bir ölçü birimi ailesi seçin"
   }),
+  isPolarizing: z.boolean().default(false),
 });
 
 type CreateIngredientFormValues = z.infer<typeof createIngredientSchema>;
@@ -39,6 +41,7 @@ export const CreateIngredientDialog = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     reset,
     formState: { errors }
   } = useForm<CreateIngredientFormValues>({
@@ -46,7 +49,8 @@ export const CreateIngredientDialog = () => {
     defaultValues: {
       name: "",
       categoryId: "",
-      unitFamily: MeasurementCategory.Other
+      unitFamily: MeasurementCategory.Other,
+      isPolarizing: false
     }
   });
 
@@ -55,7 +59,8 @@ export const CreateIngredientDialog = () => {
       await createMutation.mutateAsync({
         name: data.name,
         categoryId: data.categoryId,
-        unitFamily: data.unitFamily
+        unitFamily: data.unitFamily,
+        isPolarizing: data.isPolarizing
       });
       toast.success("Malzeme başarıyla eklendi");
       reset();
@@ -127,6 +132,22 @@ export const CreateIngredientDialog = () => {
               </SelectContent>
             </Select>
             {errors.unitFamily && <p className="text-sm text-destructive">{errors.unitFamily.message}</p>}
+          </div>
+
+          <div className="flex items-center space-x-2 pt-2">
+            <Checkbox 
+              id="isPolarizing" 
+              checked={watch("isPolarizing")}
+              onCheckedChange={(checked) => setValue("isPolarizing", checked as boolean)}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label htmlFor="isPolarizing" className="font-bold text-foreground cursor-pointer">
+                Yaygın Olarak Sevilmeyen Malzeme
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Bamya, kişniş veya sakatat gibi toplumda sıkça sevilmeyen bir malzemeyse işaretleyin.
+              </p>
+            </div>
           </div>
 
           <div className="flex justify-end pt-4">

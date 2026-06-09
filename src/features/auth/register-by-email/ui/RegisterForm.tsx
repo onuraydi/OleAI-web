@@ -1,8 +1,8 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AxiosError } from "axios";
-import { Button, Input, Label } from "@/shared/ui";
+import { Button, Input, Label, Checkbox } from "@/shared/ui";
 import { Mail, Lock, User, ArrowRight, Loader2, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { sessionApi } from "@/entities/session";
@@ -13,7 +13,10 @@ const registerSchema = z.object({
   lastName: z.string().min(2, "Soyad en az 2 karakter olmalıdır"),
   email: z.string().email("Geçerli bir e-posta adresi giriniz"),
   password: z.string().min(8, "Şifre en az 8 karakter olmalıdır"),
-  confirmPassword: z.string()
+  confirmPassword: z.string(),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "Şartları kabul etmelisiniz",
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Şifreler eşleşmiyor",
   path: ["confirmPassword"],
@@ -29,6 +32,7 @@ export const RegisterForm = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -43,6 +47,7 @@ export const RegisterForm = () => {
         lastName: data.lastName,
         email: data.email,
         password: data.password,
+        acceptTerms: data.acceptTerms,
       });
       // Kayıt başarılı, doğrulama sayfasına yönlendir
       navigate(`/verify-email?email=${encodeURIComponent(data.email)}`);
@@ -137,6 +142,32 @@ export const RegisterForm = () => {
           />
         </div>
         {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>}
+      </div>
+
+      <div className="flex items-start space-x-3 pt-2">
+        <Controller
+          name="acceptTerms"
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <Checkbox
+              id="acceptTerms"
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              className="mt-1"
+            />
+          )}
+        />
+        <div className="grid gap-1.5 leading-none">
+          <Label
+            htmlFor="acceptTerms"
+            className="text-sm font-medium leading-normal text-muted-foreground"
+          >
+            <Link to="/terms" target="_blank" className="text-primary hover:underline font-bold">Kullanım Şartları</Link>'nı ve{" "}
+            <Link to="/privacy" target="_blank" className="text-primary hover:underline font-bold">Gizlilik Politikası</Link>'nı okudum, kabul ediyorum.
+          </Label>
+          {errors.acceptTerms && <p className="text-xs text-destructive">{errors.acceptTerms.message}</p>}
+        </div>
       </div>
 
       <Button

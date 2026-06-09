@@ -23,3 +23,4 @@ export { AdminEditRecipePage } from './admin-recipe';
 export * from './privacy';
 export * from './terms';
 export * from './contact';
+export * from './help';

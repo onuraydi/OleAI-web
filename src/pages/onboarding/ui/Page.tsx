@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/shared/ui";
 import { ArrowRight, Utensils, Sparkles, Box, Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import aiMagicImg from "@/shared/assets/onboarding/ai-magic.png";
 import pantryImg from "@/shared/assets/onboarding/pantry-real.png";
 import communityImg from "@/shared/assets/onboarding/community-real.png";
@@ -63,9 +63,6 @@ export default function OnboardingPage() {
       {/* Header */}
       <header className="absolute top-0 left-0 w-full p-8 flex justify-between items-center z-20">
         <div className="flex items-center gap-2 text-2xl font-bold text-primary">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Utensils className="w-6 h-6" />
-          </div>
           OleAI
         </div>
         <button 
