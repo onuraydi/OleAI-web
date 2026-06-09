@@ -43,9 +43,6 @@ export default function LoginPage() {
       <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 md:p-20 bg-background">
         <div className="flex justify-between items-center mb-12 lg:mb-0">
           <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-primary">
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <Utensils className="w-6 h-6" />
-            </div>
             OleAI
           </Link>
         </div>

@@ -8,7 +8,7 @@ const stats = [
 
 export const Stats = () => {
   return (
-    <section className="py-24 border-y border-border/50 bg-background">
+    <section className="py-24 border-y border-border/50 bg-secondary/60">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center items-center">
           {stats.map((stat, index) => (

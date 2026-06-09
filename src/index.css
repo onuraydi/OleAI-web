@@ -3,6 +3,9 @@
 @tailwind utilities;
  
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   :root {
     --background: 84 12% 97%; /* Very light green tint */
     --foreground: 84 30% 15%; /* Dark greenish text */

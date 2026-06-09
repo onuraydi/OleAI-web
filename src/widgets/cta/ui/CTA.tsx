@@ -1,8 +1,9 @@
 import { Button, Container } from "@/shared/ui"
+import { Link } from "react-router-dom"
 
 export const CTA = () => {
   return (
-    <section className="py-40 bg-background relative overflow-hidden">
+    <section className="py-40 bg-secondary/30 relative overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary/[0.02] -z-10" />
       <Container>
         <div className="text-center max-w-4xl mx-auto">
@@ -14,8 +15,8 @@ export const CTA = () => {
             Sıfır atık ile daha sağlıklı ve lezzetli öğünler yaratmak için 
             OleAI kullanan binlerce ev aşçısına katılın.
           </p>
-          <Button size="lg" className="rounded-full px-16 bg-primary hover:bg-primary/90 text-white font-bold h-16 text-xl shadow-2xl shadow-primary/30">
-            Şimdi Katılın
+          <Button asChild size="lg" className="rounded-full px-16 bg-primary hover:bg-primary/90 text-white font-bold h-16 text-xl shadow-2xl shadow-primary/30">
+            <Link to="/register">Şimdi Katılın</Link>
           </Button>
         </div>
       </Container>

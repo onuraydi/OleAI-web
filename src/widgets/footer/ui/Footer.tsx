@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 export const Footer = () => {
   return (
-    <footer className="py-20 border-t border-border/50 bg-secondary/40">
+    <footer className="py-20 border-t border-border/50 bg-background">
       <Container>
         <div className="flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="text-center md:text-left">
@@ -16,8 +16,8 @@ export const Footer = () => {
             <Link to="/privacy" className="hover:text-primary transition-colors">Gizlilik Politikası</Link>
             <Link to="/terms" className="hover:text-primary transition-colors">Kullanım Şartları</Link>
             <Link to="/contact" className="hover:text-primary transition-colors">İletişim</Link>
-            <Link to="/instagram" className="hover:text-primary transition-colors">Instagram</Link>
-            <Link to="/twitter" className="hover:text-primary transition-colors">Twitter</Link>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Instagram</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Twitter</a>
           </div>
         </div>
       </Container>

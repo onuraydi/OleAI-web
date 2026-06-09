@@ -16,9 +16,9 @@ export const Header = () => {
             </Link>
             <nav className="hidden md:block">
               <ul className="flex gap-8 text-[15px] font-medium text-muted-foreground">
-                <li><Link to="/features" className="hover:text-primary transition-colors">Özellikler</Link></li>
-                <li><Link to="/recipes" className="hover:text-primary transition-colors">Tarifler</Link></li>
-                <li><Link to="/about" className="hover:text-primary transition-colors">Hakkımızda</Link></li>
+                <li><a href="/#features" className="hover:text-primary transition-colors">Özellikler</a></li>
+                <li><a href="/#how-it-works" className="hover:text-primary transition-colors">Nasıl Çalışır?</a></li>
+                <li><a href="/#about" className="hover:text-primary transition-colors">Hakkımızda</a></li>
               </ul>
             </nav>
           </div>

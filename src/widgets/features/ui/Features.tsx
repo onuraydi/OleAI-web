@@ -1,5 +1,6 @@
 import { Container, SectionHeading } from "@/shared/ui"
 import { Package, ChefHat, ShoppingCart } from "lucide-react"
+import { motion } from "framer-motion"
 
 const features = [
   {
@@ -22,30 +23,62 @@ const features = [
   },
 ]
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+}
+
 export const Features = () => {
   return (
-    <section className="py-32 bg-secondary/60">
+    <section id="features" className="py-32 bg-secondary/60 relative">
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -z-10" />
       <Container>
-        <SectionHeading 
-          title="Modern Aşçılar için Akıllı Araçlar" 
-          className="mb-20"
-        />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <SectionHeading 
+            title="Modern Aşçılar için Akıllı Araçlar" 
+            className="mb-20"
+          />
+        </motion.div>
+        
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-10"
+        >
           {features.map((feature, index) => (
-            <div 
+            <motion.div 
               key={index} 
-              className="p-10 rounded-[2rem] bg-white dark:bg-card border border-border/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group"
+              variants={itemVariants}
+              className="p-10 rounded-[2.5rem] bg-background/50 backdrop-blur-xl border border-border/50 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 transition-all duration-500 group"
             >
-              <div className={`w-14 h-14 rounded-2xl ${feature.bgColor} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
+              <div className={`w-16 h-16 rounded-2xl ${feature.bgColor} flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-sm`}>
                 {feature.icon}
               </div>
               <h3 className="text-2xl font-bold mb-4 tracking-tight">{feature.title}</h3>
               <p className="text-muted-foreground leading-relaxed text-lg">
                 {feature.description}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </Container>
     </section>
   )
