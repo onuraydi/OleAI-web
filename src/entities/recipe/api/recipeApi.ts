@@ -39,10 +39,10 @@ export interface RecipeImageResponse {
 }
 
 export interface RecipeStatisticsResponse {
-  comments: number;
-  likes: number;
-  dislikes: number;
-  saves: number;
+  totalComments: number;
+  totalLikes: number;
+  totalDislikes: number;
+  totalSaves: number;
 }
 
 export interface UserInteractionResponse {
@@ -134,6 +134,18 @@ export const recipeApi = {
   },
   createRecipe: async (formData: FormData) => {
     const response = await apiInstance.post<{ message: string; id: string }>('/recipes', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+  deleteRecipe: async (id: string) => {
+    const response = await apiInstance.delete<{ message: string }>(`/recipes/${id}`);
+    return response.data;
+  },
+  updateRecipe: async (id: string, formData: FormData) => {
+    const response = await apiInstance.put<{ message: string }>(`/recipes/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

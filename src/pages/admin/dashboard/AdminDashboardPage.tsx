@@ -1,36 +1,49 @@
-import { useSessionStore } from '@/entities/session';
-import { Button } from '@/shared/ui/button';
+import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
+import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
+import { StatCards, UserGrowthChart, RecentActivityTimeline } from "@/widgets/admin-overview";
+import { Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 export const AdminDashboardPage = () => {
-  const user = useSessionStore((state) => state.user);
-  const logout = useSessionStore((state) => state.logout);
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="p-8 space-y-6 bg-white rounded-xl shadow-lg w-full max-w-2xl">
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Admin Paneli</h1>
-          <p className="text-muted-foreground">
-            Hoş geldin, <span className="font-semibold text-primary">{user?.email}</span>
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-500">
+      <Sidebar />
+      
+      <main className="lg:ml-72 min-h-screen flex flex-col">
+        <DashboardHeader searchPlaceholder="Kullanıcı, tarif veya log ara..." />
+        
+        <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full">
+          {/* Welcome Section */}
+          <section>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4 mb-2"
+            >
+              <div className="px-3 py-1 bg-primary/10 rounded-full text-xs font-black text-primary uppercase tracking-widest flex items-center gap-2">
+                <Sparkles className="w-3 h-3" /> Sistem Kontrol Paneli
+              </div>
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight">
+              Admin <span className="text-primary">Dashboard</span>
+            </h1>
+            <p className="text-muted-foreground text-lg mt-2 font-medium">
+              Sistem sağlığını, kullanıcı istatistiklerini ve son aktiviteleri buradan yönetin.
+            </p>
+          </section>
 
-        <div className="grid gap-4 md:grid-cols-2 mt-8">
-          {/* Gelecekte eklenecek widget'lar için yer tutucular */}
-          <div className="p-6 border rounded-lg bg-card text-card-foreground shadow-sm flex flex-col items-center justify-center min-h-[150px]">
-            <p className="text-sm text-muted-foreground">İstatistikler Çok Yakında</p>
-          </div>
-          <div className="p-6 border rounded-lg bg-card text-card-foreground shadow-sm flex flex-col items-center justify-center min-h-[150px]">
-            <p className="text-sm text-muted-foreground">Kullanıcı Yönetimi Çok Yakında</p>
-          </div>
-        </div>
+          {/* Top Stats Cards */}
+          <section>
+            <StatCards />
+          </section>
 
-        <div className="flex justify-center mt-8">
-          <Button variant="destructive" onClick={logout}>
-            Çıkış Yap
-          </Button>
+          {/* Main Content Area */}
+          <section className="flex flex-col lg:flex-row gap-6 pb-20">
+            <UserGrowthChart />
+            <RecentActivityTimeline />
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

@@ -9,6 +9,8 @@ import { useSessionStore, sessionApi } from "@/entities/session";
 import { useNavigate, Link } from "react-router-dom";
 import { userApi } from "@/entities/user/api/userApi";
 
+import { decodeRoleFromToken } from "@/shared/lib/jwt";
+
 const loginSchema = z.object({
   email: z.string().email("Geçerli bir e-posta adresi giriniz"),
   password: z.string().min(6, "Şifre en az 6 karakter olmalıdır"),
@@ -39,25 +41,31 @@ export const LoginForm = () => {
     setIsLoading(true);
     setError(null);
     try {
-      await sessionApi.login({
+      const loginResponse = await sessionApi.login({
         request: {
           email: data.email,
           password: data.password,
         },
       });
       
-      const userData = await userApi.getProfile();
+      const tokenStr = loginResponse.accessToken?.token || loginResponse.AccessToken?.Token;
+      if (!tokenStr) {
+        throw new Error("Token alınamadı.");
+      }
+      const role = decodeRoleFromToken(tokenStr);
+      const profile = await userApi.getProfile();
+      const userData = { ...profile, role };
+      
       setAuth(true, userData);
       
+      const hasCompletedOnboarding = localStorage.getItem(`onboarding_${userData.id}`);
+      
       if (userData.role === 'Admin') {
-        navigate('/admin/dashboard');
+        navigate("/admin/dashboard");
+      } else if (!hasCompletedOnboarding) {
+        navigate("/onboarding");
       } else {
-        const hasCompletedOnboarding = localStorage.getItem(`onboarding_${userData.id}`);
-        if (!hasCompletedOnboarding) {
-          navigate("/onboarding");
-        } else {
-          navigate("/home");
-        }
+        navigate("/home");
       }
     } catch (err: unknown) {
       if (err instanceof AxiosError) {

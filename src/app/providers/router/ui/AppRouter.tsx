@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage, PantryPage, RecipeDetailPage, CreateRecipePage, RecipesPage, ShoppingListPage, AdminDashboardPage, AdminIngredientsPage, AdminCategoriesPage, AdminAllergiesPage, AdminDietsPage, AdminUsersPage, AdminRecipesPage, AdminRecipeDetailPage, AdminEditRecipePage, PrivacyPage, TermsPage, ContactPage } from '@/pages';
 import { ProtectedRoute } from './ProtectedRoute';
 
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -73,13 +74,50 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: '/admin',
     element: <ProtectedRoute allowedRoles={['Admin']} />,
     children: [
       {
-        path: '/admin/dashboard',
+        path: 'dashboard',
         element: <AdminDashboardPage />,
       },
+      {
+        path: 'ingredients',
+        element: <AdminIngredientsPage />,
+      },
+      {
+        path: 'categories',
+        element: <AdminCategoriesPage />,
+      },
+      {
+        path: 'allergies',
+        element: <AdminAllergiesPage />,
+      },
+      {
+        path: 'diets',
+        element: <AdminDietsPage />,
+      },
+      {
+        path: 'users',
+        element: <AdminUsersPage />,
+      },
+      {
+        path: 'recipes',
+        element: <AdminRecipesPage />,
+      },
+      {
+        path: 'recipes/:id',
+        element: <AdminRecipeDetailPage />,
+      },
+      {
+        path: 'recipes/edit/:id',
+        element: <AdminEditRecipePage />,
+      },
     ],
+  },
+  {
+    path: '/404',
+    element: <NotFoundPage />,
   },
   {
     path: '*',

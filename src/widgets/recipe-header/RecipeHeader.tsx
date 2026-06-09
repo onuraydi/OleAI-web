@@ -5,6 +5,7 @@ import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";
 import { motion, AnimatePresence } from "framer-motion";
 import { CookingAssistantModal } from "@/features/cooking-assistant/ui/CookingAssistantModal";
+import { XCircle, Maximize2 } from "lucide-react";
 
 interface RecipeHeaderProps {
   recipe: RecipeDetailResponse;
@@ -17,6 +18,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isCookingModalOpen, setIsCookingModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const sortedImages = useMemo(() => {
     if (!recipe.images || recipe.images.length === 0) {
@@ -42,7 +44,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           ...old,
           statistics: {
             ...old.statistics,
-            likes: isCurrentlyLiked ? old.statistics.likes - 1 : old.statistics.likes + 1
+            totalLikes: isCurrentlyLiked ? old.statistics.totalLikes - 1 : old.statistics.totalLikes + 1
           },
           userInteraction: {
             ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
@@ -74,7 +76,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           ...old,
           statistics: {
             ...old.statistics,
-            dislikes: isCurrentlyDisliked ? old.statistics.dislikes - 1 : old.statistics.dislikes + 1
+            totalDislikes: isCurrentlyDisliked ? old.statistics.totalDislikes - 1 : old.statistics.totalDislikes + 1
           },
           userInteraction: {
             ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
@@ -106,7 +108,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           ...old,
           statistics: {
             ...old.statistics,
-            saves: isCurrentlySaved ? old.statistics.saves - 1 : old.statistics.saves + 1
+            totalSaves: isCurrentlySaved ? old.statistics.totalSaves - 1 : old.statistics.totalSaves + 1
           },
           userInteraction: {
             ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
@@ -149,16 +151,24 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
       {/* Hero Image / Carousel */}
       <div className="w-full max-w-5xl relative rounded-[2rem] overflow-hidden aspect-[21/9] shadow-2xl mb-6 group bg-black/5 dark:bg-white/5">
         <AnimatePresence mode="wait">
-          <motion.img 
+          <motion.div 
             key={currentImageIndex}
-            src={currentImage} 
-            alt={recipe.title} 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="w-full h-full object-cover"
-          />
+            className="w-full h-full relative group cursor-zoom-in"
+            onClick={() => setSelectedImage(currentImage)}
+          >
+            <motion.img 
+              src={currentImage} 
+              alt={recipe.title} 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+              <Maximize2 className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
+            </div>
+          </motion.div>
         </AnimatePresence>
         
         {sortedImages.length > 1 && (
@@ -226,7 +236,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
             <span className="font-bold text-foreground">{mockRating}</span>
-            <span>({recipe.statistics.comments} Değerlendirme)</span>
+            <span>({recipe.statistics.totalComments} Değerlendirme)</span>
           </div>
           <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
           <div className="flex items-center gap-2">
@@ -264,7 +274,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           >
             <ThumbsUp className={`w-5 h-5 ${recipe.userInteraction?.isLiked ? "fill-primary text-primary" : "text-muted-foreground group-hover:text-primary transition-colors"}`} />
             <span className={`font-bold text-xs md:text-base ${recipe.userInteraction?.isLiked ? "text-primary" : "text-foreground"}`}>
-              {recipe.statistics.likes >= 1000 ? (recipe.statistics.likes / 1000).toFixed(1) + 'k' : recipe.statistics.likes}
+              {recipe.statistics.totalLikes >= 1000 ? (recipe.statistics.totalLikes / 1000).toFixed(1) + 'k' : recipe.statistics.totalLikes}
             </span>
           </button>
           
@@ -278,7 +288,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           >
             <ThumbsDown className={`w-5 h-5 ${recipe.userInteraction?.isDisliked ? "fill-foreground text-foreground" : "text-muted-foreground group-hover:text-foreground transition-colors"}`} />
             <span className={`font-bold text-xs md:text-base ${recipe.userInteraction?.isDisliked ? "text-foreground" : "text-muted-foreground group-hover:text-foreground transition-colors"}`}>
-              {recipe.statistics.dislikes >= 1000 ? (recipe.statistics.dislikes / 1000).toFixed(1) + 'k' : recipe.statistics.dislikes}
+              {recipe.statistics.totalDislikes >= 1000 ? (recipe.statistics.totalDislikes / 1000).toFixed(1) + 'k' : recipe.statistics.totalDislikes}
             </span>
           </button>
 
@@ -290,7 +300,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
             className="flex flex-col md:flex-row items-center gap-1 md:gap-3 hover:text-primary transition-colors px-2 md:px-4 text-muted-foreground"
           >
             <MessageSquare className="w-5 h-5 fill-current" />
-            <span className="font-bold text-foreground text-xs md:text-base">{recipe.statistics.comments}</span>
+            <span className="font-bold text-foreground text-xs md:text-base">{recipe.statistics.totalComments}</span>
           </button>
 
           <div className="w-px h-6 bg-muted/50 hidden md:block" />
@@ -323,6 +333,35 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
         onClose={() => setIsCookingModalOpen(false)} 
         recipe={recipe} 
       />
+
+      {/* Fullscreen Image Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 cursor-zoom-out backdrop-blur-sm"
+          >
+            <button 
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-black/50 p-2 rounded-full transition-colors"
+              onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
+            >
+              <XCircle className="w-8 h-8" />
+            </button>
+            <motion.img 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              src={selectedImage} 
+              alt="Büyük Görsel" 
+              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" 
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
