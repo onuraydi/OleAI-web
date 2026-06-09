@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
-import { Send, UserCircle2, Loader2, MessageSquare, ChevronDown, ChevronUp, Reply } from "lucide-react";
+import { Send, UserCircle2, Loader2, MessageSquare, ChevronDown, ChevronUp, Reply, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface RecipeCommentsProps {
@@ -11,6 +11,7 @@ interface RecipeCommentsProps {
 
 export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps) => {
   const [commentText, setCommentText] = useState("");
+  const [rating, setRating] = useState<number>(0);
   const [isOpen, setIsOpen] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
@@ -33,10 +34,11 @@ export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps)
   const comments = data?.pages.flatMap((page) => page.items) || [];
 
   const addCommentMutation = useMutation({
-    mutationFn: ({ content, parentId }: { content: string, parentId?: string }) => 
-      recipeApi.addComment(recipeId, content, parentId),
+    mutationFn: ({ content, parentId, rating }: { content: string, parentId?: string, rating?: number }) => 
+      recipeApi.addComment(recipeId, content, parentId, rating),
     onSuccess: () => {
       setCommentText("");
+      setRating(0);
       setReplyText("");
       setReplyingTo(null);
       queryClient.invalidateQueries({ queryKey: ["recipe-comments", recipeId] });
@@ -46,8 +48,8 @@ export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentText.trim()) return;
-    addCommentMutation.mutate({ content: commentText });
+    if (!commentText.trim() || rating === 0) return;
+    addCommentMutation.mutate({ content: commentText, rating });
   };
 
   const handleReplySubmit = (e: React.FormEvent, parentId: string) => {
@@ -94,6 +96,22 @@ export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps)
                     <UserCircle2 className="w-8 h-8 text-primary" />
                   </div>
                   <div className="flex-1">
+                    {/* Rating Selector */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-sm font-semibold text-muted-foreground mr-2">Puanınız:</span>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRating(star)}
+                          className={`hover:scale-110 transition-transform ${
+                            rating >= star ? "text-amber-500" : "text-muted-foreground/30"
+                          }`}
+                        >
+                          <Star className={`w-6 h-6 ${rating >= star ? "fill-amber-500" : ""}`} />
+                        </button>
+                      ))}
+                    </div>
                     <textarea
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
@@ -103,7 +121,7 @@ export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps)
                     <div className="flex justify-end mt-4">
                       <button
                         type="submit"
-                        disabled={!commentText.trim() || addCommentMutation.isPending}
+                        disabled={!commentText.trim() || rating === 0 || addCommentMutation.isPending}
                         className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                       >
                         {addCommentMutation.isPending && !replyingTo ? (
@@ -139,7 +157,15 @@ export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps)
                           )}
                           <div className="flex-1 flex justify-between items-start">
                             <div>
-                              <h4 className="font-bold text-foreground">{comment.username}</h4>
+                              <h4 className="font-bold text-foreground flex items-center gap-2">
+                                {comment.username}
+                                {comment.rating && (
+                                  <div className="flex items-center gap-0.5 bg-amber-500/10 px-1.5 py-0.5 rounded text-amber-600 dark:text-amber-500 text-xs font-bold">
+                                    <Star className="w-3 h-3 fill-current" />
+                                    {comment.rating}
+                                  </div>
+                                )}
+                              </h4>
                               <p className="text-sm text-muted-foreground">
                                 {new Date(comment.createdDate).toLocaleDateString("tr-TR", { 
                                   year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'

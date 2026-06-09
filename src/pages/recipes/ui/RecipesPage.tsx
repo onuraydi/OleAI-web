@@ -36,33 +36,26 @@ export const RecipesPage = () => {
         
         <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
           {/* Header section */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-            <span className="hover:text-foreground cursor-pointer transition-colors" onClick={() => navigate('/home')}>Ana Sayfa</span>
-            <span>/</span>
-            <span className="text-foreground font-medium">Tarifler</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-black text-foreground">Tarifleri Keşfet</h1>
+      <div className="flex flex-col lg:flex-row lg:items-center gap-4 w-full">
+        <h1 className="text-3xl md:text-4xl font-black text-foreground whitespace-nowrap">Tarifleri Keşfet</h1>
+
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Tarif ara..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-[1rem] outline-none transition-all shadow-sm font-medium"
+          />
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="relative flex-1 md:flex-none">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Tarif ara..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-64 lg:w-80 pl-10 pr-4 py-2.5 bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-2xl outline-none transition-all shadow-sm"
-            />
-          </div>
-          
+        <div className="flex items-center gap-3 flex-shrink-0">
           <div className="relative">
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none pl-4 pr-10 py-2.5 bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-2xl outline-none transition-all shadow-sm font-medium cursor-pointer"
+              className="appearance-none pl-4 pr-10 py-3 bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-[1rem] outline-none transition-all shadow-sm font-medium cursor-pointer"
             >
               <option value="Popular">Popüler</option>
               <option value="Newest">En Yeni</option>
@@ -74,7 +67,7 @@ export const RecipesPage = () => {
 
           <button 
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl shadow-sm transition-colors font-medium border-2 ${
+            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-[1rem] shadow-sm transition-colors font-medium border-2 ${
               showFilters 
                 ? "bg-primary text-primary-foreground border-primary" 
                 : "bg-white dark:bg-neutral-900 text-foreground border-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800"
@@ -236,50 +229,58 @@ export const RecipesPage = () => {
               {data?.items.map((recipe, index) => (
                 <motion.div 
                   key={recipe.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: index * 0.05 }}
                   onClick={() => navigate(`/recipes/${recipe.id}`)}
-                  className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
+                  className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-[2rem] overflow-hidden border border-muted/30 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     <img 
                       src={recipe.mainImageUrl || "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w=1776&auto=format&fit=crop"} 
                       alt={recipe.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     
-                    <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary hover:text-white transition-colors">
+                    {/* Like Button */}
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); }}
+                      className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-primary transition-colors shadow-sm"
+                    >
                       <Heart className="w-5 h-5" />
                     </button>
                     
+                    {/* Status Badge */}
                     {recipe.statusName && (
                       <div className="absolute top-4 left-4">
-                        <span className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-foreground shadow-sm">
+                        <span className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-bold text-foreground shadow-sm">
                           {recipe.statusName}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h3 className="text-lg font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
                       {recipe.title}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
                       {recipe.description}
                     </p>
 
-                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-muted/50">
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-muted/30">
                       <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
-                        <Clock className="w-4 h-4" />
+                        <Clock className="w-4 h-4 text-primary/60" />
                         <span>-- dk</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-amber-500">
-                        <Star className="w-4 h-4 fill-current" />
-                        <span>--</span>
+                      <div className="flex items-center gap-1 text-sm font-bold text-foreground">
+                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                        <span>{recipe.averageRating > 0 ? recipe.averageRating.toFixed(1) : "--"}</span>
+                        {recipe.totalRatings > 0 && (
+                          <span className="text-xs font-normal text-muted-foreground ml-1">({recipe.totalRatings})</span>
+                        )}
                       </div>
                     </div>
                   </div>

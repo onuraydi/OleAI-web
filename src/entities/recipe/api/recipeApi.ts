@@ -6,6 +6,8 @@ export interface RecipeListItem {
   description: string;
   mainImageUrl: string;
   statusName: string;
+  averageRating: number;
+  totalRatings: number;
 }
 
 export interface PaginatedResponse<T> {
@@ -43,6 +45,8 @@ export interface RecipeStatisticsResponse {
   totalLikes: number;
   totalDislikes: number;
   totalSaves: number;
+  averageRating: number;
+  totalRatings: number;
 }
 
 export interface UserInteractionResponse {
@@ -64,6 +68,7 @@ export interface RecipeCommentResponse {
   profileImageUrl: string | null;
   content: string;
   parentCommentId: string | null;
+  rating: number | null;
   createdDate: string;
   replies?: RecipeCommentResponse[];
 }
@@ -124,8 +129,8 @@ export const recipeApi = {
     const response = await apiInstance.post<{ message: string }>(`/recipes/${id}/save`);
     return response.data;
   },
-  addComment: async (id: string, content: string, parentId?: string) => {
-    const response = await apiInstance.post<{ message: string }>(`/recipes/${id}/comments`, { content, parentCommentId: parentId });
+  addComment: async (id: string, content: string, parentId?: string, rating?: number) => {
+    const response = await apiInstance.post<{ message: string }>(`/recipes/${id}/comments`, { content, parentCommentId: parentId, rating });
     return response.data;
   },
   startCooking: async (id: string) => {

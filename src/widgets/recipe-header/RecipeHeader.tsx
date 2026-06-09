@@ -235,8 +235,10 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
         <div className="flex items-center justify-center gap-6 text-muted-foreground font-medium mb-12 text-sm md:text-base">
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
-            <span className="font-bold text-foreground">{mockRating}</span>
-            <span>({recipe.statistics.totalComments} Değerlendirme)</span>
+            <span className="font-bold text-foreground">
+              {recipe.statistics.averageRating > 0 ? recipe.statistics.averageRating.toFixed(1) : "--"}
+            </span>
+            <span>({recipe.statistics.totalRatings} Değerlendirme)</span>
           </div>
           <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
           <div className="flex items-center gap-2">
