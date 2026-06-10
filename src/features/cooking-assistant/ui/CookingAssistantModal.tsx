@@ -80,7 +80,7 @@ export const CookingAssistantModal = ({ isOpen, onClose, recipe }: CookingAssist
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-4xl h-[85vh] md:h-[650px] bg-white dark:bg-[#111111] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          className="relative w-full max-w-4xl h-[85vh] md:h-[650px] bg-card rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-6 border-b border-muted/20">

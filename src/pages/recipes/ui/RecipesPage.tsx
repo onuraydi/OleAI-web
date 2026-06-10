@@ -83,7 +83,7 @@ export const RecipesPage = () => {
             placeholder="Tarif ara..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-[1rem] outline-none transition-all shadow-sm font-medium"
+            className="w-full pl-12 pr-4 py-3 bg-card border-2 border-transparent focus:border-primary rounded-[1rem] outline-none transition-all shadow-sm font-medium"
           />
         </div>
 
@@ -92,7 +92,7 @@ export const RecipesPage = () => {
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none pl-4 pr-10 py-3 bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-[1rem] outline-none transition-all shadow-sm font-medium cursor-pointer"
+              className="appearance-none pl-4 pr-10 py-3 bg-card border-2 border-transparent focus:border-primary rounded-[1rem] outline-none transition-all shadow-sm font-medium cursor-pointer"
             >
               <option value="Popular">Popüler</option>
               <option value="Newest">En Yeni</option>
@@ -107,7 +107,7 @@ export const RecipesPage = () => {
             className={`flex items-center justify-center gap-2 px-4 py-3 rounded-[1rem] shadow-sm transition-colors font-medium border-2 ${
               showFilters 
                 ? "bg-primary text-primary-foreground border-primary" 
-                : "bg-white dark:bg-neutral-900 text-foreground border-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                : "bg-card text-foreground border-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800"
             }`}
           >
             <SlidersHorizontal className="w-5 h-5" />
@@ -125,7 +125,7 @@ export const RecipesPage = () => {
             exit={{ opacity: 0, height: 0, marginTop: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-white dark:bg-neutral-900 p-6 rounded-[2rem] shadow-sm border border-muted/30">
+            <div className="bg-card p-6 rounded-[2rem] shadow-sm border border-muted/30">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {/* Category Filter */}
                 <div className="space-y-3">
@@ -267,7 +267,7 @@ export const RecipesPage = () => {
             setSelectedCategory(undefined);
             setAppliedCategory(undefined);
           }}
-          className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors ${appliedCategory === undefined ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-white dark:bg-neutral-900 text-muted-foreground hover:bg-neutral-50'}`}
+          className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors ${appliedCategory === undefined ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-card text-muted-foreground hover:bg-neutral-50'}`}
         >
           Tümü
         </button>
@@ -278,7 +278,7 @@ export const RecipesPage = () => {
               setSelectedCategory(cat.id);
               setAppliedCategory(cat.id);
             }}
-            className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors ${appliedCategory === cat.id ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-white dark:bg-neutral-900 text-muted-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}
+            className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors ${appliedCategory === cat.id ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-card text-muted-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}
           >
             {cat.name}
           </button>
@@ -290,12 +290,12 @@ export const RecipesPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="space-y-4">
-              <div className="aspect-square rounded-3xl bg-white dark:bg-neutral-900 shadow-sm animate-pulse" />
+              <div className="aspect-square rounded-3xl bg-card shadow-sm animate-pulse" />
             </div>
           ))}
         </div>
       ) : isError ? (
-        <div className="py-20 text-center space-y-4 bg-white dark:bg-neutral-900 rounded-[3rem] shadow-sm">
+        <div className="py-20 text-center space-y-4 bg-card rounded-[3rem] shadow-sm">
           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 text-red-500 rounded-2xl flex items-center justify-center mx-auto">
             <Sparkles className="w-8 h-8" />
           </div>
@@ -303,7 +303,7 @@ export const RecipesPage = () => {
           <p className="text-muted-foreground">Tarifler yüklenemedi. Lütfen tekrar deneyin.</p>
         </div>
       ) : data?.items.length === 0 ? (
-        <div className="py-20 text-center space-y-4 bg-white dark:bg-neutral-900 rounded-[3rem] shadow-sm">
+        <div className="py-20 text-center space-y-4 bg-card rounded-[3rem] shadow-sm">
           <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto text-muted-foreground">
             <Search className="w-8 h-8" />
           </div>
@@ -324,7 +324,7 @@ export const RecipesPage = () => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: index * 0.05 }}
                   onClick={() => navigate(`/recipes/${recipe.id}`)}
-                  className="group cursor-pointer bg-white dark:bg-neutral-900 rounded-[2rem] overflow-hidden border border-muted/30 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col"
+                  className="group cursor-pointer bg-card rounded-[2rem] overflow-hidden border border-muted/30 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     <img 
@@ -389,7 +389,7 @@ export const RecipesPage = () => {
                 <select 
                   value={size}
                   onChange={(e) => setSize(Number(e.target.value))}
-                  className="bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary rounded-xl px-2 py-1 outline-none transition-all shadow-sm cursor-pointer"
+                  className="bg-card border-2 border-transparent focus:border-primary rounded-xl px-2 py-1 outline-none transition-all shadow-sm cursor-pointer"
                 >
                   <option value={12}>12</option>
                   <option value={24}>24</option>
@@ -403,7 +403,7 @@ export const RecipesPage = () => {
                   <button 
                     onClick={() => setPage(p => Math.max(0, p - 1))}
                     disabled={!data.hasPreviousPage}
-                    className="p-2 rounded-xl bg-white dark:bg-neutral-900 text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
+                    className="p-2 rounded-xl bg-card text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
@@ -416,7 +416,7 @@ export const RecipesPage = () => {
                         className={`w-10 h-10 rounded-xl font-bold transition-colors shadow-sm ${
                           page === i 
                             ? 'bg-primary text-primary-foreground' 
-                            : 'bg-white dark:bg-neutral-900 text-muted-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                            : 'bg-card text-muted-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800'
                         }`}
                       >
                         {i + 1}
@@ -427,7 +427,7 @@ export const RecipesPage = () => {
                   <button 
                     onClick={() => setPage(p => Math.min(data.totalPages - 1, p + 1))}
                     disabled={!data.hasNextPage}
-                    className="p-2 rounded-xl bg-white dark:bg-neutral-900 text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
+                    className="p-2 rounded-xl bg-card text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>

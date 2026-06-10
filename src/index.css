@@ -39,13 +39,13 @@
   }
  
   .dark {
-    --background: 84 30% 5%;
+    --background: 84 20% 4%;
     --foreground: 60 20% 98%;
  
-    --card: 84 30% 8%;
+    --card: 84 15% 9%;
     --card-foreground: 60 20% 98%;
  
-    --popover: 84 30% 8%;
+    --popover: 84 15% 9%;
     --popover-foreground: 60 20% 98%;
  
     --primary: 84 30% 45%; /* Lighter green for dark mode */

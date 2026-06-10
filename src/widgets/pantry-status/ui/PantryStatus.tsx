@@ -37,7 +37,7 @@ export const PantryStatus = () => {
       {/* Items Count */}
       <motion.div 
         whileHover={{ y: -5 }}
-        className="bg-white dark:bg-neutral-900 p-6 rounded-[2rem] border border-muted/30 shadow-sm relative overflow-hidden group"
+        className="bg-card p-6 rounded-[2rem] border border-muted/30 shadow-sm relative overflow-hidden group"
       >
         <div className="absolute top-0 right-0 p-4">
           <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
@@ -58,7 +58,7 @@ export const PantryStatus = () => {
       {/* Expiring Soon */}
       <motion.div 
         whileHover={{ y: -5 }}
-        className="bg-white dark:bg-neutral-900 p-6 rounded-[2rem] border border-muted/30 shadow-sm relative overflow-hidden group"
+        className="bg-card p-6 rounded-[2rem] border border-muted/30 shadow-sm relative overflow-hidden group"
       >
         <div className="absolute top-0 right-0 p-4">
           <div className={`w-12 h-12 ${expiringItemsCount > 0 ? 'bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white' : 'bg-muted/50 text-muted-foreground'} rounded-2xl flex items-center justify-center transition-all duration-500`}>

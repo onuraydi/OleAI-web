@@ -33,7 +33,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       }
 
       return (
-        <div className="flex flex-col items-center justify-center p-12 text-center bg-white dark:bg-neutral-900 rounded-3xl border border-muted/30 shadow-sm">
+        <div className="flex flex-col items-center justify-center p-12 text-center bg-card rounded-3xl border border-muted/30 shadow-sm">
           <div className="w-16 h-16 bg-destructive/10 rounded-2xl flex items-center justify-center mb-6">
             <svg className="w-8 h-8 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />

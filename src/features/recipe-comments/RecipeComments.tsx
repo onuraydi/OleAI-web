@@ -90,7 +90,7 @@ export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps)
           >
             <div className="pt-8">
               {/* Comment Input */}
-              <div className="bg-white dark:bg-[#111111] rounded-[2rem] p-6 border border-muted/20 mb-10 shadow-sm">
+              <div className="bg-card rounded-[2rem] p-6 border border-muted/20 mb-10 shadow-sm">
                 <form onSubmit={handleSubmit} className="flex gap-4 items-start">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <UserCircle2 className="w-8 h-8 text-primary" />
@@ -145,7 +145,7 @@ export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps)
                 ) : comments.length > 0 ? (
                   <>
                     {comments.map((comment) => (
-                      <div key={comment.id} className="bg-white dark:bg-[#111111] p-6 rounded-[2rem] border border-muted/20 shadow-sm">
+                      <div key={comment.id} className="bg-card p-6 rounded-[2rem] border border-muted/20 shadow-sm">
                         {/* Main Comment */}
                         <div className="flex items-start gap-4 mb-4">
                           {comment.profileImageUrl ? (

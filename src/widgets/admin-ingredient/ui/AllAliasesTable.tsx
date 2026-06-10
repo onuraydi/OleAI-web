@@ -68,7 +68,7 @@ export const AllAliasesTable = ({ searchTerm = "" }: { searchTerm?: string }) =>
 
   return (
     <div className="space-y-4">
-      <div className="bg-white dark:bg-neutral-900 border border-muted/30 rounded-[2rem] overflow-hidden shadow-sm">
+      <div className="bg-card border border-muted/30 rounded-[2rem] overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-muted-foreground uppercase bg-muted/20 border-b border-muted/30">

@@ -31,7 +31,7 @@ export const ShoppingListItem = ({
   };
 
   return (
-    <div className="group flex items-center justify-between p-3 rounded-2xl border border-muted/30 bg-white dark:bg-neutral-950 hover:border-primary/50 transition-all shadow-sm">
+    <div className="group flex items-center justify-between p-3 rounded-2xl border border-muted/30 bg-background hover:border-primary/50 transition-all shadow-sm">
       <div className="flex items-center gap-4 flex-1 min-w-0">
         <button
           onClick={() => onToggleSelect(item.id)}
@@ -64,12 +64,12 @@ export const ShoppingListItem = ({
               step="0.1"
               value={editQty}
               onChange={(e) => setEditQty(Number(e.target.value))}
-              className="w-14 sm:w-16 px-1.5 py-1 bg-white dark:bg-neutral-950 border border-muted rounded-md text-sm outline-none focus:border-primary flex-shrink-0"
+              className="w-14 sm:w-16 px-1.5 py-1 bg-background border border-muted rounded-md text-sm outline-none focus:border-primary flex-shrink-0"
             />
             <select
               value={editUnit}
               onChange={(e) => setEditUnit(Number(e.target.value) as MeasurementUnit)}
-              className="w-20 sm:w-24 px-1 py-1 bg-white dark:bg-neutral-950 border border-muted rounded-md text-sm outline-none focus:border-primary truncate flex-shrink-0"
+              className="w-20 sm:w-24 px-1 py-1 bg-background border border-muted rounded-md text-sm outline-none focus:border-primary truncate flex-shrink-0"
             >
               {ALL_UNITS.map(u => (
                 <option key={u} value={u}>{MEASUREMENT_UNIT_LABELS[u]}</option>

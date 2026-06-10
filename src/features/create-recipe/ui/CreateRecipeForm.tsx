@@ -729,7 +729,7 @@ export const CreateRecipeForm = () => {
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-neutral-900 w-full max-w-md rounded-3xl shadow-2xl relative z-10 overflow-hidden"
+              className="bg-card w-full max-w-md rounded-3xl shadow-2xl relative z-10 overflow-hidden"
             >
               <div className="p-6 border-b border-muted/20 flex items-center justify-between">
                 <h3 className="font-black text-xl text-foreground">Yeni Malzeme Öner</h3>

@@ -66,7 +66,7 @@ export const UserStatistics = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className={`p-5 rounded-2xl border ${item.borderColor} bg-white dark:bg-neutral-900/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1`}
+          className={`p-5 rounded-2xl border ${item.borderColor} bg-card/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1`}
         >
           <div className={`w-10 h-10 rounded-xl ${item.bgColor} flex items-center justify-center`}>
             <item.icon className={`w-5 h-5 ${item.color}`} />

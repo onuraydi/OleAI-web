@@ -57,7 +57,7 @@ export const AdminRecipeCategoryTable = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-neutral-900 border border-muted/50 rounded-2xl p-8 flex flex-col items-center justify-center min-h-[400px]">
+      <div className="bg-card border border-muted/50 rounded-2xl p-8 flex flex-col items-center justify-center min-h-[400px]">
         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
         <p className="mt-4 text-muted-foreground font-medium">Kategoriler yükleniyor...</p>
       </div>
@@ -66,7 +66,7 @@ export const AdminRecipeCategoryTable = () => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white dark:bg-neutral-900 border border-muted/50 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+      <div className="bg-card border border-muted/50 rounded-2xl shadow-sm overflow-hidden flex flex-col">
         <div className="p-4 border-b border-muted/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/10">
           <div className="relative max-w-sm w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -74,7 +74,7 @@ export const AdminRecipeCategoryTable = () => {
               placeholder="Kategori adı ile ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 bg-white dark:bg-neutral-950"
+              className="pl-9 bg-background"
             />
           </div>
           <div className="text-sm text-muted-foreground font-medium px-2">

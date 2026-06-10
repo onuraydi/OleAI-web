@@ -32,7 +32,7 @@ export function AdminRecipesTable({ fixedStatus }: AdminRecipesTableProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-neutral-900 border border-muted/50 rounded-2xl p-8 flex flex-col items-center justify-center min-h-[400px]">
+      <div className="bg-card border border-muted/50 rounded-2xl p-8 flex flex-col items-center justify-center min-h-[400px]">
         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
         <p className="mt-4 text-muted-foreground font-medium">Tarifler yükleniyor...</p>
       </div>
@@ -53,7 +53,7 @@ export function AdminRecipesTable({ fixedStatus }: AdminRecipesTableProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-neutral-900 border border-muted/50 rounded-[2rem] shadow-sm overflow-hidden flex flex-col">
+      <div className="bg-card border border-muted/50 rounded-[2rem] shadow-sm overflow-hidden flex flex-col">
         <div className="p-4 border-b border-muted/50 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-muted/10">
           <div className="flex flex-col sm:flex-row gap-4 flex-1">
             <div className="relative max-w-sm w-full">
@@ -65,12 +65,12 @@ export function AdminRecipesTable({ fixedStatus }: AdminRecipesTableProps) {
                   setSearchTerm(e.target.value);
                   setPage(1);
                 }}
-                className="pl-9 bg-white dark:bg-neutral-950 rounded-xl"
+                className="pl-9 bg-background rounded-xl"
               />
             </div>
             
             <Select value={visibilityFilter} onValueChange={(val) => { setVisibilityFilter(val); setPage(1); }}>
-              <SelectTrigger className="w-[160px] rounded-xl bg-white dark:bg-neutral-950">
+              <SelectTrigger className="w-[160px] rounded-xl bg-background">
                 <SelectValue placeholder="Görünürlük Seç" />
               </SelectTrigger>
               <SelectContent>
@@ -174,7 +174,7 @@ export function AdminRecipesTable({ fixedStatus }: AdminRecipesTableProps) {
         const hasNxt = paginatedData.hasNextPage ?? false;
         
         return (
-          <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-neutral-900 px-6 py-4 rounded-[2rem] border border-muted/30 shadow-sm gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center bg-card px-6 py-4 rounded-[2rem] border border-muted/30 shadow-sm gap-4">
             <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
               <div className="flex items-center gap-2">
                 <span>Sayfa başına:</span>

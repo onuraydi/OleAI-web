@@ -32,7 +32,7 @@ export const ShoppingListGroup = ({
   const hasMore = items.length > ITEMS_LIMIT;
 
   return (
-    <div className="mb-6 last:mb-0 bg-white dark:bg-neutral-900 border border-muted/30 rounded-[2rem] p-5 shadow-sm">
+    <div className="mb-6 last:mb-0 bg-card border border-muted/30 rounded-[2rem] p-5 shadow-sm">
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-2 mb-2 group outline-none"

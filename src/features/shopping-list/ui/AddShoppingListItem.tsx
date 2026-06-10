@@ -83,7 +83,7 @@ export const AddShoppingListItem = () => {
 
   return (
     <div className="relative mt-8" ref={containerRef}>
-      <div className={`flex items-center gap-3 p-2 rounded-2xl border-2 transition-all shadow-sm bg-white dark:bg-neutral-900 ${
+      <div className={`flex items-center gap-3 p-2 rounded-2xl border-2 transition-all shadow-sm bg-card ${
         isFocused ? "border-primary" : "border-muted/30 hover:border-muted/50"
       }`}>
         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted/50 text-muted-foreground ml-2 shrink-0">
@@ -167,7 +167,7 @@ export const AddShoppingListItem = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-muted/20 z-50 overflow-hidden max-h-60 overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl shadow-xl border border-muted/20 z-50 overflow-hidden max-h-60 overflow-y-auto"
           >
             {searchResults.length > 0 ? (
               searchResults.map((result: any) => (

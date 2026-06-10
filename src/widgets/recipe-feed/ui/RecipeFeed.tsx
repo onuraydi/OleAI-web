@@ -33,7 +33,7 @@ export const RecipeFeed = () => {
 
   if (isError || !recipeData?.items.length) {
     return (
-      <div className="py-20 text-center space-y-4 bg-white dark:bg-neutral-900 rounded-[3rem] border-2 border-dashed border-muted/50">
+      <div className="py-20 text-center space-y-4 bg-card rounded-[3rem] border-2 border-dashed border-muted/50">
         <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto text-muted-foreground">
           <Sparkles className="w-8 h-8" />
         </div>

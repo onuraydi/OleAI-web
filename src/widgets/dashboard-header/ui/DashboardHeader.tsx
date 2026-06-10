@@ -61,12 +61,12 @@ export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
         {/* Theme Switcher */}
         <button 
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="w-10 h-10 rounded-xl bg-white dark:bg-neutral-900 border border-muted/30 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"
+          className="w-10 h-10 rounded-xl bg-card border border-muted/30 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"
         >
           {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </button>
 
-        <button className="w-10 h-10 rounded-xl bg-white dark:bg-neutral-900 border border-muted/30 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all relative">
+        <button className="w-10 h-10 rounded-xl bg-card border border-muted/30 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all relative">
           <Bell className="w-5 h-5" />
           <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-white dark:border-neutral-900" />
         </button>

@@ -102,7 +102,7 @@ export const ShoppingListPage = () => {
             </div>
             
             {/* Progress Circle */}
-            <div className="flex items-center gap-4 bg-white dark:bg-neutral-900 p-4 rounded-3xl shadow-sm border border-muted/30">
+            <div className="flex items-center gap-4 bg-card p-4 rounded-3xl shadow-sm border border-muted/30">
               <div className="relative w-16 h-16 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="40" className="stroke-muted fill-none" strokeWidth="8" />
@@ -129,7 +129,7 @@ export const ShoppingListPage = () => {
             
             {/* Toolbar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center bg-white dark:bg-neutral-900 p-1 rounded-2xl shadow-sm border border-muted/30">
+              <div className="flex items-center bg-card p-1 rounded-2xl shadow-sm border border-muted/30">
                 <button 
                   onClick={() => setActiveTab("category")}
                   className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
@@ -153,7 +153,7 @@ export const ShoppingListPage = () => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as "name" | "recent")}
-                    className="appearance-none pl-4 pr-10 py-2.5 bg-white dark:bg-neutral-900 border border-muted/50 rounded-xl text-sm font-bold text-foreground outline-none focus:border-primary cursor-pointer shadow-sm"
+                    className="appearance-none pl-4 pr-10 py-2.5 bg-card border border-muted/50 rounded-xl text-sm font-bold text-foreground outline-none focus:border-primary cursor-pointer shadow-sm"
                   >
                     <option value="recent">Sırala: Varsayılan</option>
                     <option value="name">Sırala: İsim (A-Z)</option>
@@ -165,7 +165,7 @@ export const ShoppingListPage = () => {
                   <select
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value as "all" | "unselected")}
-                    className="appearance-none pl-4 pr-10 py-2.5 bg-white dark:bg-neutral-900 border border-muted/50 rounded-xl text-sm font-bold text-foreground outline-none focus:border-primary cursor-pointer shadow-sm"
+                    className="appearance-none pl-4 pr-10 py-2.5 bg-card border border-muted/50 rounded-xl text-sm font-bold text-foreground outline-none focus:border-primary cursor-pointer shadow-sm"
                   >
                     <option value="all">Filtre: Tümü</option>
                     <option value="unselected">Filtre: Eksikler</option>
@@ -181,7 +181,7 @@ export const ShoppingListPage = () => {
                 <Loader2 className="w-8 h-8 text-primary animate-spin" />
               </div>
             ) : totalItems === 0 ? (
-              <div className="py-20 text-center flex flex-col items-center bg-white dark:bg-neutral-900/50 rounded-3xl p-8 border border-dashed border-muted/50">
+              <div className="py-20 text-center flex flex-col items-center bg-card/50 rounded-3xl p-8 border border-dashed border-muted/50">
                 <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mb-4">
                   <CheckCircle2 className="w-8 h-8 text-muted-foreground" />
                 </div>
@@ -189,7 +189,7 @@ export const ShoppingListPage = () => {
                 <p className="text-muted-foreground">Alışveriş listenize malzeme eklemeye başlayın.</p>
               </div>
             ) : Object.keys(groupedList).length === 0 ? (
-              <div className="py-20 text-center bg-white dark:bg-neutral-900/50 rounded-3xl p-8 border border-dashed border-muted/50">
+              <div className="py-20 text-center bg-card/50 rounded-3xl p-8 border border-dashed border-muted/50">
                 <p className="text-muted-foreground font-medium">Bu filtreye uygun malzeme bulunamadı.</p>
               </div>
             ) : (
@@ -220,7 +220,7 @@ export const ShoppingListPage = () => {
               className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
                 selectedItemIds.length > 0 
                   ? "bg-primary text-primary-foreground hover:opacity-90 shadow-md hover:shadow-lg transform hover:-translate-y-0.5" 
-                  : "bg-white dark:bg-neutral-900 text-muted-foreground cursor-not-allowed border-2 border-dashed border-muted/50"
+                  : "bg-card text-muted-foreground cursor-not-allowed border-2 border-dashed border-muted/50"
               }`}
             >
               {bulkPurchaseMutation.isPending ? (

@@ -56,7 +56,7 @@ export function AdminRecipeDetailPage() {
           </Button>
 
           {isLoading ? (
-            <div className="bg-white dark:bg-neutral-900 border border-muted/50 rounded-3xl p-12 flex flex-col items-center justify-center min-h-[400px]">
+            <div className="bg-card border border-muted/50 rounded-3xl p-12 flex flex-col items-center justify-center min-h-[400px]">
               <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               <p className="mt-6 text-muted-foreground font-medium text-lg">Tarif detayları yükleniyor...</p>
             </div>
@@ -75,7 +75,7 @@ export function AdminRecipeDetailPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-neutral-900 border border-muted/50 rounded-[2rem] overflow-hidden shadow-sm"
+              className="bg-card border border-muted/50 rounded-[2rem] overflow-hidden shadow-sm"
             >
               {/* Header section with actions */}
               <div className="p-6 md:p-8 border-b border-muted/50 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-muted/5">

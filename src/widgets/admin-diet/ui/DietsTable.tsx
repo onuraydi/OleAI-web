@@ -95,7 +95,7 @@ export const DietsTable = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-muted/50 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-card border border-muted/50 rounded-2xl shadow-sm overflow-hidden flex flex-col">
       {/* Search Bar */}
       <div className="p-4 border-b border-muted/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/10">
         <div className="relative max-w-sm w-full">
@@ -104,7 +104,7 @@ export const DietsTable = () => {
             placeholder="Diyet adı ile ara..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 bg-white dark:bg-neutral-950"
+            className="pl-9 bg-background"
           />
         </div>
         <div className="text-sm text-muted-foreground font-medium px-2">

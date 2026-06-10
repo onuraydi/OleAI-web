@@ -315,7 +315,7 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
         </div>
 
         {/* Interaction Bar */}
-        <div className="flex items-center justify-center gap-4 md:gap-8 bg-white dark:bg-[#111111] border border-muted/20 shadow-lg rounded-full py-3 px-6 md:px-8 mb-16 mx-auto w-fit max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex items-center justify-center gap-4 md:gap-8 bg-card border border-muted/20 shadow-lg rounded-full py-3 px-6 md:px-8 mb-16 mx-auto w-fit max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {/* Like */}
           <button 
             onClick={() => likeMutation.mutate()}

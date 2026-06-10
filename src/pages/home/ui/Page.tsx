@@ -54,7 +54,7 @@ export default function HomePage() {
               
               <Link 
                 to="/recipes/create"
-                className="p-5 rounded-2xl bg-white dark:bg-neutral-900 border border-muted/30 hover:border-primary/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1 group"
+                className="p-5 rounded-2xl bg-card border border-muted/30 hover:border-primary/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1 group"
               >
                 <div className="w-10 h-10 rounded-xl bg-muted/50 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                   <span className="text-2xl leading-none">+</span>
@@ -67,7 +67,7 @@ export default function HomePage() {
 
               <Link 
                 to="/profile"
-                className="p-5 rounded-2xl bg-white dark:bg-neutral-900 border border-muted/30 hover:border-primary/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1 group"
+                className="p-5 rounded-2xl bg-card border border-muted/30 hover:border-primary/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1 group"
               >
                 <div className="w-10 h-10 rounded-xl bg-muted/50 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                   <Bookmark className="w-5 h-5" />
@@ -80,7 +80,7 @@ export default function HomePage() {
 
               <Link 
                 to="/shopping-list"
-                className="p-5 rounded-2xl bg-white dark:bg-neutral-900 border border-muted/30 hover:border-primary/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1 group"
+                className="p-5 rounded-2xl bg-card border border-muted/30 hover:border-primary/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1 group"
               >
                 <div className="w-10 h-10 rounded-xl bg-muted/50 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                   <ShoppingCart className="w-5 h-5" />

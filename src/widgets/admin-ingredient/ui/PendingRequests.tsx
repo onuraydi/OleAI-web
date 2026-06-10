@@ -29,7 +29,7 @@ export const PendingRequests = ({ searchTerm = "" }: { searchTerm?: string }) =>
 
   if (!filteredData || filteredData.length === 0) {
     return (
-      <div className="bg-white dark:bg-neutral-900 border border-muted/30 rounded-[2rem] p-12 flex flex-col items-center justify-center text-center shadow-sm">
+      <div className="bg-card border border-muted/30 rounded-[2rem] p-12 flex flex-col items-center justify-center text-center shadow-sm">
         <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
           <HandMetal className="w-10 h-10" />
         </div>
@@ -56,7 +56,7 @@ export const PendingRequests = ({ searchTerm = "" }: { searchTerm?: string }) =>
         </div>
       )}
 
-      <div className="bg-white dark:bg-neutral-900 border border-muted/30 rounded-[2rem] overflow-hidden shadow-sm">
+      <div className="bg-card border border-muted/30 rounded-[2rem] overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-muted-foreground uppercase bg-muted/20 border-b border-muted/30">
@@ -109,7 +109,7 @@ export const PendingRequests = ({ searchTerm = "" }: { searchTerm?: string }) =>
                   </td>
                   <td className="px-6 py-6 align-top">
                     <div className="bg-[#F4F1E1] dark:bg-[#F4F1E1]/5 rounded-2xl p-4 text-sm flex items-start gap-3">
-                      <div className="bg-white dark:bg-black/20 p-1.5 rounded-full shrink-0 shadow-sm mt-0.5">
+                      <div className="bg-background/50 p-1.5 rounded-full shrink-0 shadow-sm mt-0.5">
                         <Bot className="w-5 h-5 text-[#556B2F]" />
                       </div>
                       <div>
@@ -139,7 +139,7 @@ export const PendingRequests = ({ searchTerm = "" }: { searchTerm?: string }) =>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-neutral-900 px-6 py-4 rounded-[2rem] border border-muted/30 shadow-sm gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-card px-6 py-4 rounded-[2rem] border border-muted/30 shadow-sm gap-4">
         <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
           <div className="flex items-center gap-2">
             <span>Sayfa başına:</span>

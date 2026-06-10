@@ -69,7 +69,7 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
   return (
     <div className="space-y-6">
       {/* Table Container */}
-      <div className="bg-white dark:bg-neutral-900 border border-muted/30 rounded-[2rem] overflow-hidden shadow-sm">
+      <div className="bg-card border border-muted/30 rounded-[2rem] overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-muted-foreground uppercase bg-muted/20 border-b border-muted/30">
@@ -188,7 +188,7 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
         const hasNxt = data.hasNext ?? (data as any).hasNextPage ?? false;
 
         return (
-          <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-neutral-900 px-6 py-4 rounded-[2rem] border border-muted/30 shadow-sm gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center bg-card px-6 py-4 rounded-[2rem] border border-muted/30 shadow-sm gap-4">
           <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
             <div className="flex items-center gap-2">
               <span>Sayfa başına:</span>

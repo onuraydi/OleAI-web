@@ -105,7 +105,7 @@ export default function OnboardingPage() {
                 initial={{ scale: 0, rotate: -20, y: 20 }}
                 animate={{ scale: 1, rotate: 0, y: 0 }}
                 transition={{ delay: 0.4, type: "spring", stiffness: 260, damping: 20 }}
-                className="absolute -bottom-4 right-8 bg-white dark:bg-neutral-900 p-4 rounded-2xl shadow-xl flex items-center gap-2 border border-primary/10 dark:border-white/5 backdrop-blur-sm"
+                className="absolute -bottom-4 right-8 bg-card p-4 rounded-2xl shadow-xl flex items-center gap-2 border border-primary/10 dark:border-white/5 backdrop-blur-sm"
               >
                 {steps[currentStep].icon}
                 <span className="text-xs font-bold text-primary uppercase tracking-widest">

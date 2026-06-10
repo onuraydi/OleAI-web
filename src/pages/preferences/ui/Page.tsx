@@ -268,7 +268,7 @@ export default function PreferencesPage() {
                           value={username}
                           onChange={(e) => setUsername(e.target.value)}
                           placeholder="Örn: onuraydin"
-                          className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary focus:bg-background outline-none transition-all shadow-sm font-medium"
+                          className="w-full h-14 pl-12 pr-4 rounded-2xl bg-card border-2 border-transparent focus:border-primary focus:bg-background outline-none transition-all shadow-sm font-medium"
                         />
                       </div>
                     </div>
@@ -285,7 +285,7 @@ export default function PreferencesPage() {
                           value={birthDate}
                           max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split("T")[0]}
                           onChange={(e) => setBirthDate(e.target.value)}
-                          className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary focus:bg-background outline-none transition-all shadow-sm font-medium"
+                          className="w-full h-14 pl-12 pr-4 rounded-2xl bg-card border-2 border-transparent focus:border-primary focus:bg-background outline-none transition-all shadow-sm font-medium"
                         />
                       </div>
                     </div>
@@ -319,7 +319,7 @@ export default function PreferencesPage() {
                       className={`relative flex flex-col items-start p-6 rounded-3xl border-2 transition-all text-left ${
                         selectedDiet === diet.id 
                           ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" 
-                          : "border-transparent bg-white dark:bg-neutral-900 shadow-sm hover:shadow-md"
+                          : "border-transparent bg-card shadow-sm hover:shadow-md"
                       }`}
                     >
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
@@ -345,7 +345,7 @@ export default function PreferencesPage() {
                     className={`relative flex flex-col items-start p-6 rounded-3xl border-2 transition-all text-left ${
                       selectedDiet === "none" 
                         ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" 
-                        : "border-transparent bg-white dark:bg-neutral-900 shadow-sm hover:shadow-md"
+                        : "border-transparent bg-card shadow-sm hover:shadow-md"
                     }`}
                   >
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
@@ -385,7 +385,7 @@ export default function PreferencesPage() {
                       className={`relative flex items-center gap-4 p-5 rounded-3xl border-2 transition-all ${
                         selectedAllergies.includes(allergy.id)
                           ? "border-primary bg-primary/5 shadow-xl shadow-primary/10"
-                          : "border-transparent bg-white dark:bg-neutral-900 shadow-sm"
+                          : "border-transparent bg-card shadow-sm"
                       }`}
                     >
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
@@ -429,7 +429,7 @@ export default function PreferencesPage() {
                       placeholder="Malzeme ara... (örn: Mantar, Soğan)"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-transparent focus:border-primary focus:bg-background outline-none text-lg transition-all shadow-sm"
+                      className="w-full h-16 pl-14 pr-6 rounded-2xl bg-card border-2 border-transparent focus:border-primary focus:bg-background outline-none text-lg transition-all shadow-sm"
                     />
                     
                     <AnimatePresence>
@@ -438,7 +438,7 @@ export default function PreferencesPage() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 10 }}
-                          className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-muted z-50 max-h-60 overflow-y-auto"
+                          className="absolute top-full left-0 w-full mt-2 bg-card rounded-2xl shadow-2xl border border-muted z-50 max-h-60 overflow-y-auto"
                         >
                           {isLoadingSearch ? (
                             <div className="p-8 text-center text-muted-foreground">
@@ -537,7 +537,7 @@ export default function PreferencesPage() {
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl border-2 font-medium shadow-sm transition-all group/pop ${
                               selectedDislikedIngredients.some(i => i.id === item.id)
                                 ? "bg-primary/10 border-primary text-primary"
-                                : "bg-white dark:bg-neutral-900 border-transparent hover:border-primary/50 text-foreground"
+                                : "bg-card border-transparent hover:border-primary/50 text-foreground"
                             }`}
                           >
                             <span className={`${selectedDislikedIngredients.some(i => i.id === item.id) ? "text-primary" : "text-primary group-hover/pop:scale-110"} transition-transform`}>

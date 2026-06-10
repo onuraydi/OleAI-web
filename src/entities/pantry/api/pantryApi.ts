@@ -3,7 +3,7 @@ import { MeasurementCategory, MeasurementUnit } from "@/shared/constants/measure
 
 export interface PantryItemResponse {
   id: string;
-  ingredientId: string;
+  masterIngredientId: string;
   name: string;
   categoryId: string;
   categoryName: string;
@@ -27,6 +27,13 @@ export interface CategoryResponse {
   name: string;
 }
 
+export interface PopularCategoryResponse {
+  categoryId: string;
+  categoryName: string;
+  iconName: string;
+  ingredients: IngredientSearchResultResponse[];
+}
+
 export interface AddUserIngredientRequest {
   ingredientId?: string;
   requestedName?: string;
@@ -40,6 +47,10 @@ export interface PopularDislikedIngredientResponse {
   id: string;
   name: string;
   categoryName: string;
+}
+
+export interface AddMultipleUserIngredientsRequest {
+  ingredients: AddUserIngredientRequest[];
 }
 
 export const pantryApi = {
@@ -60,6 +71,11 @@ export const pantryApi = {
     return response.data;
   },
 
+  getPopularByCategory: async (): Promise<PopularCategoryResponse[]> => {
+    const response = await apiInstance.get<PopularCategoryResponse[]>("/Pantry/popular-by-category");
+    return response.data;
+  },
+
   getCategories: async (): Promise<CategoryResponse[]> => {
     const response = await apiInstance.get<CategoryResponse[]>("/IngredientCategories");
     return response.data;
@@ -67,6 +83,20 @@ export const pantryApi = {
 
   addIngredient: async (request: AddUserIngredientRequest): Promise<void> => {
     await apiInstance.post("/Pantry", { request });
+  },
+
+  addMultipleIngredients: async (request: AddMultipleUserIngredientsRequest): Promise<void> => {
+    await apiInstance.post("/Pantry/bulk", { request });
+  },
+
+  updateIngredientQuantity: async (id: string, newQuantity: number): Promise<void> => {
+    await apiInstance.put(`/Pantry/${id}`, newQuantity, {
+      headers: { "Content-Type": "application/json" }
+    });
+  },
+
+  deleteIngredient: async (id: string): Promise<void> => {
+    await apiInstance.delete(`/Pantry/${id}`);
   }
 };
 

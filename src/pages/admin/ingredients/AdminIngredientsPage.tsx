@@ -48,7 +48,7 @@ export const AdminIngredientsPage = () => {
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input 
                   placeholder="Tabloda ara..." 
-                  className="pl-9 w-64 rounded-xl border-muted/30 focus-visible:ring-primary/20 bg-white dark:bg-neutral-900"
+                  className="pl-9 w-64 rounded-xl border-muted/30 focus-visible:ring-primary/20 bg-card"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
