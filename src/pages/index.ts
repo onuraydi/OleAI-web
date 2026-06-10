@@ -21,6 +21,7 @@ export * from './admin-diet/ui/AdminDietsPage';
 export * from './admin-user';
 export * from './admin-recipe';
 export { AdminEditRecipePage } from './admin-recipe';
+export * from './admin-recipe-taxonomy/ui/AdminRecipeTaxonomyPage';
 export * from './privacy';
 export * from './terms';
 export * from './contact';

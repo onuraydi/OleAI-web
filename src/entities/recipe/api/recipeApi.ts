@@ -8,6 +8,9 @@ export interface RecipeListItem {
   statusName: string;
   averageRating: number;
   totalRatings: number;
+  prepTime: number;
+  cookTime: number;
+  difficulty: number;
 }
 
 export interface PaginatedResponse<T> {
@@ -83,6 +86,17 @@ export interface Paginate<T> {
   hasNextPage: boolean;
 }
 
+export interface RecipeCategoryDto {
+  id: number;
+  name: string;
+  iconName: string;
+}
+
+export interface TagDto {
+  id: number;
+  name: string;
+}
+
 export interface RecipeDetailResponse {
   id: string;
   userId: string;
@@ -92,9 +106,15 @@ export interface RecipeDetailResponse {
   status: number;
   createdDate: string;
   updatedDate: string | null;
+  difficulty: number;
+  servings: number;
+  prepTime: number;
+  cookTime: number;
   ingredients: RecipeIngredientResponse[];
   steps: RecipeStepResponse[];
   images: RecipeImageResponse[];
+  categories: RecipeCategoryDto[];
+  tags: TagDto[];
   statistics: RecipeStatisticsResponse;
   userInteraction: UserInteractionResponse | null;
   author: BasicUserInfo | null;
@@ -155,6 +175,14 @@ export const recipeApi = {
         'Content-Type': 'multipart/form-data',
       },
     });
+    return response.data;
+  },
+  getRecipeCategories: async (): Promise<RecipeCategoryDto[]> => {
+    const response = await apiInstance.get<RecipeCategoryDto[]>("/recipetaxonomy/categories");
+    return response.data;
+  },
+  getRecipeTags: async (): Promise<TagDto[]> => {
+    const response = await apiInstance.get<TagDto[]>("/recipetaxonomy/tags");
     return response.data;
   }
 };

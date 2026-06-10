@@ -25,7 +25,7 @@ const updateIngredientSchema = z.object({
   unitFamily: z.nativeEnum(MeasurementCategory, {
     message: "Lütfen geçerli bir ölçü birimi ailesi seçin"
   }),
-  isPolarizing: z.boolean().default(false),
+  isPolarizing: z.boolean(),
 });
 
 type UpdateIngredientFormValues = z.infer<typeof updateIngredientSchema>;

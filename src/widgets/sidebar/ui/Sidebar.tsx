@@ -34,6 +34,7 @@ const adminMenuItems = [
   { icon: Leaf, label: "Diyetler", path: "/admin/diets" },
   { icon: Users, label: "Kullanıcılar", path: "/admin/users" },
   { icon: ChefHat, label: "Tarifler", path: "/admin/recipes" },
+  { icon: Tags, label: "Tarif Sınıflandırma", path: "/admin/recipe-taxonomy" },
 ];
 
 export const Sidebar = () => {

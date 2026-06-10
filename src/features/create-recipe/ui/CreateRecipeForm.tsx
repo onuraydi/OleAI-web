@@ -233,6 +233,17 @@ export const CreateRecipeForm = () => {
     formData.append("Title", title);
     formData.append("Description", description);
     formData.append("Visibility", visibility);
+    formData.append("Difficulty", difficulty);
+    formData.append("Servings", servings);
+    formData.append("PrepTime", prepTime);
+    formData.append("CookTime", cookTime);
+    
+    // Send selected category as an array of IDs
+    formData.append("CategoryIds", categoryId);
+
+    // Normally tags should be selected from API IDs, but for now we'll mock or leave empty
+    // formData.append("TagIds", "1"); 
+
     formData.append("MainImage", coverPhoto);
 
     const formattedIngredients = validIngredients.map(i => ({
