@@ -252,14 +252,7 @@ export const RecipesPage = () => {
                       <Heart className="w-5 h-5" />
                     </button>
                     
-                    {/* Status Badge */}
-                    {recipe.statusName && (
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-bold text-foreground shadow-sm">
-                          {recipe.statusName}
-                        </span>
-                      </div>
-                    )}
+
                   </div>
 
                   <div className="p-6 flex-1 flex flex-col">
@@ -271,9 +264,17 @@ export const RecipesPage = () => {
                     </p>
 
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-muted/30">
-                      <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
-                        <Clock className="w-4 h-4 text-primary/60" />
-                        <span>-- dk</span>
+                      <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-4 h-4 text-primary/60" />
+                          <span>{recipe.prepTime + recipe.cookTime > 0 ? recipe.prepTime + recipe.cookTime : '--'} dk</span>
+                        </div>
+                        {recipe.difficulty > 0 && (
+                          <div className="flex items-center gap-1.5 hidden sm:flex">
+                            <span className="w-1 h-1 rounded-full bg-muted-foreground/30"></span>
+                            <span>{recipe.difficulty === 1 ? 'Kolay' : recipe.difficulty === 2 ? 'Orta' : 'Zor'}</span>
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-1 text-sm font-bold text-foreground">
                         <Star className="w-4 h-4 text-amber-500 fill-amber-500" />

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { MessageSquare, Bookmark, Share2, Star, ThumbsDown, ThumbsUp, ChevronLeft, ChevronRight, ChefHat } from "lucide-react";
+import { MessageSquare, Bookmark, Share2, Star, ThumbsDown, ThumbsUp, ChevronLeft, ChevronRight, ChefHat, Clock, Flame } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";
@@ -194,14 +194,22 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           </>
         )}
         
-        {/* Mock Tags */}
-        <div className="absolute top-6 right-6 flex gap-3 z-10">
-          {mockTags.map((tag, idx) => (
+        {/* Categories & Tags */}
+        <div className="absolute top-6 right-6 flex flex-wrap justify-end gap-2 z-10 max-w-[60%]">
+          {recipe.categories?.map((cat) => (
             <span 
-              key={idx} 
-              className="bg-white/90 backdrop-blur-md text-foreground font-bold px-4 py-1.5 rounded-full text-sm shadow-lg tracking-wider"
+              key={`cat-${cat.id}`} 
+              className="bg-primary/90 backdrop-blur-md text-primary-foreground font-bold px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm shadow-lg tracking-wider"
             >
-              {tag}
+              {cat.name}
+            </span>
+          ))}
+          {recipe.tags?.map((tag) => (
+            <span 
+              key={`tag-${tag.id}`} 
+              className="bg-white/90 dark:bg-black/80 backdrop-blur-md text-foreground font-bold px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm shadow-lg tracking-wider"
+            >
+              #{tag.name}
             </span>
           ))}
         </div>
@@ -232,21 +240,57 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
           {recipe.title}
         </h1>
         
-        <div className="flex items-center justify-center gap-6 text-muted-foreground font-medium mb-12 text-sm md:text-base">
+        <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-muted-foreground font-medium mb-12 text-sm md:text-base">
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
             <span className="font-bold text-foreground">
               {recipe.statistics.averageRating > 0 ? recipe.statistics.averageRating.toFixed(1) : "--"}
             </span>
-            <span>({recipe.statistics.totalRatings} Değerlendirme)</span>
+            <span>({recipe.statistics.totalRatings})</span>
           </div>
-          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 hidden md:block" />
           <div className="flex items-center gap-2">
             <span className="font-bold text-foreground">
               {recipe.author?.username || "OleAI Kitchen"}
             </span>
-            <span>tarafından</span>
           </div>
+          
+          {(recipe.prepTime > 0 || recipe.cookTime > 0 || recipe.servings > 0 || recipe.difficulty > 0) && (
+            <>
+              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 hidden md:block" />
+              <div className="flex items-center gap-4 bg-muted/30 px-4 py-1.5 rounded-full">
+                {recipe.difficulty > 0 && (
+                  <div className="flex items-center gap-1.5" title="Zorluk">
+                    <ChefHat className="w-4 h-4" />
+                    <span className="font-bold">{recipe.difficulty === 1 ? 'Kolay' : recipe.difficulty === 2 ? 'Orta' : 'Zor'}</span>
+                  </div>
+                )}
+                
+                {recipe.servings > 0 && (
+                  <div className="flex items-center gap-1.5" title="Porsiyon">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span className="font-bold">{recipe.servings} Kişilik</span>
+                  </div>
+                )}
+
+                {recipe.prepTime > 0 && (
+                  <div className="flex items-center gap-1.5" title="Hazırlık Süresi">
+                    <Clock className="w-4 h-4" />
+                    <span className="font-bold">{recipe.prepTime} dk Hazırlık</span>
+                  </div>
+                )}
+                
+                {recipe.cookTime > 0 && (
+                  <div className="flex items-center gap-1.5" title="Pişirme Süresi">
+                    <Flame className="w-4 h-4 text-orange-500" />
+                    <span className="font-bold">{recipe.cookTime} dk Pişirme</span>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {recipe.description && (

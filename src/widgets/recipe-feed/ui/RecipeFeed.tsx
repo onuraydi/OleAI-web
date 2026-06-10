@@ -73,11 +73,7 @@ export const RecipeFeed = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
-              <div className="absolute top-4 left-4">
-                <span className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-black text-primary shadow-sm">
-                  {recipe.statusName || "Yeni"}
-                </span>
-              </div>
+
 
               <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary transition-all">
                 <Heart className="w-5 h-5" />
@@ -91,7 +87,26 @@ export const RecipeFeed = () => {
                 {recipe.title}
               </h3>
               <p className="text-sm text-muted-foreground mb-3 line-clamp-1 font-medium">{recipe.description}</p>
+              
+              <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground mt-2">
+                {recipe.prepTime > 0 || recipe.cookTime > 0 ? (
+                  <div className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{recipe.prepTime + recipe.cookTime} dk</span>
+                  </div>
+                ) : null}
 
+                {recipe.difficulty > 0 ? (
+                  <div className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span>{recipe.difficulty === 1 ? 'Kolay' : recipe.difficulty === 2 ? 'Orta' : 'Zor'}</span>
+                  </div>
+                ) : null}
+              </div>
             </div>
           </motion.div>
         ))}
