@@ -255,14 +255,18 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
             </span>
           </div>
           
-          {(recipe.prepTime > 0 || recipe.cookTime > 0 || recipe.servings > 0 || recipe.difficulty > 0) && (
+          {(recipe.prepTime > 0 || recipe.cookTime > 0 || recipe.servings > 0 || recipe.difficulty !== undefined) && (
             <>
               <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 hidden md:block" />
               <div className="flex items-center gap-4 bg-muted/30 px-4 py-1.5 rounded-full">
-                {recipe.difficulty > 0 && (
+                {recipe.difficulty !== undefined && (
                   <div className="flex items-center gap-1.5" title="Zorluk">
                     <ChefHat className="w-4 h-4" />
-                    <span className="font-bold">{recipe.difficulty === 1 ? 'Kolay' : recipe.difficulty === 2 ? 'Orta' : 'Zor'}</span>
+                    <span className="font-bold">
+                      {recipe.difficulty === 1 || String(recipe.difficulty) === 'Easy' ? 'Kolay' :
+                       recipe.difficulty === 2 || String(recipe.difficulty) === 'Medium' ? 'Orta' :
+                       recipe.difficulty === 3 || String(recipe.difficulty) === 'Hard' ? 'Zor' : 'Belirtilmedi'}
+                    </span>
                   </div>
                 )}
                 

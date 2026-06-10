@@ -5,6 +5,7 @@ import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { useNavigate } from "react-router-dom";
 import { Search, Loader2, Sparkles, Heart, Clock, Star, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import type { RecipeCategoryDto, TagDto } from "@/entities/recipe/api/recipeApi";
 
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
@@ -18,15 +19,51 @@ export const RecipesPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("Popular");
 
+  // Seçili Filtreler (Sadece UI'da Gözüken)
+  const [selectedCategory, setSelectedCategory] = useState<number | undefined>(undefined);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<number | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState<number | undefined>(undefined);
+  const [selectedTag, setSelectedTag] = useState<number | undefined>(undefined);
+
+  // Uygulanmış Filtreler (API'ye Gönderilen)
+  const [appliedCategory, setAppliedCategory] = useState<number | undefined>(undefined);
+  const [appliedDifficulty, setAppliedDifficulty] = useState<number | undefined>(undefined);
+  const [appliedTime, setAppliedTime] = useState<number | undefined>(undefined);
+  const [appliedTag, setAppliedTag] = useState<number | undefined>(undefined);
+
+  const handleApplyFilters = () => {
+    setAppliedCategory(selectedCategory);
+    setAppliedDifficulty(selectedDifficulty);
+    setAppliedTime(selectedTime);
+    setAppliedTag(selectedTag);
+    setShowFilters(false);
+  };
+
+  const handleClearFilters = () => {
+    setSelectedCategory(undefined);
+    setSelectedDifficulty(undefined);
+    setSelectedTime(undefined);
+    setSelectedTag(undefined);
+    
+    setAppliedCategory(undefined);
+    setAppliedDifficulty(undefined);
+    setAppliedTime(undefined);
+    setAppliedTag(undefined);
+  };
+
+  // Filtreler için veriler
+  const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: recipeApi.getRecipeCategories });
+  const { data: tags } = useQuery({ queryKey: ["tags"], queryFn: recipeApi.getRecipeTags });
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["recipes", "published", page, size, debouncedSearch],
-    queryFn: () => recipeApi.getPublishedRecipes(page, size, debouncedSearch || undefined),
+    queryKey: ["recipes", "published", page, size, debouncedSearch, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy],
+    queryFn: () => recipeApi.getPublishedRecipes(page, size, debouncedSearch || undefined, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy),
   });
 
-  // Reset page when search or size changes
+  // Reset page when search, size or any APPLIED filter changes
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearch, size]);
+  }, [debouncedSearch, size, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy]);
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-500">
@@ -94,16 +131,27 @@ export const RecipesPage = () => {
                 <div className="space-y-3">
                   <h3 className="font-bold text-foreground">Kategori</h3>
                   <div className="flex flex-wrap gap-2">
-                    {["Tümü", "Kahvaltı", "Ana Yemek", "Tatlı", "Atıştırmalık"].map(cat => (
+                    <button 
+                      onClick={() => setSelectedCategory(undefined)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        selectedCategory === undefined 
+                          ? "bg-primary/10 text-primary border-2 border-primary/20" 
+                          : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                      }`}
+                    >
+                      Tümü
+                    </button>
+                    {categories?.map(cat => (
                       <button 
-                        key={cat}
+                        key={cat.id}
+                        onClick={() => setSelectedCategory(cat.id)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          cat === "Tümü" 
+                          selectedCategory === cat.id 
                             ? "bg-primary/10 text-primary border-2 border-primary/20" 
                             : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
                         }`}
                       >
-                        {cat}
+                        {cat.name}
                       </button>
                     ))}
                   </div>
@@ -113,16 +161,26 @@ export const RecipesPage = () => {
                 <div className="space-y-3">
                   <h3 className="font-bold text-foreground">Zorluk</h3>
                   <div className="flex flex-wrap gap-2">
-                    {["Tümü", "Kolay", "Orta", "Zor"].map(level => (
+                    <button 
+                      onClick={() => setSelectedDifficulty(undefined)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        selectedDifficulty === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                      }`}>Tümü</button>
+                    {[
+                      { label: "Kolay", val: 1 }, 
+                      { label: "Orta", val: 2 }, 
+                      { label: "Zor", val: 3 }
+                    ].map(level => (
                       <button 
-                        key={level}
+                        key={level.val}
+                        onClick={() => setSelectedDifficulty(level.val)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          level === "Tümü" 
+                          selectedDifficulty === level.val 
                             ? "bg-primary/10 text-primary border-2 border-primary/20" 
                             : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
                         }`}
                       >
-                        {level}
+                        {level.label}
                       </button>
                     ))}
                   </div>
@@ -132,35 +190,51 @@ export const RecipesPage = () => {
                 <div className="space-y-3">
                   <h3 className="font-bold text-foreground">Hazırlama Süresi</h3>
                   <div className="flex flex-wrap gap-2">
-                    {["Tümü", "< 15 dk", "< 30 dk", "< 60 dk", "1s+"].map(time => (
+                    <button 
+                      onClick={() => setSelectedTime(undefined)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        selectedTime === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                      }`}>Tümü</button>
+                    {[
+                      { label: "< 15 dk", val: 15 },
+                      { label: "< 30 dk", val: 30 },
+                      { label: "< 60 dk", val: 60 }
+                    ].map(time => (
                       <button 
-                        key={time}
+                        key={time.val}
+                        onClick={() => setSelectedTime(time.val)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          time === "Tümü" 
+                          selectedTime === time.val 
                             ? "bg-primary/10 text-primary border-2 border-primary/20" 
                             : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
                         }`}
                       >
-                        {time}
+                        {time.label}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Dietary Preferences Filter */}
+                {/* Dietary Preferences Filter (Tag) */}
                 <div className="space-y-3">
-                  <h3 className="font-bold text-foreground">Diyet</h3>
+                  <h3 className="font-bold text-foreground">Diyet / Etiket</h3>
                   <div className="flex flex-wrap gap-2">
-                    {["Yok", "Vejetaryen", "Vegan", "Glutensiz", "Keto"].map(diet => (
+                    <button 
+                      onClick={() => setSelectedTag(undefined)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                        selectedTag === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                      }`}>Tümü</button>
+                    {tags?.map(tag => (
                       <button 
-                        key={diet}
+                        key={tag.id}
+                        onClick={() => setSelectedTag(tag.id)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          diet === "Yok" 
+                          selectedTag === tag.id 
                             ? "bg-primary/10 text-primary border-2 border-primary/20" 
                             : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
                         }`}
                       >
-                        {diet}
+                        {tag.name}
                       </button>
                     ))}
                   </div>
@@ -168,10 +242,16 @@ export const RecipesPage = () => {
               </div>
               
               <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-muted/30">
-                <button className="px-5 py-2.5 text-muted-foreground font-medium hover:text-foreground transition-colors">
+                <button 
+                  onClick={handleClearFilters}
+                  className="px-5 py-2.5 text-muted-foreground font-medium hover:text-foreground transition-colors"
+                >
                   Temizle
                 </button>
-                <button className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 transition-opacity shadow-sm">
+                <button 
+                  onClick={handleApplyFilters}
+                  className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 transition-opacity shadow-sm"
+                >
                   Filtreleri Uygula
                 </button>
               </div>
@@ -182,15 +262,25 @@ export const RecipesPage = () => {
 
       {/* Decorative Categories (Static for aesthetic, to match design) */}
       <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-        <button className="px-5 py-2 rounded-full bg-primary text-primary-foreground font-bold whitespace-nowrap shadow-md shadow-primary/20">
+        <button 
+          onClick={() => {
+            setSelectedCategory(undefined);
+            setAppliedCategory(undefined);
+          }}
+          className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors ${appliedCategory === undefined ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-white dark:bg-neutral-900 text-muted-foreground hover:bg-neutral-50'}`}
+        >
           Tümü
         </button>
-        {["Kahvaltı", "Vegan", "Keto", "Tatlı", "Hızlı ve Kolay", "Öğle Yemeği"].map((cat) => (
+        {categories?.slice(0, 6).map((cat) => (
           <button 
-            key={cat}
-            className="px-5 py-2 rounded-full bg-white dark:bg-neutral-900 text-muted-foreground font-medium whitespace-nowrap hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
+            key={cat.id}
+            onClick={() => {
+              setSelectedCategory(cat.id);
+              setAppliedCategory(cat.id);
+            }}
+            className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors ${appliedCategory === cat.id ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-white dark:bg-neutral-900 text-muted-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}
           >
-            {cat}
+            {cat.name}
           </button>
         ))}
       </div>
