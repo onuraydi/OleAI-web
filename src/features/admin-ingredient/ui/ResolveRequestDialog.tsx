@@ -36,6 +36,7 @@ const resolveSchema = z.object({
   action: z.nativeEnum(ResolutionAction),
   newCategoryId: z.string().optional(),
   newUnitFamily: z.nativeEnum(MeasurementCategory).optional(),
+  estimatedShelfLifeInDays: z.number().nullable().optional(),
   masterIngredientId: z.string().optional(),
   adminNote: z.string().optional(),
 }).superRefine((data, ctx) => {
@@ -96,7 +97,11 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
 
   // Reset form when request changes
   useState(() => {
-    reset();
+    reset({
+      action: ResolutionAction.ApproveAsNew,
+      adminNote: "",
+      estimatedShelfLifeInDays: request?.estimatedShelfLifeInDays || null
+    });
   });
 
   const onSubmit = async (data: ResolveFormValues) => {
@@ -108,6 +113,7 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
         action: data.action,
         newCategoryId: data.newCategoryId,
         newUnitFamily: data.newUnitFamily,
+        estimatedShelfLifeInDays: data.estimatedShelfLifeInDays,
         masterIngredientId: data.masterIngredientId,
         adminNote: data.adminNote
       });
@@ -220,6 +226,21 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
                   </SelectContent>
                 </Select>
                 {errors.newUnitFamily && <p className="text-xs text-destructive">{errors.newUnitFamily.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="estimatedShelfLife">Tahmini Raf Ömrü (Gün - Opsiyonel)</Label>
+                <div className="relative">
+                  <Input 
+                    id="estimatedShelfLife" 
+                    type="number" 
+                    min="1"
+                    placeholder="Örn: 5" 
+                    {...register("estimatedShelfLifeInDays", { valueAsNumber: true })} 
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Gün</span>
+                </div>
+                {errors.estimatedShelfLifeInDays && <p className="text-xs text-destructive">{errors.estimatedShelfLifeInDays.message}</p>}
               </div>
             </div>
           )}

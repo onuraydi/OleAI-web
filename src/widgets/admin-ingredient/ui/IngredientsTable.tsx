@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Loader2, Plus, Tags, Pencil, Trash2, Archive, ArchiveRestore, Edit2 } from "lucide-react";
-import { useAdminIngredients, useDeleteIngredientMutation, type Ingredient, MeasurementCategory } from "@/entities/admin-ingredient";
+import { useAdminIngredients, useDeleteIngredientMutation, type Ingredient, MeasurementCategory, ExpirationMode } from "@/entities/admin-ingredient";
 import { UpdateIngredientDialog, ManageAliasesDialog } from "@/features/admin-ingredient";
 import { Button } from "@/shared/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
@@ -74,9 +74,10 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-muted-foreground uppercase bg-muted/20 border-b border-muted/30">
               <tr>
-                <th className="px-6 py-5 font-black tracking-wider w-[40%]">Malzeme Adı</th>
+                <th className="px-6 py-5 font-black tracking-wider w-[35%]">Malzeme Adı</th>
                 <th className="px-6 py-5 font-black tracking-wider">Kategori</th>
                 <th className="px-6 py-5 font-black tracking-wider">Birim Ailesi</th>
+                <th className="px-6 py-5 font-black tracking-wider">Raf Ömrü</th>
                 <th className="px-6 py-5 font-black tracking-wider text-right">İşlemler</th>
               </tr>
             </thead>
@@ -117,6 +118,17 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
                     <span className="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                       {getMeasurementCategoryName(ingredient.unitFamily)}
                     </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-1">
+                      {ingredient.estimatedShelfLifeInDays ? (
+                        <span className="text-sm font-bold bg-secondary dark:bg-secondary/60 px-2 py-1 rounded-md border border-border/50 inline-block w-fit">
+                          {ingredient.estimatedShelfLifeInDays} Gün
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">Belirtilmedi</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity">

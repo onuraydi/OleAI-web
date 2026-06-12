@@ -20,6 +20,8 @@ export interface IngredientSearchResultResponse {
   unitFamily: MeasurementCategory;
   categoryId: string;
   categoryName: string;
+  estimatedShelfLifeInDays?: number | null;
+  defaultExpirationMode?: number; // 1: Auto, 2: ShelfLife, 3: ExactDate
 }
 
 export interface CategoryResponse {
@@ -41,6 +43,7 @@ export interface AddUserIngredientRequest {
   quantity: number;
   unit: MeasurementUnit;
   expirationDate?: string;
+  estimatedShelfLifeInDays?: number;
 }
 
 export interface PopularDislikedIngredientResponse {
@@ -89,8 +92,12 @@ export const pantryApi = {
     await apiInstance.post("/Pantry/bulk", { request });
   },
 
-  updateIngredientQuantity: async (id: string, newQuantity: number): Promise<void> => {
-    await apiInstance.put(`/Pantry/${id}`, newQuantity, {
+  updateIngredientQuantity: async (id: string, newQuantity: number, expirationDate?: string): Promise<void> => {
+    const payload = {
+      newQuantity: newQuantity,
+      expirationDate: expirationDate
+    };
+    await apiInstance.put(`/Pantry/${id}`, payload, {
       headers: { "Content-Type": "application/json" }
     });
   },

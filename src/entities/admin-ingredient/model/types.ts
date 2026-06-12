@@ -11,6 +11,12 @@ export enum ResolutionAction {
   Reject = 3
 }
 
+export enum ExpirationMode {
+  Auto = 1,
+  ShelfLife = 2,
+  ExactDate = 3
+}
+
 export interface IngredientCategory {
   id: string;
   name: string;
@@ -24,6 +30,8 @@ export interface Ingredient {
   categoryIconName: string;
   unitFamily: MeasurementCategory;
   isPolarizing: boolean;
+  estimatedShelfLifeInDays?: number | null;
+  defaultExpirationMode: ExpirationMode;
   deletedDate: string | null;
 }
 
@@ -38,6 +46,7 @@ export interface PendingRequest {
   id: string;
   userId: string;
   requestedName: string;
+  estimatedShelfLifeInDays?: number | null;
   llmAnalysisResult: string | null;
   createdDate: string;
 }
@@ -67,6 +76,8 @@ export interface CreateIngredientRequest {
   categoryId: string;
   unitFamily: MeasurementCategory;
   isPolarizing: boolean;
+  estimatedShelfLifeInDays?: number | null;
+  defaultExpirationMode: ExpirationMode;
 }
 
 export interface UpdateIngredientRequest {
@@ -74,6 +85,8 @@ export interface UpdateIngredientRequest {
   categoryId: string;
   unitFamily: MeasurementCategory;
   isPolarizing: boolean;
+  estimatedShelfLifeInDays?: number | null;
+  defaultExpirationMode: ExpirationMode;
 }
 
 export interface ResolveIngredientRequestDto {
@@ -81,6 +94,7 @@ export interface ResolveIngredientRequestDto {
   action: ResolutionAction;
   newCategoryId?: string | null;
   newUnitFamily?: MeasurementCategory | null;
+  estimatedShelfLifeInDays?: number | null;
   masterIngredientId?: string | null;
   adminNote?: string | null;
 }

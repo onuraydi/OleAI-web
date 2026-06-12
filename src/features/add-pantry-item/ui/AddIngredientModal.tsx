@@ -24,6 +24,7 @@ interface StagedItem {
   quantity: number;
   unit: MeasurementUnit;
   expirationDate?: string;
+  estimatedShelfLifeInDays?: number;
 }
 
 export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSubmitOverride, isLoadingOverride }: AddIngredientModalProps) => {
@@ -35,6 +36,9 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
   const [selectedIngredient, setSelectedIngredient] = useState<IngredientSearchResultResponse | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
   const [unit, setUnit] = useState<MeasurementUnit>(MeasurementUnit.Piece);
+  type ExpirationMode = 'auto' | 'shelf-life' | 'exact-date';
+  const [expirationMode, setExpirationMode] = useState<ExpirationMode>('auto');
+  const [shelfLifeDays, setShelfLifeDays] = useState<string>("");
   const [expirationDate, setExpirationDate] = useState<string>("");
   const [suggestedCategoryId, setSuggestedCategoryId] = useState<string>("");
   
@@ -87,6 +91,18 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
     }
     const units = MEASUREMENT_CATEGORY_UNITS[categoryValue as MeasurementCategory] || ALL_UNITS;
     setUnit(units[0]);
+
+    // Update expiration mode based on default from admin
+    if (item.defaultExpirationMode === 2) {
+      setExpirationMode('shelf-life');
+      setShelfLifeDays(item.estimatedShelfLifeInDays ? item.estimatedShelfLifeInDays.toString() : "");
+    } else if (item.defaultExpirationMode === 3) {
+      setExpirationMode('exact-date');
+      setShelfLifeDays("");
+    } else {
+      setExpirationMode('auto');
+      setShelfLifeDays("");
+    }
   };
 
   const handleCustomAdd = () => {
@@ -101,6 +117,22 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
     if (!keyword.trim() && !selectedIngredient) return;
     if (!quantity) return;
 
+    let finalExpirationDate: string | undefined = undefined;
+    if (expirationMode === 'exact-date' && expirationDate) {
+      finalExpirationDate = expirationDate;
+    } else if (expirationMode === 'shelf-life' && shelfLifeDays) {
+      const days = parseInt(shelfLifeDays, 10);
+      if (!isNaN(days)) {
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+        finalExpirationDate = date.toISOString();
+      }
+    } else if (expirationMode === 'auto' && selectedIngredient?.estimatedShelfLifeInDays) {
+      const date = new Date();
+      date.setDate(date.getDate() + selectedIngredient.estimatedShelfLifeInDays);
+      finalExpirationDate = date.toISOString();
+    }
+
     const newItem: StagedItem = {
       id: Math.random().toString(36).substr(2, 9),
       ingredient: selectedIngredient,
@@ -109,7 +141,8 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
       categoryName: selectedIngredient ? selectedIngredient.categoryName : (suggestedCategoryId ? categories?.find(c => c.id === suggestedCategoryId)?.name : undefined),
       quantity: parseFloat(quantity),
       unit: unit,
-      expirationDate: expirationDate || undefined,
+      expirationDate: finalExpirationDate,
+      estimatedShelfLifeInDays: (!selectedIngredient && expirationMode === 'shelf-life' && shelfLifeDays) ? parseInt(shelfLifeDays, 10) : undefined,
     };
 
     setStagedItems([newItem, ...stagedItems]); // Prepend so newest is at top
@@ -119,6 +152,8 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
     setSelectedIngredient(null);
     setQuantity("1");
     setUnit(MeasurementUnit.Piece);
+    setExpirationMode('auto');
+    setShelfLifeDays("");
     setExpirationDate("");
     setSuggestedCategoryId("");
   };
@@ -135,6 +170,7 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
         const req: AddUserIngredientRequest = {
           quantity: Number(item.quantity),
           unit: Number(item.unit),
+          estimatedShelfLifeInDays: item.estimatedShelfLifeInDays
         };
 
         if (item.ingredient) {
@@ -167,6 +203,8 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
     setSelectedIngredient(null);
     setQuantity("1");
     setUnit(MeasurementUnit.Piece);
+    setExpirationMode('auto');
+    setShelfLifeDays("");
     setExpirationDate("");
     setSuggestedCategoryId("");
     setStagedItems([]);
@@ -444,18 +482,75 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
                           </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                             <CalendarIcon className="w-3.5 h-3.5" />
-                            Son Kullanma (Opsiyonel)
+                            Raf Ömrü & SKT
                           </label>
-                          <input
-                            type="date"
-                            value={expirationDate}
-                            min={new Date().toISOString().split('T')[0]}
-                            onChange={(e) => setExpirationDate(e.target.value)}
-                            className="w-full h-12 px-4 rounded-xl bg-secondary dark:bg-secondary/60 border-2 border-transparent focus:border-primary focus:bg-background outline-none transition-all font-bold text-sm"
-                          />
+                          <div className="grid grid-cols-3 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setExpirationMode('auto')}
+                              className={`h-10 text-xs font-bold rounded-xl border transition-all ${expirationMode === 'auto' ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary dark:bg-secondary/60 text-muted-foreground border-transparent hover:border-primary/50'}`}
+                            >
+                              Otomatik
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setExpirationMode('shelf-life')}
+                              className={`h-10 text-xs font-bold rounded-xl border transition-all ${expirationMode === 'shelf-life' ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary dark:bg-secondary/60 text-muted-foreground border-transparent hover:border-primary/50'}`}
+                            >
+                              Raf Ömrü
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setExpirationMode('exact-date')}
+                              className={`h-10 text-xs font-bold rounded-xl border transition-all ${expirationMode === 'exact-date' ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary dark:bg-secondary/60 text-muted-foreground border-transparent hover:border-primary/50'}`}
+                            >
+                              Kesin Tarih
+                            </button>
+                          </div>
+                          
+                          <AnimatePresence mode="wait">
+                            {expirationMode === 'shelf-life' && (
+                              <motion.div
+                                key="shelf-life"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="pt-1"
+                              >
+                                <div className="relative">
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    placeholder="Örn: 5"
+                                    value={shelfLifeDays}
+                                    onChange={(e) => setShelfLifeDays(e.target.value)}
+                                    className="w-full h-12 px-4 pr-16 rounded-xl bg-secondary dark:bg-secondary/60 border-2 border-transparent focus:border-primary focus:bg-background outline-none transition-all font-bold text-sm"
+                                  />
+                                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Gün</span>
+                                </div>
+                              </motion.div>
+                            )}
+                            {expirationMode === 'exact-date' && (
+                              <motion.div
+                                key="exact-date"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="pt-1"
+                              >
+                                <input
+                                  type="date"
+                                  value={expirationDate}
+                                  min={new Date().toISOString().split('T')[0]}
+                                  onChange={(e) => setExpirationDate(e.target.value)}
+                                  className="w-full h-12 px-4 rounded-xl bg-secondary dark:bg-secondary/60 border-2 border-transparent focus:border-primary focus:bg-background outline-none transition-all font-bold text-sm"
+                                />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
 
                         <button

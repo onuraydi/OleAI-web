@@ -29,17 +29,25 @@ const UNIT_SHORT_LABELS: Record<string, string> = {
 
 import { MeasurementUnit } from "@/shared/constants/measurement";
 
-// Deterministic mock for expiration days based on item ID (to keep it consistent across renders)
-const getExpirationMock = (id: string) => {
-  const hash = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const days = (hash % 14) + 1; // 1 to 14 days
+// Helper to calculate expiration days from real date
+const getExpirationInfo = (expirationDateString: string | null) => {
+  if (!expirationDateString) {
+    return { daysText: "Tarih Belirsiz", colorClass: "bg-muted", textClass: "text-muted-foreground", hexColor: "#9e9e9e", progress: 0, isUnknown: true };
+  }
+
+  const expDate = new Date(expirationDateString);
+  const today = new Date();
+  const diffTime = expDate.getTime() - today.getTime();
+  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   let colorClass = "bg-[#4CAF50]"; // Green
   let textClass = "text-[#4CAF50]";
   let hexColor = "#4CAF50";
   let progress = Math.min((days / 14) * 100, 100);
 
-  if (days <= 3) {
+  if (days < 0) {
+    return { daysText: "Geçti", colorClass: "bg-neutral-800", textClass: "text-neutral-500", hexColor: "#424242", progress: 100, isUnknown: false };
+  } else if (days <= 3) {
     colorClass = "bg-[#F44336]"; // Red
     textClass = "text-[#F44336]";
     hexColor = "#F44336";
@@ -51,7 +59,7 @@ const getExpirationMock = (id: string) => {
     progress = 50;
   }
 
-  return { days, colorClass, textClass, progress, hexColor };
+  return { daysText: `${days} Gün`, colorClass, textClass, progress, hexColor, isUnknown: false };
 };
 
 const mapUnitNameToEnum = (unitName: string): number => {
@@ -78,23 +86,24 @@ const PantryItemCard = ({
   idx: number;
 }) => {
   const queryClient = useQueryClient();
-  const expiration = getExpirationMock(item.id);
+  const expiration = getExpirationInfo(item.expirationDate);
   
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isShoppingListModalOpen, setIsShoppingListModalOpen] = useState(false);
   const [quantity, setQuantity] = useState<number>(item.quantity);
+  const [expirationDateInput, setExpirationDateInput] = useState<string>(item.expirationDate ? item.expirationDate.split('T')[0] : '');
   const [shoppingQuantity, setShoppingQuantity] = useState<number>(1);
 
   const updateMutation = useMutation({
-    mutationFn: (newQuantity: number) => pantryApi.updateIngredientQuantity(item.id, newQuantity),
+    mutationFn: (args: { newQuantity: number; expirationDate?: string }) => pantryApi.updateIngredientQuantity(item.id, args.newQuantity, args.expirationDate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-pantry"] });
-      toast.success("Miktar güncellendi.");
+      toast.success("Güncellendi.");
       setIsUpdateModalOpen(false);
     },
     onError: () => {
-      toast.error("Miktar güncellenemedi.");
+      toast.error("Güncellenemedi.");
     }
   });
 
@@ -150,8 +159,8 @@ const PantryItemCard = ({
         </div>
         
         {/* Content */}
-        <div className="flex-1 min-w-0 py-1 mr-4">
-          <h3 className="font-bold text-sm text-foreground mb-1 truncate group-hover:text-primary transition-colors">{item.name}</h3>
+        <div className="flex-1 min-w-0 py-1">
+          <h3 className="font-bold text-sm text-foreground mb-1 whitespace-normal group-hover:text-primary transition-colors">{item.name}</h3>
           <div className="flex items-center gap-2">
             <p className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md w-fit whitespace-nowrap">
               {item.quantity} {UNIT_SHORT_LABELS[item.unit] || item.unit}
@@ -167,21 +176,23 @@ const PantryItemCard = ({
         {/* Expiration Indicator */}
         <div className="flex flex-col items-end justify-center gap-2 flex-shrink-0 pl-3 border-l border-muted/30">
           <div 
-            className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"
+            className={`px-2.5 py-1 rounded-full text-[10px] font-black tracking-wider ${expiration.isUnknown ? 'capitalize' : 'uppercase'}`}
             style={{ 
-              backgroundColor: `${expiration.hexColor}15`, 
-              color: expiration.hexColor,
-              border: `1px solid ${expiration.hexColor}30`
+              backgroundColor: expiration.isUnknown ? undefined : `${expiration.hexColor}15`, 
+              color: expiration.isUnknown ? undefined : expiration.hexColor,
+              border: expiration.isUnknown ? undefined : `1px solid ${expiration.hexColor}30`
             }}
           >
-            {expiration.days} Gün
+            {expiration.daysText}
           </div>
-          <div className="w-12 h-1.5 rounded-full bg-muted overflow-hidden">
-            <div 
-              className="h-full rounded-full transition-all duration-1000 ease-out" 
-              style={{ width: `${expiration.progress}%`, backgroundColor: expiration.hexColor }}
-            />
-          </div>
+          {!expiration.isUnknown && (
+            <div className="w-12 h-1.5 rounded-full bg-muted overflow-hidden">
+              <div 
+                className="h-full rounded-full transition-all duration-1000 ease-out" 
+                style={{ width: `${expiration.progress}%`, backgroundColor: expiration.hexColor }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Hover Action Overlay */}
@@ -244,6 +255,17 @@ const PantryItemCard = ({
                 <Plus className="w-6 h-6" />
               </button>
             </div>
+
+            <div className="w-full space-y-2 mt-2">
+              <label className="text-sm font-bold text-muted-foreground ml-1">Son Kullanma Tarihi</label>
+              <input
+                type="date"
+                min={new Date().toISOString().split('T')[0]}
+                value={expirationDateInput}
+                onChange={(e) => setExpirationDateInput(e.target.value)}
+                className="w-full h-12 rounded-xl bg-muted/50 px-4 text-sm font-medium border-2 border-transparent focus:border-primary/50 outline-none transition-colors"
+              />
+            </div>
           </div>
           <div className="flex gap-3 w-full">
             <button 
@@ -253,8 +275,8 @@ const PantryItemCard = ({
               İptal
             </button>
             <button 
-              onClick={() => updateMutation.mutate(quantity)}
-              disabled={updateMutation.isPending || quantity === item.quantity}
+              onClick={() => updateMutation.mutate({ newQuantity: quantity, expirationDate: expirationDateInput ? new Date(expirationDateInput).toISOString() : undefined })}
+              disabled={updateMutation.isPending || (quantity === item.quantity && expirationDateInput === (item.expirationDate ? item.expirationDate.split('T')[0] : ''))}
               className="flex-1 h-12 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
               {updateMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Kaydet"}

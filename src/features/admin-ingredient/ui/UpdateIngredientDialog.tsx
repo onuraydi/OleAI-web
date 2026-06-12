@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarIcon } from "lucide-react";
 import { 
   Dialog,
   DialogContent,
@@ -15,9 +15,10 @@ import { Button } from "@/shared/ui/button";
 import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Checkbox } from "@/shared/ui/checkbox";
-import { type Ingredient, MeasurementCategory, useIngredientCategories, useUpdateIngredientMutation } from "@/entities/admin-ingredient";
+import { type Ingredient, MeasurementCategory, ExpirationMode, useIngredientCategories, useUpdateIngredientMutation } from "@/entities/admin-ingredient";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 const updateIngredientSchema = z.object({
   name: z.string().min(2, "Malzeme adı en az 2 karakter olmalıdır"),
@@ -26,6 +27,8 @@ const updateIngredientSchema = z.object({
     message: "Lütfen geçerli bir ölçü birimi ailesi seçin"
   }),
   isPolarizing: z.boolean(),
+  estimatedShelfLifeInDays: z.number().nullable().optional(),
+  defaultExpirationMode: z.nativeEnum(ExpirationMode),
 });
 
 type UpdateIngredientFormValues = z.infer<typeof updateIngredientSchema>;
@@ -53,9 +56,13 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
       name: "",
       categoryId: "",
       unitFamily: MeasurementCategory.Other,
-      isPolarizing: false
+      isPolarizing: false,
+      estimatedShelfLifeInDays: null,
+      defaultExpirationMode: ExpirationMode.ShelfLife
     }
   });
+
+  const watchExpirationMode = watch("defaultExpirationMode");
 
   useEffect(() => {
     if (ingredient && categories && open) {
@@ -66,7 +73,9 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
         name: ingredient.name,
         categoryId: cat?.id || "",
         unitFamily: ingredient.unitFamily,
-        isPolarizing: ingredient.isPolarizing
+        isPolarizing: ingredient.isPolarizing,
+        estimatedShelfLifeInDays: ingredient.estimatedShelfLifeInDays ?? null,
+        defaultExpirationMode: ingredient.defaultExpirationMode ?? ExpirationMode.Auto
       });
     }
   }, [ingredient, categories, open, reset]);
@@ -78,7 +87,9 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
         name: data.name,
         categoryId: data.categoryId,
         unitFamily: data.unitFamily,
-        isPolarizing: data.isPolarizing
+        isPolarizing: data.isPolarizing,
+        estimatedShelfLifeInDays: data.estimatedShelfLifeInDays || null,
+        defaultExpirationMode: ExpirationMode.ShelfLife
       });
       toast.success("Malzeme başarıyla güncellendi");
       onOpenChange(false);
@@ -147,6 +158,21 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
               </SelectContent>
             </Select>
             {errors.unitFamily && <p className="text-sm text-destructive">{errors.unitFamily.message}</p>}
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <Label htmlFor="estimatedShelfLife">Tahmini Raf Ömrü (Gün)</Label>
+            <div className="relative">
+              <Input 
+                id="estimatedShelfLife" 
+                type="number" 
+                min="1"
+                placeholder="Örn: 5" 
+                {...register("estimatedShelfLifeInDays", { valueAsNumber: true })} 
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Gün</span>
+            </div>
+            {errors.estimatedShelfLifeInDays && <p className="text-sm text-destructive">{errors.estimatedShelfLifeInDays.message}</p>}
           </div>
 
           <div className="flex items-center space-x-2 pt-2">
