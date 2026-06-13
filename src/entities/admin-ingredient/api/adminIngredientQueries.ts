@@ -6,7 +6,7 @@ import type { CreateIngredientRequest, ResolveIngredientRequestDto } from "../mo
 export const adminIngredientKeys = {
   all: ['admin-ingredients'] as const,
   lists: () => [...adminIngredientKeys.all, 'list'] as const,
-  list: (page: number, size: number) => [...adminIngredientKeys.lists(), { page, size }] as const,
+  list: (page: number, size: number, keyword?: string) => [...adminIngredientKeys.lists(), { page, size, keyword }] as const,
   aliases: () => [...adminIngredientKeys.all, 'aliases'] as const,
   ingredientAliases: (id: string) => [...adminIngredientKeys.aliases(), id] as const,
   categories: ['ingredient-categories'] as const,
@@ -15,10 +15,10 @@ export const adminIngredientKeys = {
 };
 
 // --- QUERIES ---
-export const useAdminIngredients = (page: number = 0, size: number = 10) => {
+export const useAdminIngredients = (page: number = 0, size: number = 10, keyword?: string) => {
   return useQuery({
-    queryKey: adminIngredientKeys.list(page, size),
-    queryFn: () => adminIngredientApi.getIngredients(page, size),
+    queryKey: adminIngredientKeys.list(page, size, keyword),
+    queryFn: () => adminIngredientApi.getIngredients(page, size, keyword),
     placeholderData: keepPreviousData,
   });
 };

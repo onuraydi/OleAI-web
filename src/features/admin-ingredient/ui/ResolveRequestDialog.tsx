@@ -214,7 +214,10 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
 
               <div className="space-y-2">
                 <Label>Ölçü Birimi Ailesi</Label>
-                <Select onValueChange={(val) => setValue("newUnitFamily", val as MeasurementCategory)}>
+                <Select 
+                  onValueChange={(val) => setValue("newUnitFamily", val as MeasurementCategory)}
+                  value={watch("newUnitFamily")}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Birim Seçin" />
                   </SelectTrigger>
@@ -225,7 +228,7 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
                     <SelectItem value={MeasurementCategory.Other}>Diğer</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.newUnitFamily && <p className="text-xs text-destructive">{errors.newUnitFamily.message}</p>}
+                {errors.newUnitFamily && <p className="text-sm text-destructive">{errors.newUnitFamily.message}</p>}
               </div>
 
               <div className="space-y-2">
@@ -236,7 +239,9 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
                     type="number" 
                     min="1"
                     placeholder="Örn: 5" 
-                    {...register("estimatedShelfLifeInDays", { valueAsNumber: true })} 
+                    {...register("estimatedShelfLifeInDays", { 
+                      setValueAs: v => v === "" ? null : parseInt(v, 10) 
+                    })} 
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Gün</span>
                 </div>

@@ -12,9 +12,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { LayoutDashboard, AlertCircle, CheckSquare, Tags, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/shared/ui/input";
+import { useDebounce } from "@/shared/hooks/useDebounce";
 
 export const AdminIngredientsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-500">
@@ -79,19 +81,19 @@ export const AdminIngredientsPage = () => {
                 </TabsList>
 
                 <TabsContent value="ingredients" className="mt-0 focus-visible:outline-none">
-                  <IngredientsTable searchTerm={searchTerm} />
+                  <IngredientsTable searchTerm={debouncedSearchTerm} />
                 </TabsContent>
 
                 <TabsContent value="aliases" className="mt-0 focus-visible:outline-none">
-                  <AllAliasesTable searchTerm={searchTerm} />
+                  <AllAliasesTable searchTerm={debouncedSearchTerm} />
                 </TabsContent>
 
                 <TabsContent value="pending" className="mt-0 focus-visible:outline-none">
-                  <PendingRequests searchTerm={searchTerm} />
+                  <PendingRequests searchTerm={debouncedSearchTerm} />
                 </TabsContent>
 
                 <TabsContent value="resolved" className="mt-0 focus-visible:outline-none">
-                  <ResolvedRequests searchTerm={searchTerm} />
+                  <ResolvedRequests searchTerm={debouncedSearchTerm} />
                 </TabsContent>
               </Tabs>
             </motion.div>

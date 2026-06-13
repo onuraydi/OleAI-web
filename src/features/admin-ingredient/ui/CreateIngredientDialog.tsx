@@ -29,7 +29,6 @@ const createIngredientSchema = z.object({
   }),
   isPolarizing: z.boolean(),
   estimatedShelfLifeInDays: z.number().nullable().optional(),
-  defaultExpirationMode: z.nativeEnum(ExpirationMode),
 });
 
 type CreateIngredientFormValues = z.infer<typeof createIngredientSchema>;
@@ -55,11 +54,9 @@ export const CreateIngredientDialog = () => {
       unitFamily: MeasurementCategory.Other,
       isPolarizing: false,
       estimatedShelfLifeInDays: null,
-      defaultExpirationMode: ExpirationMode.ShelfLife
     }
   });
 
-  const watchExpirationMode = watch("defaultExpirationMode");
 
   const onSubmit = async (data: CreateIngredientFormValues) => {
     try {
@@ -128,7 +125,7 @@ export const CreateIngredientDialog = () => {
             <Label>Ölçü Birimi Ailesi (Unit Family)</Label>
             <Select 
               onValueChange={(val) => setValue("unitFamily", val as MeasurementCategory)}
-              defaultValue={MeasurementCategory.Other}
+              value={watch("unitFamily")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Birim Seçin" />
@@ -151,7 +148,9 @@ export const CreateIngredientDialog = () => {
                 type="number" 
                 min="1"
                 placeholder="Örn: 5" 
-                {...register("estimatedShelfLifeInDays", { valueAsNumber: true })} 
+                {...register("estimatedShelfLifeInDays", { 
+                  setValueAs: v => v === "" ? null : parseInt(v, 10) 
+                })} 
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Gün</span>
             </div>

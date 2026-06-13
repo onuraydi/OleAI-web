@@ -6,6 +6,7 @@ import { pantryApi } from "@/entities/pantry/api/pantryApi";
 import type { IngredientSearchResultResponse, AddUserIngredientRequest, AddMultipleUserIngredientsRequest } from "@/entities/pantry/api/pantryApi";
 import { MeasurementCategory, MeasurementUnit, MEASUREMENT_UNIT_LABELS, MEASUREMENT_CATEGORY_UNITS, ALL_UNITS } from "@/shared/constants/measurement";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
 interface AddIngredientModalProps {
   isOpen: boolean;
@@ -13,21 +14,12 @@ interface AddIngredientModalProps {
   initialKeyword?: string;
   onSubmitOverride?: (request: any) => void;
   isLoadingOverride?: boolean;
+  mode?: 'pantry' | 'shopping-list';
 }
 
-interface StagedItem {
-  id: string; // temp id
-  ingredient: IngredientSearchResultResponse | null;
-  customName?: string;
-  categoryId?: string;
-  categoryName?: string;
-  quantity: number;
-  unit: MeasurementUnit;
-  expirationDate?: string;
-  estimatedShelfLifeInDays?: number;
-}
+import { useAddIngredientStore, type StagedItem } from "@/entities/pantry/model/useAddIngredientStore";
 
-export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSubmitOverride, isLoadingOverride }: AddIngredientModalProps) => {
+export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSubmitOverride, isLoadingOverride, mode = 'pantry' }: AddIngredientModalProps) => {
   const queryClient = useQueryClient();
   const [keyword, setKeyword] = useState(initialKeyword);
   const [debouncedKeyword, setDebouncedKeyword] = useState(initialKeyword);
@@ -43,11 +35,22 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
   const [suggestedCategoryId, setSuggestedCategoryId] = useState<string>("");
   
   // Staged Items State
-  const [stagedItems, setStagedItems] = useState<StagedItem[]>([]);
+  const draftsStore = useAddIngredientStore();
+  const stagedItems = mode === 'pantry' ? draftsStore.pantryDrafts : draftsStore.shoppingListDrafts;
+  const setStagedItems = mode === 'pantry' ? draftsStore.setPantryDrafts : draftsStore.setShoppingListDrafts;
+  const clearStagedItems = mode === 'pantry' ? draftsStore.clearPantryDrafts : draftsStore.clearShoppingListDrafts;
 
   useEffect(() => {
-    if (isOpen && initialKeyword) {
-      setKeyword(initialKeyword);
+    if (isOpen) {
+      setKeyword(initialKeyword || "");
+      setSelectedIngredient(null);
+      setQuantity("1");
+      setUnit(MeasurementUnit.Piece);
+      setExpirationMode('auto');
+      setShelfLifeDays("");
+      setExpirationDate("");
+      setSuggestedCategoryId("");
+      // Removed setStagedItems([]) so drafts are preserved when reopening
     }
   }, [isOpen, initialKeyword]);
 
@@ -78,11 +81,27 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
     mutationFn: (request: AddMultipleUserIngredientsRequest) => pantryApi.addMultipleIngredients(request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-pantry"] });
+      clearStagedItems();
       handleClose();
     }
   });
 
   const handleSelect = (item: IngredientSearchResultResponse) => {
+    const existingItem = stagedItems.find(s => s.ingredient?.masterIngredientId === item.masterIngredientId);
+    
+    if (existingItem) {
+      setStagedItems(stagedItems.filter(s => s.id !== existingItem.id));
+      
+      if (selectedIngredient?.masterIngredientId === item.masterIngredientId) {
+        setSelectedIngredient(null);
+        setQuantity("1");
+        setUnit(MeasurementUnit.Piece);
+        setExpirationMode('auto');
+        setShelfLifeDays("");
+      }
+      return;
+    }
+
     setSelectedIngredient(item);
     // API string enum döndürüyor ("Weight", "Volume"), bunu numeric enum'a çevirmeliyiz
     let categoryValue = item.unitFamily as unknown as number;
@@ -207,7 +226,6 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
     setShelfLifeDays("");
     setExpirationDate("");
     setSuggestedCategoryId("");
-    setStagedItems([]);
     addMultipleMutation.reset();
     onClose();
   };
@@ -245,7 +263,7 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
               {/* Modal Header */}
               <div className="h-16 px-6 border-b border-muted/30 flex items-center justify-between bg-muted/5 shrink-0">
                 <div>
-                  <h2 className="text-xl font-black text-foreground">Dolaba Malzeme Ekle</h2>
+                  <h2 className="text-xl font-black text-foreground">{mode === 'shopping-list' ? 'Listeye Malzeme Ekle' : 'Dolaba Malzeme Ekle'}</h2>
                   <p className="text-xs text-muted-foreground font-medium mt-0.5">Arayın, detaylandırın ve sepetinize atın.</p>
                 </div>
                 <button 
@@ -441,16 +459,21 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
                         {!selectedIngredient && (
                           <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Kategori (Opsiyonel)</label>
-                            <select
-                              value={suggestedCategoryId}
-                              onChange={(e) => setSuggestedCategoryId(e.target.value)}
-                              className="w-full h-12 px-4 rounded-xl bg-secondary dark:bg-secondary/60 border-2 border-transparent focus:border-primary outline-none transition-all font-bold text-sm cursor-pointer"
-                            >
-                              <option value="">-- Kategori Seçiniz --</option>
-                              {categories?.map((cat) => (
-                                <option key={cat.id} value={cat.id}>{cat.name}</option>
-                              ))}
-                            </select>
+                            <Select value={suggestedCategoryId} onValueChange={setSuggestedCategoryId}>
+                              <SelectTrigger className="w-full h-12 px-4 rounded-xl bg-secondary dark:bg-secondary/60 border-2 border-transparent focus:border-primary outline-none transition-all font-bold text-sm cursor-pointer shadow-none">
+                                <SelectValue placeholder="-- Kategori Seçiniz --" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[300px] bg-popover/95 backdrop-blur-md border-border/50 rounded-xl">
+                                {categories?.map((cat) => (
+                                  <SelectItem key={cat.id} value={cat.id} className="cursor-pointer font-bold text-sm hover:bg-primary/10 hover:text-primary transition-colors py-2.5 rounded-lg">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-primary/70">{getCategoryIcon(cat.name, "w-4 h-4")}</span>
+                                      <span>{cat.name}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                         )}
 
@@ -469,16 +492,18 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
                           </div>
                           <div className="space-y-2 flex-[1.5]">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Birim</label>
-                            <select
-                              value={unit}
-                              onChange={(e) => setUnit(Number(e.target.value) as MeasurementUnit)}
-                              disabled={!!selectedIngredient}
-                              className="w-full h-12 px-4 rounded-xl bg-secondary dark:bg-secondary/60 border-2 border-transparent focus:border-primary outline-none transition-all font-bold text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                            >
-                              {availableUnits.map((u) => (
-                                <option key={u} value={u}>{MEASUREMENT_UNIT_LABELS[u]}</option>
-                              ))}
-                            </select>
+                            <Select key={`unit-select-${selectedIngredient?.masterIngredientId || 'custom'}-${currentCategoryValue}`} value={unit.toString()} onValueChange={(v) => setUnit(Number(v) as MeasurementUnit)}>
+                              <SelectTrigger className="w-full h-12 px-4 rounded-xl bg-secondary dark:bg-secondary/60 border-2 border-transparent focus:border-primary outline-none transition-all font-bold text-sm cursor-pointer shadow-none">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[300px] bg-popover/95 backdrop-blur-md border-border/50 rounded-xl">
+                                {availableUnits.map((u) => (
+                                  <SelectItem key={u} value={u.toString()} className="cursor-pointer font-bold text-sm hover:bg-primary/10 hover:text-primary transition-colors py-2.5 rounded-lg">
+                                    {MEASUREMENT_UNIT_LABELS[u]}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
 
@@ -649,14 +674,15 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
                       disabled={stagedItems.length === 0 || (isLoadingOverride ?? addMultipleMutation.isPending)}
                       className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-lg flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 disabled:opacity-50 disabled:shadow-none"
                     >
-                      {(isLoadingOverride ?? addMultipleMutation.isPending) ? (
+                      {isLoadingOverride || addMultipleMutation.isPending ? (
                         <>
-                          <Loader2 className="w-6 h-6 animate-spin" />
-                          <span>Dolaba Gönderiliyor...</span>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>{mode === 'shopping-list' ? 'Listeye Ekleniyor...' : 'Dolaba Gönderiliyor...'}</span>
                         </>
                       ) : (
                         <>
-                          <span>{stagedItems.length > 0 ? `${stagedItems.length} Ürünü Dolaba Ekle` : 'Dolaba Ekle'}</span>
+                          <span>{stagedItems.length > 0 ? (mode === 'shopping-list' ? `${stagedItems.length} Ürünü Listeye Ekle` : `${stagedItems.length} Ürünü Dolaba Ekle`) : (mode === 'shopping-list' ? 'Listeye Ekle' : 'Dolaba Ekle')}</span>
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </>
                       )}
                     </button>

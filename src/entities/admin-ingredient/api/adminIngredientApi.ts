@@ -12,9 +12,9 @@ import type {
 
 export const adminIngredientApi = {
   // --- INGREDIENTS ---
-  getIngredients: async (page: number = 0, size: number = 10) => {
+  getIngredients: async (page: number = 0, size: number = 10, keyword?: string) => {
     const { data } = await api.get<PaginatedResponse<Ingredient>>("/admin/Ingredients", {
-      params: { page, size }
+      params: { page, size, keyword }
     });
     return data;
   },

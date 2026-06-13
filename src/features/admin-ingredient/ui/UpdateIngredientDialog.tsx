@@ -28,7 +28,6 @@ const updateIngredientSchema = z.object({
   }),
   isPolarizing: z.boolean(),
   estimatedShelfLifeInDays: z.number().nullable().optional(),
-  defaultExpirationMode: z.nativeEnum(ExpirationMode),
 });
 
 type UpdateIngredientFormValues = z.infer<typeof updateIngredientSchema>;
@@ -58,11 +57,9 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
       unitFamily: MeasurementCategory.Other,
       isPolarizing: false,
       estimatedShelfLifeInDays: null,
-      defaultExpirationMode: ExpirationMode.ShelfLife
     }
   });
 
-  const watchExpirationMode = watch("defaultExpirationMode");
 
   useEffect(() => {
     if (ingredient && categories && open) {
@@ -75,7 +72,6 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
         unitFamily: ingredient.unitFamily,
         isPolarizing: ingredient.isPolarizing,
         estimatedShelfLifeInDays: ingredient.estimatedShelfLifeInDays ?? null,
-        defaultExpirationMode: ingredient.defaultExpirationMode ?? ExpirationMode.Auto
       });
     }
   }, [ingredient, categories, open, reset]);
@@ -168,7 +164,9 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
                 type="number" 
                 min="1"
                 placeholder="Örn: 5" 
-                {...register("estimatedShelfLifeInDays", { valueAsNumber: true })} 
+                {...register("estimatedShelfLifeInDays", { 
+                  setValueAs: v => v === "" ? null : parseInt(v, 10) 
+                })} 
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Gün</span>
             </div>

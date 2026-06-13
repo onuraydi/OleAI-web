@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loader2, Plus, Tags, Pencil, Trash2, Archive, ArchiveRestore, Edit2 } from "lucide-react";
 import { useAdminIngredients, useDeleteIngredientMutation, type Ingredient, MeasurementCategory, ExpirationMode } from "@/entities/admin-ingredient";
 import { UpdateIngredientDialog, ManageAliasesDialog } from "@/features/admin-ingredient";
@@ -31,7 +31,8 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   
-  const { data, isLoading } = useAdminIngredients(page, size);
+  // Use a debounced value or just use searchTerm directly. We will pass it directly for now.
+  const { data, isLoading } = useAdminIngredients(page, size, searchTerm);
   const deleteMutation = useDeleteIngredientMutation();
 
   const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | null>(null);
@@ -40,16 +41,12 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
   
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const filteredItems = useMemo(() => {
-    if (!data?.items) return [];
-    if (!searchTerm) return data.items;
-    
-    const lowerSearch = searchTerm.toLowerCase();
-    return data.items.filter(req => 
-      req.name?.toLowerCase().includes(lowerSearch) || 
-      req.categoryName?.toLowerCase().includes(lowerSearch)
-    );
-  }, [data?.items, searchTerm]);
+  // When searchTerm changes, reset page to 0
+  useEffect(() => {
+    setPage(0);
+  }, [searchTerm]);
+
+  const items = data?.items || [];
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -82,7 +79,7 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
               </tr>
             </thead>
             <tbody className="divide-y divide-muted/30">
-              {filteredItems.map((ingredient) => {
+              {items.map((ingredient) => {
                 const iconColorClass = getCategoryColorClass(ingredient.categoryIconName || ingredient.categoryName);
                 
                 return (
