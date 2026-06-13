@@ -26,3 +26,4 @@ export * from './privacy';
 export * from './terms';
 export * from './contact';
 export * from './help';
+export * from './my-recipe-book';

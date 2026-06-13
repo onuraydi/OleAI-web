@@ -4,7 +4,7 @@ import {
   Refrigerator, 
   ChefHat, 
   ShoppingBag, 
-  Settings, 
+  User, 
   LogOut,
   Sparkles,
   ChevronRight,
@@ -13,7 +13,8 @@ import {
   Tags,
   ShieldAlert,
   Leaf,
-  Users
+  Users,
+  BookOpen
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
@@ -21,9 +22,10 @@ import { useSessionStore } from "@/entities/session";
 const menuItems = [
   { icon: Home, label: "Ana Sayfa", path: "/home" },
   { icon: ChefHat, label: "Keşfet", path: "/recipes" },
+  { icon: BookOpen, label: "Tarif Defterim", path: "/my-recipe-book" },
   { icon: Refrigerator, label: "Mutfak Dolabım", path: "/pantry" },
   { icon: ShoppingBag, label: "Alışveriş Listesi", path: "/shopping-list" },
-  { icon: Settings, label: "Profilim", path: "/profile" },
+  { icon: User, label: "Profilim", path: "/profile" },
 ];
 
 const adminMenuItems = [
