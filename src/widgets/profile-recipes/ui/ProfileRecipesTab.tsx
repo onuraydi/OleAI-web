@@ -4,6 +4,8 @@ import { Heart, Loader2, Sparkles, Clock, ChefHat, Bookmark, Star, ChevronLeft, 
 import type { RecipeCategoryDto, TagDto } from "@/entities/recipe/api/recipeApi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSessionStore } from "@/entities/session";
+import { RecipeCard } from "@/widgets/recipe-card";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -473,90 +475,50 @@ const [searchTerm, setSearchTerm] = useState("");
             >
               <AnimatePresence mode="popLayout">
                 {currentData.items.map((recipe, index) => (
-                  <motion.div 
-                    key={recipe.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ delay: index * 0.05 }}
-                    onClick={() => navigate(`/recipes/${recipe.id}`)}
-                    className="group relative cursor-pointer bg-card rounded-[2rem] overflow-hidden border border-muted/30 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col"
-                  >
-                    {activeSubTab === "created" && (
-                      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            visibilityMutation.mutate({ id: recipe.id, visibility: recipe.visibility === 0 ? 1 : 0 });
-                          }}
-                          disabled={visibilityMutation.isPending}
-                          className="p-2 bg-background/80 backdrop-blur-md rounded-xl hover:bg-primary hover:text-primary-foreground transition-colors shadow-sm text-muted-foreground disabled:opacity-50"
-                          title={recipe.visibility === 0 ? "Gizli - Herkese Aç" : "Herkese Açık - Gizle"}
-                        >
-                          {recipe.visibility === 0 ? <Lock className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/recipes/edit/${recipe.id}`);
-                          }}
-                          className="p-2 bg-background/80 backdrop-blur-md rounded-xl hover:bg-blue-500 hover:text-white transition-colors shadow-sm text-muted-foreground"
-                          title="Düzenle"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setRecipeToDelete(recipe.id);
-                          }}
-                          className="p-2 bg-background/80 backdrop-blur-md rounded-xl hover:bg-red-500 hover:text-white transition-colors shadow-sm text-muted-foreground"
-                          title="Sil"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                      <img 
-                        src={recipe.mainImageUrl || "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w=1776&auto=format&fit=crop"} 
-                        alt={recipe.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-
-                    <div className="p-6 flex-1 flex flex-col">
-                      <h3 className="text-lg font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                        {recipe.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
-                        {recipe.description}
-                      </p>
-
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-muted/30">
-                        <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
-                          <div className="flex items-center gap-1.5">
-                            <Clock className="w-4 h-4 text-primary/60" />
-                            <span>{recipe.prepTime + recipe.cookTime > 0 ? recipe.prepTime + recipe.cookTime : '--'} dk</span>
-                          </div>
-                          {recipe.difficulty > 0 && (
-                            <div className="flex items-center gap-1.5 hidden sm:flex">
-                              <span className="w-1 h-1 rounded-full bg-muted-foreground/30"></span>
-                              <span>{recipe.difficulty === 1 ? 'Kolay' : recipe.difficulty === 2 ? 'Orta' : 'Zor'}</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1 text-sm font-bold text-foreground">
-                          <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                          <span>{recipe.averageRating > 0 ? recipe.averageRating.toFixed(1) : "--"}</span>
-                          {recipe.totalRatings > 0 && (
-                            <span className="text-xs font-normal text-muted-foreground ml-1">({recipe.totalRatings})</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+                  <RecipeCard 
+                    key={recipe.id} 
+                    recipe={recipe} 
+                    index={index}
+                    initialLiked={activeSubTab === "liked"}
+                    initialSaved={activeSubTab === "saved"}
+                    customActions={
+                      activeSubTab === "created" ? (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              visibilityMutation.mutate({ id: recipe.id, visibility: recipe.visibility === 0 ? 1 : 0 });
+                            }}
+                            disabled={visibilityMutation.isPending}
+                            className="w-10 h-10 bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all shadow-sm text-muted-foreground disabled:opacity-50 hover:scale-110 active:scale-95"
+                            title={recipe.visibility === 0 ? "Gizli - Herkese Aç" : "Herkese Açık - Gizle"}
+                          >
+                            {recipe.visibility === 0 ? <Lock className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/recipes/edit/${recipe.id}`);
+                            }}
+                            className="w-10 h-10 bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all shadow-sm text-muted-foreground hover:scale-110 active:scale-95"
+                            title="Düzenle"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRecipeToDelete(recipe.id);
+                            }}
+                            className="w-10 h-10 bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm text-muted-foreground hover:scale-110 active:scale-95"
+                            title="Sil"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
+                      ) : undefined
+                    }
+                  />
                 ))}
               </AnimatePresence>
             </motion.div>
