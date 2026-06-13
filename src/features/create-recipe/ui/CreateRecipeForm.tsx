@@ -484,8 +484,8 @@ export const CreateRecipeForm = () => {
                       onClick={() => toggleTag(tag.id)}
                       className={`px-3 py-1.5 rounded-full text-sm font-bold border transition-all ${
                         isSelected 
-                          ? 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/50 shadow-sm' 
-                          : 'bg-white dark:bg-neutral-800 text-muted-foreground border-muted/20 hover:border-green-500/30'
+                          ? 'bg-primary text-primary-foreground border-primary shadow-md' 
+                          : 'bg-white dark:bg-neutral-800 text-muted-foreground border-muted/20 hover:border-primary/50'
                       }`}
                     >
                       # {tag.name}
