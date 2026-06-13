@@ -13,6 +13,8 @@ export interface RecipeListItem {
   prepTime: number;
   cookTime: number;
   difficulty: number;
+  isLiked?: boolean;
+  isSaved?: boolean;
 }
 
 export interface PaginatedResponse<T> {
@@ -135,9 +137,9 @@ export interface MyComment {
 }
 
 export const recipeApi = {
-  getPublishedRecipes: async (page = 0, size = 10, searchTerm = "", categoryId?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, sortBy?: string): Promise<Paginate<RecipeListItem>> => {
+  getPublishedRecipes: async (page = 0, size = 10, searchTerm = "", categoryId?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, sortBy?: string, isForYou?: boolean): Promise<Paginate<RecipeListItem>> => {
     const response = await apiInstance.get<Paginate<RecipeListItem>>("/recipes", {
-      params: { page, size, searchTerm, categoryId, difficulty, maxTotalTime, tagId, sortBy }
+      params: { page, size, searchTerm, categoryId, difficulty, maxTotalTime, tagId, sortBy, isForYou }
     });
     return response.data;
   },

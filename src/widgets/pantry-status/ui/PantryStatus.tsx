@@ -1,102 +1,238 @@
-import { Refrigerator, ArrowUpRight, AlertCircle, Loader2 } from "lucide-react";
+import { PieChart, Activity, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { pantryApi } from "@/entities/pantry/api/pantryApi";
-import { Link } from "react-router-dom";
+import { shoppingListApi } from "@/entities/shopping-list/api/shoppingListApi";
 
 export const PantryStatus = () => {
-  const { data: pantryItems, isLoading } = useQuery({
+  const { data: pantryItems, isLoading: isPantryLoading } = useQuery({
     queryKey: ["my-pantry"],
     queryFn: pantryApi.getMyPantry,
   });
 
-  const totalItems = pantryItems?.length || 0;
-  
-  // Calculate expiring items (expires within 3 days or already expired)
-  const expiringItemsCount = pantryItems?.filter(item => {
-    if (!item.expirationDate) return false;
-    const expDate = new Date(item.expirationDate);
-    const today = new Date();
-    const diffTime = expDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 3; // Expiring in 3 days or already expired
-  }).length || 0;
+  const { data: shoppingListItems, isLoading: isShoppingLoading } = useQuery({
+    queryKey: ["shopping-list"],
+    queryFn: shoppingListApi.getMyShoppingList,
+  });
+
+  const isLoading = isPantryLoading || isShoppingLoading;
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="h-48 bg-muted/50 rounded-[2rem] animate-pulse"></div>
-        ))}
-      </div>
+      <div className="w-full h-[320px] bg-card/40 rounded-[2.5rem] border border-muted/50 animate-pulse"></div>
     );
   }
 
+  // --- Data Processing for Visuals ---
+
+  const totalPantry = pantryItems?.length || 0;
+
+  // 1. Categories Breakdown
+  const categoryCounts: Record<string, number> = {};
+  pantryItems?.forEach(item => {
+    categoryCounts[item.categoryName] = (categoryCounts[item.categoryName] || 0) + 1;
+  });
+  
+  const categoryColors = ["bg-primary", "bg-primary/70", "bg-primary/40", "bg-primary/20"];
+  const categoryData = Object.entries(categoryCounts)
+    .map(([name, count]) => ({ 
+      name, 
+      count, 
+      percentage: totalPantry === 0 ? 0 : Math.round((count / totalPantry) * 100) 
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 4)
+    .map((item, idx) => ({ ...item, color: categoryColors[idx] }));
+
+  // 2. Freshness Index
+  let fresh = 0, expiring = 0, expired = 0;
+  pantryItems?.forEach(item => {
+    if (!item.expirationDate) {
+      fresh++;
+      return;
+    }
+    const expDate = new Date(item.expirationDate);
+    const today = new Date();
+    expDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    const diffTime = expDate.getTime() - today.getTime();
+    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (days < 0) expired++;
+    else if (days <= 5) expiring++;
+    else fresh++;
+  });
+  
+  const freshPct = totalPantry === 0 ? 0 : (fresh / totalPantry) * 100;
+  const expiringPct = totalPantry === 0 ? 0 : (expiring / totalPantry) * 100;
+  const expiredPct = totalPantry === 0 ? 0 : (expired / totalPantry) * 100;
+
+  // 3. Shopping List Completion
+  const totalShopping = shoppingListItems?.length || 0;
+  const purchased = shoppingListItems?.filter(i => i.isPurchased).length || 0;
+  const shoppingPct = totalShopping === 0 ? 0 : Math.round((purchased / totalShopping) * 100);
+  const strokeDasharray = 251.2; // 2 * pi * 40
+  const strokeDashoffset = strokeDasharray - (strokeDasharray * shoppingPct) / 100;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {/* Items Count */}
-      <motion.div 
-        whileHover={{ y: -5 }}
-        className="bg-card p-6 rounded-[2rem] border border-muted/30 shadow-sm relative overflow-hidden group"
-      >
-        <div className="absolute top-0 right-0 p-4">
-          <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
-            <Refrigerator className="w-6 h-6" />
-          </div>
-        </div>
-        <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest mb-4">Dolabındaki Malzemeler</p>
-        <h3 className="text-4xl font-black text-muted-foreground/40 mb-2">{totalItems > 0 ? totalItems : "--"}</h3>
-        <p className="text-sm text-muted-foreground flex items-center gap-1 font-medium">
-          {totalItems > 0 ? (
-            <><span className="text-primary/60 flex items-center">Harika,</span> dolabın dolu</>
-          ) : (
-            <><span className="text-primary/60 flex items-center">Dolabını bağla</span> başlamak için</>
-          )}
-        </p>
-      </motion.div>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-card/40 backdrop-blur-2xl p-8 lg:p-12 rounded-[3rem] border border-muted/50 shadow-xl shadow-black/5 flex flex-col relative overflow-hidden min-h-[320px]"
+    >
+      {/* Subtle Background Glow */}
+      <div className="absolute -top-40 -left-40 w-[30rem] h-[30rem] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-      {/* Expiring Soon */}
-      <motion.div 
-        whileHover={{ y: -5 }}
-        className="bg-card p-6 rounded-[2rem] border border-muted/30 shadow-sm relative overflow-hidden group"
-      >
-        <div className="absolute top-0 right-0 p-4">
-          <div className={`w-12 h-12 ${expiringItemsCount > 0 ? 'bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white' : 'bg-muted/50 text-muted-foreground'} rounded-2xl flex items-center justify-center transition-all duration-500`}>
-            <AlertCircle className="w-6 h-6" />
-          </div>
-        </div>
-        <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest mb-4">Tazeliği Geçmek Üzere</p>
-        <h3 className={`text-4xl font-black mb-2 ${expiringItemsCount > 0 ? 'text-amber-500/80' : 'text-muted-foreground/40'}`}>
-          {expiringItemsCount > 0 ? expiringItemsCount : "--"}
-        </h3>
-        <p className="text-sm text-muted-foreground flex items-center gap-1 font-medium">
-          {expiringItemsCount > 0 ? (
-            <><span className="text-amber-500/60 flex items-center">Dikkat,</span> bozulmak üzere</>
-          ) : totalItems > 0 ? (
-            <><span className="text-green-500/60 flex items-center">Harika,</span> her şey taze</>
-          ) : (
-            <><span className="text-amber-500/60 flex items-center">Veri yok</span> henüz takip edilmiyor</>
-          )}
-        </p>
-      </motion.div>
-
-      {/* Quick Action */}
-      <motion.div 
-        whileHover={{ y: -5 }}
-        className="bg-primary rounded-[2rem] shadow-xl shadow-primary/20 relative overflow-hidden group"
-      >
-        <Link to="/recipes/create" className="block w-full h-full p-6 text-left flex flex-col justify-end">
-          <div className="absolute top-0 right-0 p-4">
-            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white backdrop-blur-md">
-              <ArrowUpRight className="w-6 h-6" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16 lg:divide-x divide-muted/30 relative z-10 flex-1">
+        
+        {/* STAT 1: Category Breakdown */}
+        <div className="flex flex-col h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-14 h-14 rounded-[1.25rem] bg-primary/10 flex items-center justify-center text-primary shrink-0">
+              <PieChart className="w-7 h-7" />
+            </div>
+            <div>
+              <h3 className="font-black text-foreground text-base uppercase tracking-wider">Dolap Dağılımı</h3>
+              <p className="text-sm text-muted-foreground font-medium">Toplam {totalPantry} malzeme</p>
             </div>
           </div>
-          <div className="absolute top-[-20%] left-[-20%] w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
-          
-          <h3 className="text-xl font-black text-white relative z-10">AI İle Tarif<br />Oluştur</h3>
-          <p className="text-white/70 text-sm font-medium mt-2 relative z-10">Mevcut malzemelerinden harikalar yarat.</p>
-        </Link>
-      </motion.div>
-    </div>
+
+          {totalPantry > 0 ? (
+            <div className="mt-auto flex flex-col justify-end">
+              <div className="h-5 w-full flex rounded-full overflow-hidden mb-6 bg-muted/50">
+                {categoryData.map((cat, idx) => (
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${cat.percentage}%` }}
+                    transition={{ duration: 1, delay: 0.2 }}
+                    key={idx} 
+                    className={`h-full ${cat.color} border-r-2 border-card last:border-0 relative group/bar`}
+                  >
+                    {cat.percentage > 15 && (
+                      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/90">
+                        %{cat.percentage}
+                      </span>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-y-4 gap-x-6">
+                {categoryData.map((cat, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <div className={`w-3.5 h-3.5 rounded-full shrink-0 ${cat.color}`}></div>
+                    <span className="text-sm text-muted-foreground font-semibold truncate flex-1">{cat.name} <span className="opacity-50 ml-1">(%{cat.percentage})</span></span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="text-base text-muted-foreground mt-auto">Analiz edilecek veri yok.</p>
+          )}
+        </div>
+
+        {/* STAT 2: Freshness Gauge */}
+        <div className="flex flex-col lg:pl-16 h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-14 h-14 rounded-[1.25rem] bg-primary/10 flex items-center justify-center text-primary shrink-0">
+              <Activity className="w-7 h-7" />
+            </div>
+            <div>
+              <h3 className="font-black text-foreground text-base uppercase tracking-wider">Tazelik Endeksi</h3>
+              <p className="text-sm text-muted-foreground font-medium">Gıda güvenliği</p>
+            </div>
+          </div>
+
+          {totalPantry > 0 ? (
+            <div className="mt-auto flex flex-col justify-end">
+              <div className="flex gap-1.5 h-5 w-full rounded-full overflow-hidden mb-6 bg-muted/50">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.max(1, freshPct)}%` }}
+                  transition={{ duration: 1, delay: 0.3 }}
+                  className="bg-emerald-500/80 h-full"
+                />
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.max(1, expiringPct)}%` }}
+                  transition={{ duration: 1, delay: 0.4 }}
+                  className="bg-amber-400/80 h-full"
+                />
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.max(1, expiredPct)}%` }}
+                  transition={{ duration: 1, delay: 0.5 }}
+                  className="bg-rose-500/80 h-full"
+                />
+              </div>
+              
+              <div className="flex justify-between items-end text-center">
+                <div className="flex flex-col items-center">
+                  <p className="text-3xl font-black text-emerald-500 mb-1 leading-none">{fresh}</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Taze</p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <p className="text-3xl font-black text-amber-500 mb-1 leading-none">{expiring}</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Riskli</p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <p className="text-3xl font-black text-rose-500 mb-1 leading-none">{expired}</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Geçmiş</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-base text-muted-foreground mt-auto">Analiz edilecek veri yok.</p>
+          )}
+        </div>
+
+        {/* STAT 3: Shopping Progress */}
+        <div className="flex flex-col lg:pl-16 h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-14 h-14 rounded-[1.25rem] bg-primary/10 flex items-center justify-center text-primary shrink-0">
+              <ShoppingCart className="w-7 h-7" />
+            </div>
+            <div>
+              <h3 className="font-black text-foreground text-base uppercase tracking-wider">Alışveriş Durumu</h3>
+              <p className="text-sm text-muted-foreground font-medium">Liste tamamlama</p>
+            </div>
+          </div>
+
+          <div className="flex-1 flex items-center justify-between gap-6 mt-auto">
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-6 h-6 text-primary shrink-0" />
+                <span className="text-base font-bold text-foreground">{purchased} Ürün Alındı</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-6 rounded-full border-[3px] border-muted-foreground/30 shrink-0"></div>
+                <span className="text-base font-semibold text-muted-foreground">{totalShopping - purchased} Ürün Bekliyor</span>
+              </div>
+            </div>
+
+            <div className="relative w-28 h-28 flex items-center justify-center shrink-0">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/50" />
+                <motion.circle 
+                  cx="50" cy="50" r="40" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="8" 
+                  strokeLinecap="round"
+                  className="text-primary"
+                  initial={{ strokeDashoffset: strokeDasharray }}
+                  animate={{ strokeDashoffset }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  strokeDasharray={strokeDasharray}
+                />
+              </svg>
+              <div className="absolute flex flex-col items-center justify-center">
+                <span className="text-xl font-black text-foreground">%{shoppingPct}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </motion.div>
   );
 };

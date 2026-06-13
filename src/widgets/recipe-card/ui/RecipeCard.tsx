@@ -1,26 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Heart, Bookmark, Clock, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import type { RecipeListItem } from "@/entities/recipe/api/recipeApi";
 import { toast } from "sonner";
+import { cn } from "@/shared/lib/utils";
 
 interface RecipeCardProps {
   recipe: RecipeListItem;
   index?: number;
   initialLiked?: boolean;
   initialSaved?: boolean;
+  customActions?: React.ReactNode;
+  className?: string;
 }
 
-export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSaved = false }: RecipeCardProps) => {
+export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSaved = false, customActions, className }: RecipeCardProps) => {
   const navigate = useNavigate();
   
   // Yerel state ile optimistik UI güncellemeleri
-  const [isLiked, setIsLiked] = useState(initialLiked);
-  const [isSaved, setIsSaved] = useState(initialSaved);
+  const [isLiked, setIsLiked] = useState(recipe.isLiked ?? initialLiked);
+  const [isSaved, setIsSaved] = useState(recipe.isSaved ?? initialSaved);
   const [isLiking, setIsLiking] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (recipe.isLiked !== undefined) setIsLiked(recipe.isLiked);
+    if (recipe.isSaved !== undefined) setIsSaved(recipe.isSaved);
+  }, [recipe.isLiked, recipe.isSaved]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -67,7 +75,7 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ delay: index * 0.05 }}
       onClick={() => navigate(`/recipes/${recipe.id}`)}
-      className="group cursor-pointer bg-card rounded-[2rem] overflow-hidden border border-muted/30 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col"
+      className={cn("group cursor-pointer bg-card rounded-[2rem] overflow-hidden border border-muted/30 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col min-w-[280px]", className)}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img 
@@ -78,23 +86,27 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
         {/* Hover Action Buttons */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button 
-            onClick={handleLike}
-            disabled={isLiking}
-            className="w-10 h-10 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-md flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
-            title="Beğen"
-          >
-            <Heart className={`w-5 h-5 transition-colors ${isLiked ? 'fill-primary text-primary' : 'text-muted-foreground hover:text-primary'}`} />
-          </button>
-          <button 
-            onClick={handleSave}
-            disabled={isSaving}
-            className="w-10 h-10 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-md flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
-            title="Kaydet"
-          >
-            <Bookmark className={`w-5 h-5 transition-colors ${isSaved ? 'fill-primary text-primary' : 'text-muted-foreground hover:text-primary'}`} />
-          </button>
+        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+          {customActions || (
+            <>
+              <button 
+                onClick={handleLike}
+                disabled={isLiking}
+                className="w-10 h-10 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-md flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
+                title="Beğen"
+              >
+                <Heart className={`w-5 h-5 transition-colors ${isLiked ? 'fill-primary text-primary' : 'text-muted-foreground hover:text-primary'}`} />
+              </button>
+              <button 
+                onClick={handleSave}
+                disabled={isSaving}
+                className="w-10 h-10 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-md flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
+                title="Kaydet"
+              >
+                <Bookmark className={`w-5 h-5 transition-colors ${isSaved ? 'fill-primary text-primary' : 'text-muted-foreground hover:text-primary'}`} />
+              </button>
+            </>
+          )}
         </div>
       </div>
 

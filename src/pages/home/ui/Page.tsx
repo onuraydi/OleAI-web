@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { PantryStatus } from "@/widgets/pantry-status/ui/PantryStatus";
-import { RecipeFeed } from "@/widgets/recipe-feed/ui/RecipeFeed";
-import { Sparkles, Bookmark, ShoppingCart } from "lucide-react";
+import { RecipeFeed, TrendingHero } from "@/widgets/recipe-feed/ui/RecipeFeed";
+import { Sparkles, Bookmark, BookOpen } from "lucide-react";
 import { useSessionStore } from "@/entities/session";
 import { ErrorBoundary } from "@/shared/ui/ErrorBoundary";
 import { Link } from "react-router-dom";
@@ -18,7 +18,7 @@ export default function HomePage() {
       <main className="lg:ml-72 min-h-screen flex flex-col">
         <DashboardHeader />
         
-        <div className="flex-1 p-8 space-y-12 max-w-7xl mx-auto w-full">
+        <div className="flex-1 p-8 space-y-16 max-w-7xl mx-auto w-full pt-4">
           {/* Welcome Section */}
           <section>
             <motion.div 
@@ -35,7 +35,7 @@ export default function HomePage() {
             </motion.div>
           </section>
 
-          {/* Quick Actions */}
+          {/* Quick Actions - 1. Sıraya Taşındı */}
           <section>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link 
@@ -79,28 +79,35 @@ export default function HomePage() {
               </Link>
 
               <Link 
-                to="/shopping-list"
+                to="/my-recipe-book"
                 className="p-5 rounded-2xl bg-card border border-muted/30 hover:border-primary/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1 group"
               >
                 <div className="w-10 h-10 rounded-xl bg-muted/50 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                  <ShoppingCart className="w-5 h-5" />
+                  <BookOpen className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-foreground">Alışveriş</p>
-                  <p className="text-xs text-muted-foreground mt-1">Eksik malzemeler</p>
+                  <p className="text-lg font-bold text-foreground">Tarif Defterim</p>
+                  <p className="text-xs text-muted-foreground mt-1">Kendi tariflerin</p>
                 </div>
               </Link>
             </div>
           </section>
 
-          {/* Pantry Status Summary */}
+          {/* Trending Hero (Kayan Kısım) - 2. Sıraya Taşındı */}
+          <section className="mb-6">
+            <ErrorBoundary>
+              <TrendingHero />
+            </ErrorBoundary>
+          </section>
+
+          {/* Pantry Status Summary - 3. Sıraya Taşındı */}
           <section>
             <ErrorBoundary>
               <PantryStatus />
             </ErrorBoundary>
           </section>
 
-          {/* Recipe Recommendations */}
+          {/* Recipe Recommendations (Sana Özel Öneriler) */}
           <section className="pb-20">
             <ErrorBoundary>
               <RecipeFeed />
