@@ -40,3 +40,16 @@ export const MEASUREMENT_CATEGORY_UNITS: Record<MeasurementCategory, Measurement
 
 // Varsayılan olarak tüm birimleri dönmek istenirse
 export const ALL_UNITS = Object.values(MeasurementUnit).filter(v => typeof v === "number") as MeasurementUnit[];
+
+export const UNIT_SHORT_LABELS: Record<string, string> = {
+  "Piece": "Adet",
+  "Kilogram": "kg",
+  "Gram": "g",
+  "Liter": "L",
+  "Milliliter": "ml",
+  "Packet": "Paket",
+  "Bunch": "Demet",
+  "Slice": "Dilim",
+  "Pinch": "Tutam",
+  "Other": "Diğer"
+};
