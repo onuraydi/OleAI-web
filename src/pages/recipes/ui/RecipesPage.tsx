@@ -9,6 +9,7 @@ import type { RecipeCategoryDto, TagDto } from "@/entities/recipe/api/recipeApi"
 
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
+import { RecipeCard } from "@/widgets/recipe-card";
 
 export const RecipesPage = () => {
   const navigate = useNavigate();
@@ -287,7 +288,7 @@ export const RecipesPage = () => {
 
       {/* Content */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="space-y-4">
               <div className="aspect-square rounded-3xl bg-card shadow-sm animate-pulse" />
@@ -314,68 +315,10 @@ export const RecipesPage = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence mode="popLayout">
               {data?.items.map((recipe, index) => (
-                <motion.div 
-                  key={recipe.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ delay: index * 0.05 }}
-                  onClick={() => navigate(`/recipes/${recipe.id}`)}
-                  className="group cursor-pointer bg-card rounded-[2rem] overflow-hidden border border-muted/30 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                    <img 
-                      src={recipe.mainImageUrl || "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w=1776&auto=format&fit=crop"} 
-                      alt={recipe.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    {/* Like Button */}
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); }}
-                      className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-primary transition-colors shadow-sm"
-                    >
-                      <Heart className="w-5 h-5" />
-                    </button>
-                    
-
-                  </div>
-
-                  <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-lg font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                      {recipe.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
-                      {recipe.description}
-                    </p>
-
-                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-muted/30">
-                      <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
-                        <div className="flex items-center gap-1.5">
-                          <Clock className="w-4 h-4 text-primary/60" />
-                          <span>{recipe.prepTime + recipe.cookTime > 0 ? recipe.prepTime + recipe.cookTime : '--'} dk</span>
-                        </div>
-                        {recipe.difficulty > 0 && (
-                          <div className="flex items-center gap-1.5 hidden sm:flex">
-                            <span className="w-1 h-1 rounded-full bg-muted-foreground/30"></span>
-                            <span>{recipe.difficulty === 1 ? 'Kolay' : recipe.difficulty === 2 ? 'Orta' : 'Zor'}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-foreground">
-                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                        <span>{recipe.averageRating > 0 ? recipe.averageRating.toFixed(1) : "--"}</span>
-                        {recipe.totalRatings > 0 && (
-                          <span className="text-xs font-normal text-muted-foreground ml-1">({recipe.totalRatings})</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
+                <RecipeCard key={recipe.id} recipe={recipe} index={index} />
               ))}
             </AnimatePresence>
           </div>
