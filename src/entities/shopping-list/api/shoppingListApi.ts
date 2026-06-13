@@ -24,6 +24,10 @@ export interface UpdateShoppingListItemRequest {
   newUnit: number;
 }
 
+export interface AddMultipleShoppingListItemsRequest {
+  items: AddShoppingListItemRequest[];
+}
+
 export const shoppingListApi = {
   getMyShoppingList: async (): Promise<ShoppingListItem[]> => {
     const response = await apiInstance.get<ShoppingListItem[]>("/shopping-list");
@@ -32,6 +36,11 @@ export const shoppingListApi = {
 
   addItem: async (request: AddShoppingListItemRequest): Promise<ShoppingListItem> => {
     const response = await apiInstance.post<ShoppingListItem>("/shopping-list", request);
+    return response.data;
+  },
+
+  bulkAddItems: async (request: AddMultipleShoppingListItemsRequest): Promise<ShoppingListItem[]> => {
+    const response = await apiInstance.post<ShoppingListItem[]>("/shopping-list/bulk", request);
     return response.data;
   },
 

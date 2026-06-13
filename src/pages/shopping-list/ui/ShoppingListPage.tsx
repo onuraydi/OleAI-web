@@ -3,17 +3,18 @@ import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { shoppingListApi } from "@/entities/shopping-list/api/shoppingListApi";
+import { useAddIngredientStore } from "@/entities/pantry/model/useAddIngredientStore";
 import { ShoppingListGroup } from "@/widgets/shopping-list/ui/ShoppingListGroup";
-import { AddShoppingListItem } from "@/features/shopping-list/ui/AddShoppingListItem";
-import { Loader2, CheckCircle2, ChevronDown } from "lucide-react";
+import { AddIngredientModal } from "@/features/add-pantry-item/ui/AddIngredientModal";
+import { Loader2, CheckCircle2, ChevronDown, Plus } from "lucide-react";
 import { MeasurementUnit } from "@/shared/constants/measurement";
 
 export const ShoppingListPage = () => {
   const queryClient = useQueryClient();
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<"category" | "recipe">("category");
   const [sortBy, setSortBy] = useState<"name" | "recent">("recent");
   const [filterBy, setFilterBy] = useState<"all" | "unselected">("all");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
   const { data: shoppingList, isLoading } = useQuery({
     queryKey: ["shopping-list"],
@@ -30,6 +31,20 @@ export const ShoppingListPage = () => {
   const updateMutation = useMutation({
     mutationFn: ({ id, qty, unit }: { id: string, qty: number, unit: MeasurementUnit }) => 
       shoppingListApi.updateItem(id, { newQuantity: qty, newUnit: unit }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["shopping-list"] });
+    }
+  });
+
+  const addMutation = useMutation({
+    mutationFn: shoppingListApi.addItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["shopping-list"] });
+    }
+  });
+
+  const bulkAddMutation = useMutation({
+    mutationFn: shoppingListApi.bulkAddItems,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["shopping-list"] });
     }
@@ -101,7 +116,16 @@ export const ShoppingListPage = () => {
               <p className="text-lg text-muted-foreground font-medium">Haftalık kiler ve mutfak alışverişini planla.</p>
             </div>
             
-            {/* Progress Circle */}
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
+              <button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="w-full sm:w-auto h-12 px-6 rounded-2xl bg-primary text-primary-foreground font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm shrink-0"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Malzeme Ekle</span>
+              </button>
+
+              {/* Progress Circle */}
             <div className="flex items-center gap-4 bg-card p-4 rounded-3xl shadow-sm border border-muted/30">
               <div className="relative w-16 h-16 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
@@ -121,6 +145,7 @@ export const ShoppingListPage = () => {
                 <span className="text-xl font-black leading-none">{doneItems}/{totalItems}</span>
                 <span className="text-xs font-bold text-muted-foreground tracking-widest mt-1">TAMAMLANAN</span>
               </div>
+              </div>
             </div>
           </div>
 
@@ -128,25 +153,7 @@ export const ShoppingListPage = () => {
           <div className="space-y-6">
             
             {/* Toolbar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center bg-card p-1 rounded-2xl shadow-sm border border-muted/30">
-                <button 
-                  onClick={() => setActiveTab("category")}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                    activeTab === "category" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Kategoriye Göre
-                </button>
-                <button 
-                  onClick={() => setActiveTab("recipe")}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                    activeTab === "recipe" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Tarife Göre
-                </button>
-              </div>
+            <div className="flex flex-col md:flex-row md:items-center justify-end gap-4">
 
               <div className="flex items-center gap-3">
                 <div className="relative group">
@@ -208,10 +215,7 @@ export const ShoppingListPage = () => {
               </div>
             )}
 
-            {/* Add Input */}
-            <div className="pt-4">
-              <AddShoppingListItem />
-            </div>
+            {/* List ends here */}
 
             {/* Done Shopping Button */}
             <button
@@ -236,6 +240,33 @@ export const ShoppingListPage = () => {
           </div>
         </div>
       </main>
+
+      <AddIngredientModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)}
+        mode="shopping-list"
+        isLoadingOverride={bulkAddMutation.isPending}
+        onSubmitOverride={(request: any) => {
+          const bulkRequest = {
+            items: request.ingredients.map((item: any) => ({
+              ingredientId: item.ingredientId,
+              requestedName: item.requestedName,
+              suggestedCategoryId: item.suggestedCategoryId,
+              quantity: item.quantity,
+              unit: item.unit
+            }))
+          };
+          bulkAddMutation.mutate(bulkRequest, {
+            onSuccess: () => {
+              useAddIngredientStore.getState().clearShoppingListDrafts();
+              setIsAddModalOpen(false);
+            },
+            onError: (error) => {
+              console.error("Listeye eklenirken hata oluştu", error);
+            }
+          });
+        }}
+      />
     </div>
   );
 };

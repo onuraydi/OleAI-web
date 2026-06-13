@@ -1,9 +1,10 @@
-import { Leaf, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ShoppingListItem as IShoppingListItem } from "@/entities/shopping-list/api/shoppingListApi";
 import { ShoppingListItem } from "./ShoppingListItem";
 import { MeasurementUnit } from "@/shared/constants/measurement";
+import { getCategoryIcon } from "@/shared/lib/icon-helpers";
 
 interface ShoppingListGroupProps {
   categoryName: string;
@@ -27,26 +28,31 @@ export const ShoppingListGroup = ({
   
   if (items.length === 0) return null;
 
-  const ITEMS_LIMIT = 6;
+  const ITEMS_LIMIT = 8;
   const displayedItems = showAll ? items : items.slice(0, ITEMS_LIMIT);
   const hasMore = items.length > ITEMS_LIMIT;
 
   return (
-    <div className="mb-6 last:mb-0 bg-card border border-muted/30 rounded-[2rem] p-5 shadow-sm">
-      <button 
+    <div className="mb-10 last:mb-0">
+      <div 
+        className="flex items-center justify-between mb-6 border-b border-muted/30 pb-4 cursor-pointer group"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-2 mb-2 group outline-none"
       >
-        <div className="flex items-center gap-2">
-          <Leaf className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-          <h3 className="text-xs font-black tracking-widest text-muted-foreground uppercase group-hover:text-foreground transition-colors">
-            {categoryName || "DİĞER"} <span className="ml-1 text-primary/50 bg-primary/10 px-2 py-0.5 rounded-full">{items.length}</span>
-          </h3>
+        <div className="flex items-center gap-3">
+          <div className="text-primary">
+            {getCategoryIcon(categoryName)}
+          </div>
+          <h2 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
+            {categoryName || "DİĞER"}
+          </h2>
+          <span className="text-xs font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            {items.length}
+          </span>
         </div>
-        <div className="text-muted-foreground group-hover:text-foreground transition-colors">
-          {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        <div className="text-muted-foreground group-hover:text-primary transition-colors p-1 rounded-full group-hover:bg-primary/10">
+          {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </div>
-      </button>
+      </div>
       
       <AnimatePresence initial={false}>
         {isOpen && (
@@ -57,11 +63,12 @@ export const ShoppingListGroup = ({
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="pt-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {displayedItems.map(item => (
                 <ShoppingListItem 
                   key={item.id} 
                   item={item} 
+                  categoryName={categoryName}
                   isSelected={selectedItemIds.includes(item.id)}
                   onToggleSelect={onToggleSelect}
                   onDelete={onDelete}
@@ -71,12 +78,12 @@ export const ShoppingListGroup = ({
             </div>
 
             {hasMore && (
-              <div className="mt-4 flex justify-center">
+              <div className="mt-6 flex justify-center">
                 <button
                   onClick={() => setShowAll(!showAll)}
-                  className="text-xs font-bold text-primary hover:text-primary/80 transition-colors bg-primary/5 hover:bg-primary/10 px-4 py-2 rounded-full"
+                  className="px-6 py-2 rounded-full border-2 border-primary/20 text-primary font-bold hover:bg-primary/10 transition-colors text-sm"
                 >
-                  {showAll ? "Daha Az Göster" : `Tümünü Gör (+${items.length - ITEMS_LIMIT})`}
+                  {showAll ? "Daha Az Göster" : `Tüm ${items.length} Ürünü Göster`}
                 </button>
               </div>
             )}
