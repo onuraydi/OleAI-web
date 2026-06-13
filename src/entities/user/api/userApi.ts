@@ -1,10 +1,35 @@
 import { apiInstance } from "@/shared/api";
 
+export interface DietaryPreferenceItem {
+  id: string;
+  name: string;
+}
+
+export interface AllergyItem {
+  id: string;
+  name: string;
+}
+
+export interface DislikedIngredientItem {
+  id: string;
+  name: string;
+}
+
 export interface UserProfileResponse {
   id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
   email: string;
-  role: string;
+  birthDate?: string | null;
+  profileImageUrl?: string | null;
   isOnboarded: boolean;
+  isEmailVerified: boolean;
+  createdDate: string;
+  role?: string;
+  dietaryPreferences: DietaryPreferenceItem[];
+  allergies: AllergyItem[];
+  dislikedIngredients: DislikedIngredientItem[];
 }
 
 export interface UserStatisticsResponse {
@@ -12,6 +37,14 @@ export interface UserStatisticsResponse {
   totalRecipesSaved: number;
   totalPantryItems: number;
   totalRecipesLiked: number;
+}
+
+export interface UpdateUserProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  birthDate?: string | null;
+  profileImage?: File | null;
 }
 
 export interface UpdateUserPreferencesRequest {
@@ -31,6 +64,25 @@ export const userApi = {
     const response = await apiInstance.get<UserProfileResponse>("/users/me");
     return response.data;
   },
+  getStatistics: async (): Promise<UserStatisticsResponse> => {
+    const response = await apiInstance.get<UserStatisticsResponse>("/users/me/statistics");
+    return response.data;
+  },
+  updateProfile: async (request: UpdateUserProfileRequest): Promise<{ message: string }> => {
+    const formData = new FormData();
+    if (request.firstName !== undefined) formData.append("FirstName", request.firstName);
+    if (request.lastName !== undefined) formData.append("LastName", request.lastName);
+    if (request.username !== undefined) formData.append("Username", request.username);
+    if (request.birthDate !== undefined && request.birthDate !== null)
+      formData.append("BirthDate", request.birthDate);
+    if (request.profileImage) formData.append("ProfileImage", request.profileImage);
+    // Always preserve onboarded state — backend defaults IsOnboarded to false if not sent
+    formData.append("IsOnboarded", "true");
+    const response = await apiInstance.put<{ message: string }>("/users/me", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  },
   updateDietaryPreferences: async (request: UpdateUserPreferencesRequest): Promise<{ message: string }> => {
     const response = await apiInstance.put<{ message: string }>("/users/me/dietary-preferences", request);
     return response.data;
@@ -41,18 +93,6 @@ export const userApi = {
   },
   updateDislikedIngredients: async (request: UpdateUserDislikedIngredientsRequest): Promise<{ message: string }> => {
     const response = await apiInstance.put<{ message: string }>("/users/me/disliked-ingredients", request);
-    return response.data;
-  },
-  updateProfile: async (formData: FormData): Promise<{ message: string }> => {
-    const response = await apiInstance.put<{ message: string }>("/users/me", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  },
-  getStatistics: async (): Promise<UserStatisticsResponse> => {
-    const response = await apiInstance.get<UserStatisticsResponse>("/users/me/statistics");
     return response.data;
   },
 };

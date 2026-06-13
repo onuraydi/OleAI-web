@@ -1,8 +1,16 @@
-import { Bell, Menu, Sparkles, Sun, Moon, Sunrise, Sunset, CloudMoon } from "lucide-react";
+import { Bell, Menu, Sparkles, Sun, Moon, Sunrise, Sunset, CloudMoon, LogOut, Settings, User, Bookmark } from "lucide-react";
 import { useSessionStore } from "@/entities/session";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu";
 
 interface DashboardHeaderProps {
   // Empty for future use
@@ -10,7 +18,9 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
   const user = useSessionStore((state) => state.user);
+  const logout = useSessionStore((state) => state.logout);
   const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
   
   const [greeting, setGreeting] = useState("Merhaba");
   const [GreetingIcon, setGreetingIcon] = useState<any>(Sun);
@@ -73,23 +83,48 @@ export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
 
         <div className="h-10 w-[1px] bg-muted/30 mx-2" />
 
-        <div className="flex items-center gap-3 pl-2">
-          <div className="text-right hidden sm:block">
-            <p className="text-sm font-bold text-foreground leading-none">
-              {user?.username || user?.email?.split('@')[0] || "Şef"}
-            </p>
-          </div>
-          {user?.profileImageUrl ? (
-            <img 
-              src={user.profileImageUrl} 
-              alt="Profil" 
-              className="w-10 h-10 rounded-xl object-cover border-2 border-primary/20 shadow-lg shadow-primary/5"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary font-black shadow-lg shadow-primary/5">
-              {(user?.username?.[0] || user?.email?.[0] || "Ş").toUpperCase()}
-            </div>
-          )}
+        <div className="flex items-center pl-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-3 outline-none">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-bold text-foreground leading-none">
+                  {user?.username || user?.email?.split('@')[0] || "Şef"}
+                </p>
+              </div>
+              {user?.profileImageUrl ? (
+                <img 
+                  src={user.profileImageUrl} 
+                  alt="Profil" 
+                  className="w-10 h-10 rounded-xl object-cover border-2 border-primary/20 shadow-lg shadow-primary/5 hover:scale-105 transition-transform"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary font-black shadow-lg shadow-primary/5 hover:scale-105 transition-transform">
+                  {(user?.username?.[0] || user?.email?.[0] || "Ş").toUpperCase()}
+                </div>
+              )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl">
+              <DropdownMenuLabel className="font-bold">Hesabım</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer rounded-xl font-medium py-2">
+                <User className="w-4 h-4 mr-2" />
+                Profilim
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/recipes")} className="cursor-pointer rounded-xl font-medium py-2">
+                <Bookmark className="w-4 h-4 mr-2" />
+                Tariflerim
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile", { state: { activeTab: 'account' } })} className="cursor-pointer rounded-xl font-medium py-2">
+                <Settings className="w-4 h-4 mr-2" />
+                Ayarlar
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout} className="cursor-pointer rounded-xl font-bold py-2 text-rose-500 hover:text-rose-600 focus:text-rose-600 focus:bg-rose-500/10 transition-colors">
+                <LogOut className="w-4 h-4 mr-2" />
+                Çıkış Yap
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Mobile Menu Button */}

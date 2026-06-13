@@ -54,13 +54,18 @@ export const LoginForm = () => {
       }
       const role = decodeRoleFromToken(tokenStr);
       const profile = await userApi.getProfile();
-      const userData = { ...profile, role };
-      
-      setAuth(true, userData);
-      
-      if (userData.role === 'Admin') {
+      setAuth(true, {
+        id: profile.id,
+        email: profile.email,
+        role,
+        username: profile.username,
+        profileImageUrl: profile.profileImageUrl ?? undefined,
+        isOnboarded: profile.isOnboarded,
+      });
+
+      if (role === 'Admin') {
         navigate("/admin/dashboard");
-      } else if (!userData.isOnboarded) {
+      } else if (!profile.isOnboarded) {
         navigate("/onboarding");
       } else {
         navigate("/home");

@@ -59,4 +59,8 @@ export const sessionApi = {
       request: { email },
     });
   },
+  changePassword: async (data: { oldPassword: string; newPassword: string }): Promise<{ message: string }> => {
+    const response = await apiInstance.post<{ message: string }>("/auth/change-password", data);
+    return response.data;
+  },
 };

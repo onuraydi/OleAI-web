@@ -2,8 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { userApi } from "@/entities/user/api/userApi";
 import { motion } from "framer-motion";
 import { BookOpen, Bookmark, Refrigerator, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const UserStatistics = () => {
+  const navigate = useNavigate();
   const { data: stats, isLoading, isError } = useQuery({
     queryKey: ["user-statistics"],
     queryFn: userApi.getStatistics,
@@ -28,17 +30,19 @@ export const UserStatistics = () => {
       label: "Oluşturulan Tarif",
       value: stats.totalRecipesCreated,
       icon: BookOpen,
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
-      borderColor: "border-blue-500/20"
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      borderColor: "border-primary/20",
+      onClick: () => navigate("/profile", { state: { activeTab: "recipes", subTab: "created" } })
     },
     {
       label: "Kaydedilen",
       value: stats.totalRecipesSaved,
       icon: Bookmark,
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10",
-      borderColor: "border-purple-500/20"
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      borderColor: "border-primary/20",
+      onClick: () => navigate("/profile", { state: { activeTab: "recipes", subTab: "saved" } })
     },
     {
       label: "Kilerdeki Malzeme",
@@ -46,34 +50,46 @@ export const UserStatistics = () => {
       icon: Refrigerator,
       color: "text-primary",
       bgColor: "bg-primary/10",
-      borderColor: "border-primary/20"
+      borderColor: "border-primary/20",
+      onClick: () => navigate("/pantry")
     },
     {
       label: "Beğenilen",
       value: stats.totalRecipesLiked,
       icon: Heart,
-      color: "text-rose-500",
-      bgColor: "bg-rose-500/10",
-      borderColor: "border-rose-500/20"
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      borderColor: "border-primary/20",
+      onClick: () => navigate("/profile", { state: { activeTab: "recipes", subTab: "liked" } })
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {statItems.map((item, index) => (
         <motion.div
           key={item.label}
+          onClick={item.onClick}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className={`p-5 rounded-2xl border ${item.borderColor} bg-card/50 shadow-sm flex flex-col gap-3 transition-transform hover:-translate-y-1`}
+          className={`relative overflow-hidden p-6 sm:p-8 rounded-[2rem] border-2 bg-card ${item.borderColor} shadow-sm group hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1`}
         >
-          <div className={`w-10 h-10 rounded-xl ${item.bgColor} flex items-center justify-center`}>
-            <item.icon className={`w-5 h-5 ${item.color}`} />
-          </div>
-          <div>
-            <p className="text-3xl font-black text-foreground">{item.value}</p>
-            <p className="text-sm font-bold text-muted-foreground">{item.label}</p>
+          {/* Subtle background glow */}
+          <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full ${item.bgColor} blur-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-500`} />
+          
+          <div className="relative z-10 flex flex-col h-full justify-between gap-6">
+            <div className={`w-12 h-12 rounded-2xl ${item.bgColor} flex items-center justify-center border border-white/5`}>
+              <item.icon className={`w-6 h-6 ${item.color}`} />
+            </div>
+            <div>
+              <p className={`text-4xl sm:text-5xl font-black ${item.color} tracking-tighter mb-1`}>
+                {item.value}
+              </p>
+              <p className="text-sm sm:text-base font-bold text-muted-foreground/80 leading-tight">
+                {item.label}
+              </p>
+            </div>
           </div>
         </motion.div>
       ))}

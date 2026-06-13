@@ -153,15 +153,11 @@ export default function PreferencesPage() {
   const handleFinish = async () => {
     setIsFinishing(true);
     try {
-      // 1. Profil bilgilerini kaydet
-      const formData = new FormData();
-      if (username) formData.append("Username", username);
-      if (birthDate) formData.append("BirthDate", birthDate);
-      formData.append("IsOnboarded", "true");
-      if (profileFile) {
-        formData.append("ProfileImage", profileFile);
-      }
-      await userApi.updateProfile(formData);
+      await userApi.updateProfile({
+        username: username || undefined,
+        birthDate: birthDate || undefined,
+        profileImage: profileFile ?? undefined,
+      });
 
       // 2. Diyet tercihini kaydet
       const dietaryPreferenceIds = selectedDiet === "none" ? [] : (selectedDiet ? [selectedDiet] : []);
