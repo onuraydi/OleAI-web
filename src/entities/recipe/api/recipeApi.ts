@@ -138,9 +138,9 @@ export interface MyComment {
 }
 
 export const recipeApi = {
-  getPublishedRecipes: async (page = 0, size = 10, searchTerm = "", categoryId?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, sortBy?: string, isForYou?: boolean): Promise<Paginate<RecipeListItem>> => {
+  getPublishedRecipes: async (page = 0, size = 10, searchTerm = "", categoryId?: number, minRating?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, sortBy?: string, isForYou?: boolean): Promise<Paginate<RecipeListItem>> => {
     const response = await apiInstance.get<Paginate<RecipeListItem>>("/recipes", {
-      params: { page, size, searchTerm, categoryId, difficulty, maxTotalTime, tagId, sortBy, isForYou }
+      params: { page, size, searchTerm, categoryId, minRating, difficulty, maxTotalTime, tagId, sortBy, isForYou }
     });
     return response.data;
   },
@@ -214,21 +214,21 @@ export const recipeApi = {
     const response = await apiInstance.get<TagDto[]>("/recipetaxonomy/tags");
     return response.data;
   },
-  getMyRecipes: async (page = 1, size = 10, searchTerm = "", categoryId?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, visibility?: number, sortBy?: string): Promise<Paginate<RecipeListItem>> => {
+  getMyRecipes: async (page = 1, size = 10, searchTerm = "", categoryId?: number, minRating?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, visibility?: number, sortBy?: string): Promise<Paginate<RecipeListItem>> => {
     const response = await apiInstance.get<Paginate<RecipeListItem>>("/recipes/my-recipes", { 
-      params: { page, size, searchTerm, categoryId, difficulty, maxTotalTime, tagId, visibility, sortBy } 
+      params: { page, size, searchTerm, categoryId, minRating, difficulty, maxTotalTime, tagId, visibility, sortBy } 
     });
     return response.data;
   },
-  getMySavedRecipes: async (page = 1, size = 10, searchTerm = "", categoryId?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, sortBy?: string): Promise<Paginate<RecipeListItem>> => {
+  getMySavedRecipes: async (page = 1, size = 10, searchTerm = "", categoryId?: number, minRating?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, sortBy?: string): Promise<Paginate<RecipeListItem>> => {
     const response = await apiInstance.get<Paginate<RecipeListItem>>("/recipes/me/saved-recipes", { 
-      params: { page, size, searchTerm, categoryId, difficulty, maxTotalTime, tagId, sortBy } 
+      params: { page, size, searchTerm, categoryId, minRating, difficulty, maxTotalTime, tagId, sortBy } 
     });
     return response.data;
   },
-  getMyLikedRecipes: async (page = 1, size = 10, searchTerm = "", categoryId?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, sortBy?: string): Promise<Paginate<RecipeListItem>> => {
+  getMyLikedRecipes: async (page = 1, size = 10, searchTerm = "", categoryId?: number, minRating?: number, difficulty?: number, maxTotalTime?: number, tagId?: number, sortBy?: string): Promise<Paginate<RecipeListItem>> => {
     const response = await apiInstance.get<Paginate<RecipeListItem>>("/recipes/me/liked-recipes", { 
-      params: { page, size, searchTerm, categoryId, difficulty, maxTotalTime, tagId, sortBy } 
+      params: { page, size, searchTerm, categoryId, minRating, difficulty, maxTotalTime, tagId, sortBy } 
     });
     return response.data;
   },

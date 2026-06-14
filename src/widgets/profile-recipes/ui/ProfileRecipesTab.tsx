@@ -28,20 +28,20 @@ export const ProfileRecipesTab = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("Newest");
 
-  const [selectedCategory, setSelectedCategory] = useState<number | undefined>(undefined);
+  const [selectedRating, setSelectedRating] = useState<number | undefined>(undefined);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<number | undefined>(undefined);
   const [selectedTag, setSelectedTag] = useState<number | undefined>(undefined);
   const [selectedVisibility, setSelectedVisibility] = useState<number | undefined>(undefined);
 
-  const [appliedCategory, setAppliedCategory] = useState<number | undefined>(undefined);
+  const [appliedRating, setAppliedRating] = useState<number | undefined>(undefined);
   const [appliedDifficulty, setAppliedDifficulty] = useState<number | undefined>(undefined);
   const [appliedTime, setAppliedTime] = useState<number | undefined>(undefined);
   const [appliedTag, setAppliedTag] = useState<number | undefined>(undefined);
   const [appliedVisibility, setAppliedVisibility] = useState<number | undefined>(undefined);
 
   const handleApplyFilters = () => {
-    setAppliedCategory(selectedCategory);
+    setAppliedRating(selectedRating);
     setAppliedDifficulty(selectedDifficulty);
     setAppliedTime(selectedTime);
     setAppliedTag(selectedTag);
@@ -50,13 +50,13 @@ export const ProfileRecipesTab = () => {
   };
 
   const handleClearFilters = () => {
-    setSelectedCategory(undefined);
+    setSelectedRating(undefined);
     setSelectedDifficulty(undefined);
     setSelectedTime(undefined);
     setSelectedTag(undefined);
     setSelectedVisibility(undefined);
     
-    setAppliedCategory(undefined);
+    setAppliedRating(undefined);
     setAppliedDifficulty(undefined);
     setAppliedTime(undefined);
     setAppliedTag(undefined);
@@ -97,21 +97,21 @@ const [searchTerm, setSearchTerm] = useState("");
   // Reset page when search or tab changes
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearch, size, activeSubTab, appliedCategory, appliedDifficulty, appliedTime, appliedTag, appliedVisibility, sortBy]);
+  }, [debouncedSearch, size, activeSubTab, appliedRating, appliedDifficulty, appliedTime, appliedTag, appliedVisibility, sortBy]);
 
   const { data: createdData, isLoading: isLoadingCreated } = useQuery({
-    queryKey: ["recipes", "created", page, size, debouncedSearch, appliedCategory, appliedDifficulty, appliedTime, appliedTag, appliedVisibility, sortBy],
-    queryFn: () => recipeApi.getMyRecipes(page, size, debouncedSearch || undefined, appliedCategory, appliedDifficulty, appliedTime, appliedTag, appliedVisibility, sortBy),
+    queryKey: ["recipes", "created", page, size, debouncedSearch, appliedRating, appliedDifficulty, appliedTime, appliedTag, appliedVisibility, sortBy],
+    queryFn: () => recipeApi.getMyRecipes(page, size, debouncedSearch || undefined, undefined, appliedRating, appliedDifficulty, appliedTime, appliedTag, appliedVisibility, sortBy),
   });
 
   const { data: savedData, isLoading: isLoadingSaved } = useQuery({
-    queryKey: ["recipes", "saved", page, size, debouncedSearch, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy],
-    queryFn: () => recipeApi.getMySavedRecipes(page, size, debouncedSearch || undefined, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy),
+    queryKey: ["recipes", "saved", page, size, debouncedSearch, appliedRating, appliedDifficulty, appliedTime, appliedTag, sortBy],
+    queryFn: () => recipeApi.getMySavedRecipes(page, size, debouncedSearch || undefined, undefined, appliedRating, appliedDifficulty, appliedTime, appliedTag, sortBy),
   });
 
   const { data: likedData, isLoading: isLoadingLiked } = useQuery({
-    queryKey: ["recipes", "liked", page, size, debouncedSearch, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy],
-    queryFn: () => recipeApi.getMyLikedRecipes(page, size, debouncedSearch || undefined, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy),
+    queryKey: ["recipes", "liked", page, size, debouncedSearch, appliedRating, appliedDifficulty, appliedTime, appliedTag, sortBy],
+    queryFn: () => recipeApi.getMyLikedRecipes(page, size, debouncedSearch || undefined, undefined, appliedRating, appliedDifficulty, appliedTime, appliedTag, sortBy),
   });
 
   const { data: dislikedData, isLoading: isLoadingDisliked } = useQuery({
@@ -131,7 +131,7 @@ const [searchTerm, setSearchTerm] = useState("");
     activeSubTab === "liked" ? likedData :
     dislikedData;
 
-  const hasActiveFilters = appliedCategory !== undefined || appliedDifficulty !== undefined || appliedTime !== undefined || appliedTag !== undefined || appliedVisibility !== undefined;
+  const hasActiveFilters = appliedRating !== undefined || appliedDifficulty !== undefined || appliedTime !== undefined || appliedTag !== undefined || appliedVisibility !== undefined;
   const isSearchOrFilterActive = !!debouncedSearch || hasActiveFilters;
 
   const getEmptyStateMessage = () => {
@@ -234,31 +234,35 @@ const [searchTerm, setSearchTerm] = useState("");
           >
             <div className="bg-card p-6 rounded-[2rem] shadow-sm border border-muted/30">
               <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-                {/* Category Filter */}
+                {/* Rating Filter */}
                 <div className="space-y-3">
-                  <h3 className="font-bold text-foreground">Kategori</h3>
+                  <h3 className="font-bold text-foreground">Değerlendirme Puanı</h3>
                   <div className="flex flex-wrap gap-2">
                     <button 
-                      onClick={() => setSelectedCategory(undefined)}
+                      onClick={() => setSelectedRating(undefined)}
                       className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedCategory === undefined 
+                        selectedRating === undefined 
                           ? "bg-primary/10 text-primary border-2 border-primary/20" 
                           : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
                       }`}
                     >
                       Tümü
                     </button>
-                    {categories?.map(cat => (
+                    {[
+                      { label: "4+ Yıldız", val: 4 }, 
+                      { label: "3+ Yıldız", val: 3 }, 
+                      { label: "2+ Yıldız", val: 2 }
+                    ].map(rating => (
                       <button 
-                        key={cat.id}
-                        onClick={() => setSelectedCategory(cat.id)}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          selectedCategory === cat.id 
+                        key={rating.val}
+                        onClick={() => setSelectedRating(rating.val)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1 ${
+                          selectedRating === rating.val 
                             ? "bg-primary/10 text-primary border-2 border-primary/20" 
                             : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
                         }`}
                       >
-                        {cat.name}
+                        {rating.label}
                       </button>
                     ))}
                   </div>

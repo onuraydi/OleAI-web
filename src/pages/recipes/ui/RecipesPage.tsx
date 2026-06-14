@@ -31,12 +31,15 @@ export const RecipesPage = () => {
   const [appliedDifficulty, setAppliedDifficulty] = useState<number | undefined>(undefined);
   const [appliedTime, setAppliedTime] = useState<number | undefined>(undefined);
   const [appliedTag, setAppliedTag] = useState<number | undefined>(undefined);
+  const [selectedRating, setSelectedRating] = useState<number | undefined>(undefined);
+  const [appliedRating, setAppliedRating] = useState<number | undefined>(undefined);
 
   const handleApplyFilters = () => {
     setAppliedCategory(selectedCategory);
     setAppliedDifficulty(selectedDifficulty);
     setAppliedTime(selectedTime);
     setAppliedTag(selectedTag);
+    setAppliedRating(selectedRating);
     setShowFilters(false);
   };
 
@@ -45,11 +48,13 @@ export const RecipesPage = () => {
     setSelectedDifficulty(undefined);
     setSelectedTime(undefined);
     setSelectedTag(undefined);
+    setSelectedRating(undefined);
     
     setAppliedCategory(undefined);
     setAppliedDifficulty(undefined);
     setAppliedTime(undefined);
     setAppliedTag(undefined);
+    setAppliedRating(undefined);
   };
 
   // Filtreler için veriler
@@ -57,14 +62,14 @@ export const RecipesPage = () => {
   const { data: tags } = useQuery({ queryKey: ["tags"], queryFn: recipeApi.getRecipeTags });
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["recipes", "published", page, size, debouncedSearch, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy],
-    queryFn: () => recipeApi.getPublishedRecipes(page, size, debouncedSearch || undefined, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy),
+    queryKey: ["recipes", "published", page, size, debouncedSearch, appliedCategory, appliedRating, appliedDifficulty, appliedTime, appliedTag, sortBy],
+    queryFn: () => recipeApi.getPublishedRecipes(page, size, debouncedSearch || undefined, appliedCategory, appliedRating, appliedDifficulty, appliedTime, appliedTag, sortBy),
   });
 
   // Reset page when search, size or any APPLIED filter changes
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearch, size, appliedCategory, appliedDifficulty, appliedTime, appliedTag, sortBy]);
+  }, [debouncedSearch, size, appliedCategory, appliedDifficulty, appliedTime, appliedTag, appliedRating, sortBy]);
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] transition-colors duration-500">
@@ -128,31 +133,35 @@ export const RecipesPage = () => {
           >
             <div className="bg-card p-6 rounded-[2rem] shadow-sm border border-muted/30">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                {/* Category Filter */}
+                {/* Rating Filter */}
                 <div className="space-y-3">
-                  <h3 className="font-bold text-foreground">Kategori</h3>
+                  <h3 className="font-bold text-foreground">Değerlendirme Puanı</h3>
                   <div className="flex flex-wrap gap-2">
                     <button 
-                      onClick={() => setSelectedCategory(undefined)}
+                      onClick={() => setSelectedRating(undefined)}
                       className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedCategory === undefined 
+                        selectedRating === undefined 
                           ? "bg-primary/10 text-primary border-2 border-primary/20" 
                           : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
                       }`}
                     >
                       Tümü
                     </button>
-                    {categories?.map(cat => (
+                    {[
+                      { label: "4+ Yıldız", val: 4 }, 
+                      { label: "3+ Yıldız", val: 3 }, 
+                      { label: "2+ Yıldız", val: 2 }
+                    ].map(rating => (
                       <button 
-                        key={cat.id}
-                        onClick={() => setSelectedCategory(cat.id)}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          selectedCategory === cat.id 
+                        key={rating.val}
+                        onClick={() => setSelectedRating(rating.val)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1 ${
+                          selectedRating === rating.val 
                             ? "bg-primary/10 text-primary border-2 border-primary/20" 
                             : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
                         }`}
                       >
-                        {cat.name}
+                        {rating.label}
                       </button>
                     ))}
                   </div>
