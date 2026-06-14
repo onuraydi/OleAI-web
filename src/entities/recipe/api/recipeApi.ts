@@ -15,6 +15,7 @@ export interface RecipeListItem {
   difficulty: number;
   isLiked?: boolean;
   isSaved?: boolean;
+  tags?: TagDto[];
 }
 
 export interface PaginatedResponse<T> {

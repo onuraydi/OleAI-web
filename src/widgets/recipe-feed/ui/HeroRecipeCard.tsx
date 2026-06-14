@@ -18,6 +18,8 @@ const HeroSlide = ({ recipe }: { recipe: RecipeListItem }) => {
   const [isLiking, setIsLiking] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const uniqueTags = recipe.tags?.filter((tag, index, self) => self.findIndex(t => t.id === tag.id) === index) || [];
+
   useEffect(() => {
     if (recipe.isLiked !== undefined) setIsLiked(recipe.isLiked);
     if (recipe.isSaved !== undefined) setIsSaved(recipe.isSaved);
@@ -75,10 +77,24 @@ const HeroSlide = ({ recipe }: { recipe: RecipeListItem }) => {
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
       {/* Top badges */}
-      <div className="absolute top-6 left-6 flex items-center gap-2 z-20">
+      <div className="absolute top-6 left-6 flex flex-wrap items-center gap-2 z-20">
         <span className="bg-primary/90 text-primary-foreground backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-medium">
           🔥 Günün Trendi
         </span>
+        {uniqueTags.length > 0 && (
+          <>
+            {uniqueTags.slice(0, 2).map(tag => (
+              <span key={tag.id} className="bg-primary/90 text-primary-foreground backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-medium hidden sm:inline-flex">
+                {tag.name}
+              </span>
+            ))}
+            {uniqueTags.length > 2 && (
+              <span className="bg-primary/90 text-primary-foreground backdrop-blur-md px-3 py-1.5 rounded-full text-sm font-medium hidden sm:inline-flex">
+                +{uniqueTags.length - 2}
+              </span>
+            )}
+          </>
+        )}
       </div>
 
       {/* Action buttons */}

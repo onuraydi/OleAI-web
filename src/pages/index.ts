@@ -27,3 +27,4 @@ export * from './terms';
 export * from './contact';
 export * from './help';
 export * from './my-recipe-book';
+export * from './admin-log';

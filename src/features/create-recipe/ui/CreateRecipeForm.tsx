@@ -85,15 +85,25 @@ export const CreateRecipeForm = () => {
   const { data: recipeTags = [] } = useAdminTags();
 
   const toggleCategory = (id: number) => {
-    setSelectedCategoryIds(prev => 
-      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
-    );
+    setSelectedCategoryIds(prev => {
+      if (prev.includes(id)) return prev.filter(c => c !== id);
+      if (prev.length >= 3) {
+        alert("En fazla 3 kategori seçebilirsiniz.");
+        return prev;
+      }
+      return [...prev, id];
+    });
   };
 
   const toggleTag = (id: number) => {
-    setSelectedTagIds(prev => 
-      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
-    );
+    setSelectedTagIds(prev => {
+      if (prev.includes(id)) return prev.filter(t => t !== id);
+      if (prev.length >= 5) {
+        alert("En fazla 5 etiket seçebilirsiniz.");
+        return prev;
+      }
+      return [...prev, id];
+    });
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -452,7 +462,10 @@ export const CreateRecipeForm = () => {
             </div>
 
             <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3">
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Kategoriler</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Kategoriler</span>
+                <span className="text-xs font-bold text-primary">{selectedCategoryIds.length}/3 Seçildi</span>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {recipeCategories.map((cat: any) => {
                   const isSelected = selectedCategoryIds.includes(cat.id);
@@ -474,7 +487,10 @@ export const CreateRecipeForm = () => {
             </div>
 
             <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3">
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Etiketler</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Etiketler</span>
+                <span className="text-xs font-bold text-primary">{selectedTagIds.length}/5 Seçildi</span>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {recipeTags.map((tag: any) => {
                   const isSelected = selectedTagIds.includes(tag.id);

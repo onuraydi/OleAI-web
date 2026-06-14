@@ -1,20 +1,16 @@
 import { useState, useMemo } from "react";
-import { MessageSquare, Bookmark, Share2, Star, ThumbsDown, ThumbsUp, ChevronLeft, ChevronRight, ChefHat, Clock, Flame } from "lucide-react";
+import { MessageSquare, Bookmark, Share2, Star, ThumbsDown, ThumbsUp, ChevronLeft, ChevronRight, ChefHat, Clock, Flame, Calendar, Maximize2, XCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";
 import { motion, AnimatePresence } from "framer-motion";
 import { CookingAssistantModal } from "@/features/cooking-assistant/ui/CookingAssistantModal";
-import { XCircle, Maximize2 } from "lucide-react";
 
 interface RecipeHeaderProps {
   recipe: RecipeDetailResponse;
-  // Mock data for display purposes based on UI design
-  mockTags?: string[];
-  mockRating?: number;
 }
 
-export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"], mockRating = 4.8 }: RecipeHeaderProps) => {
+export const RecipeHeader = ({ recipe }: RecipeHeaderProps) => {
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isCookingModalOpen, setIsCookingModalOpen] = useState(false);
@@ -42,57 +38,14 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
         const isCurrentlyLiked = old.userInteraction?.isLiked ?? false;
         return {
           ...old,
-          statistics: {
-            ...old.statistics,
-            totalLikes: isCurrentlyLiked ? old.statistics.totalLikes - 1 : old.statistics.totalLikes + 1
-          },
-          userInteraction: {
-            ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
-            isLiked: !isCurrentlyLiked,
-            isDisliked: false // Optional: clear dislike when liking optimistically
-          }
+          statistics: { ...old.statistics, totalLikes: isCurrentlyLiked ? old.statistics.totalLikes - 1 : old.statistics.totalLikes + 1 },
+          userInteraction: { ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }), isLiked: !isCurrentlyLiked, isDisliked: false }
         };
       });
       return { previousRecipe };
     },
-    onError: (err, variables, context) => {
-      if (context?.previousRecipe) queryClient.setQueryData(["recipe-detail", recipe.id], context.previousRecipe);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipe.id] });
-    }
-  });
-
-  const dislikeMutation = useMutation({
-    mutationFn: () => recipeApi.toggleDislike(recipe.id),
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["recipe-detail", recipe.id] });
-      const previousRecipe = queryClient.getQueryData<RecipeDetailResponse>(["recipe-detail", recipe.id]);
-      
-      queryClient.setQueryData<RecipeDetailResponse>(["recipe-detail", recipe.id], (old) => {
-        if (!old) return old;
-        const isCurrentlyDisliked = old.userInteraction?.isDisliked ?? false;
-        return {
-          ...old,
-          statistics: {
-            ...old.statistics,
-            totalDislikes: isCurrentlyDisliked ? old.statistics.totalDislikes - 1 : old.statistics.totalDislikes + 1
-          },
-          userInteraction: {
-            ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
-            isDisliked: !isCurrentlyDisliked,
-            isLiked: false // Optional: clear like when disliking optimistically
-          }
-        };
-      });
-      return { previousRecipe };
-    },
-    onError: (err, variables, context) => {
-      if (context?.previousRecipe) queryClient.setQueryData(["recipe-detail", recipe.id], context.previousRecipe);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipe.id] });
-    }
+    onError: (err, variables, context) => { if (context?.previousRecipe) queryClient.setQueryData(["recipe-detail", recipe.id], context.previousRecipe); },
+    onSettled: () => { queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipe.id] }); }
   });
 
   const saveMutation = useMutation({
@@ -106,33 +59,19 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
         const isCurrentlySaved = old.userInteraction?.isSaved ?? false;
         return {
           ...old,
-          statistics: {
-            ...old.statistics,
-            totalSaves: isCurrentlySaved ? old.statistics.totalSaves - 1 : old.statistics.totalSaves + 1
-          },
-          userInteraction: {
-            ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }),
-            isSaved: !isCurrentlySaved
-          }
+          statistics: { ...old.statistics, totalSaves: isCurrentlySaved ? old.statistics.totalSaves - 1 : old.statistics.totalSaves + 1 },
+          userInteraction: { ...(old.userInteraction || { isLiked: false, isDisliked: false, isSaved: false }), isSaved: !isCurrentlySaved }
         };
       });
       return { previousRecipe };
     },
-    onError: (err, variables, context) => {
-      if (context?.previousRecipe) queryClient.setQueryData(["recipe-detail", recipe.id], context.previousRecipe);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipe.id] });
-    }
+    onError: (err, variables, context) => { if (context?.previousRecipe) queryClient.setQueryData(["recipe-detail", recipe.id], context.previousRecipe); },
+    onSettled: () => { queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipe.id] }); }
   });
 
   const handleShare = () => {
     if (navigator.share) {
-      navigator.share({
-        title: recipe.title,
-        text: `Bu tarife göz at: ${recipe.title}`,
-        url: window.location.href,
-      }).catch(console.error);
+      navigator.share({ title: recipe.title, text: `Bu tarife göz at: ${recipe.title}`, url: window.location.href }).catch(console.error);
     } else {
       navigator.clipboard.writeText(window.location.href);
       alert("Bağlantı panoya kopyalandı!");
@@ -147,234 +86,212 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
   };
 
   return (
-    <div className="w-full flex flex-col items-center">
-      {/* Hero Image / Carousel */}
-      <div className="w-full max-w-5xl relative rounded-[2rem] overflow-hidden aspect-[21/9] shadow-2xl mb-6 group bg-black/5 dark:bg-white/5">
+    <div className="w-full flex flex-col gap-6">
+      
+      {/* 1. HERO IMAGE CARD */}
+      <div className="relative w-full h-[350px] md:h-[450px] rounded-[2.5rem] bg-card overflow-hidden shadow-sm border border-border/50 group">
         <AnimatePresence mode="wait">
-          <motion.div 
+          <motion.img 
             key={currentImageIndex}
-            className="w-full h-full relative group cursor-zoom-in"
-            onClick={() => setSelectedImage(currentImage)}
-          >
-            <motion.img 
-              src={currentImage} 
-              alt={recipe.title} 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-              <Maximize2 className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
-            </div>
-          </motion.div>
+            src={currentImage} 
+            alt={recipe.title} 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
         </AnimatePresence>
         
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors pointer-events-none" />
+
+        {/* Expand Button */}
+        <button 
+          onClick={() => setSelectedImage(currentImage)}
+          className="absolute top-6 right-6 z-20 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all shadow-md"
+          title="Büyüt"
+        >
+          <Maximize2 className="w-5 h-5" />
+        </button>
+
+        {/* Carousel Controls */}
         {sortedImages.length > 1 && (
           <>
-            {/* Arrows */}
             <button 
               onClick={prevImage} 
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all z-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-black/60 hover:bg-white dark:hover:bg-black text-foreground p-3 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all z-10 shadow-md"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button 
               onClick={nextImage} 
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all z-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-black/60 hover:bg-white dark:hover:bg-black text-foreground p-3 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all z-10 shadow-md"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
-            
-            {/* Image Counter */}
-            <div className="absolute bottom-4 right-4 bg-black/50 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-md z-10">
+            <div className="absolute bottom-6 right-6 bg-black/60 text-white text-xs font-bold px-4 py-2 rounded-full backdrop-blur-md z-10 shadow-md">
               {currentImageIndex + 1} / {sortedImages.length}
             </div>
           </>
         )}
-        
-        {/* Categories & Tags */}
-        <div className="absolute top-6 right-6 flex flex-wrap justify-end gap-2 z-10 max-w-[60%]">
-          {recipe.categories?.map((cat) => (
-            <span 
-              key={`cat-${cat.id}`} 
-              className="bg-primary/90 backdrop-blur-md text-primary-foreground font-bold px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm shadow-lg tracking-wider"
-            >
-              {cat.name}
-            </span>
-          ))}
-          {recipe.tags?.map((tag) => (
-            <span 
-              key={`tag-${tag.id}`} 
-              className="bg-white/90 dark:bg-black/80 backdrop-blur-md text-foreground font-bold px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm shadow-lg tracking-wider"
-            >
-              #{tag.name}
-            </span>
-          ))}
-        </div>
       </div>
 
-      {/* Thumbnails */}
-      {sortedImages.length > 1 && (
-        <div className="flex gap-3 overflow-x-auto pb-2 mb-8 w-full max-w-5xl justify-center items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {sortedImages.map((img, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentImageIndex(idx)}
-              className={`relative rounded-xl overflow-hidden w-20 h-20 md:w-24 md:h-24 flex-shrink-0 transition-all ${
-                currentImageIndex === idx 
-                  ? "ring-4 ring-primary scale-105 opacity-100 z-10" 
-                  : "opacity-50 hover:opacity-100 scale-95"
-              }`}
-            >
-              <img src={img.imageUrl} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Title & Author */}
-      <div className="text-center max-w-3xl px-4">
-        <h1 className="text-5xl md:text-6xl font-black text-foreground mb-6 tracking-tight">
-          {recipe.title}
-        </h1>
+      {/* 2. BENTO GRID LAYOUT */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-muted-foreground font-medium mb-12 text-sm md:text-base">
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
-            <span className="font-bold text-foreground">
-              {recipe.statistics.averageRating > 0 ? recipe.statistics.averageRating.toFixed(1) : "--"}
-            </span>
-            <span>({recipe.statistics.totalRatings})</span>
-          </div>
-          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 hidden md:block" />
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-foreground">
-              {recipe.author?.username || "OleAI Kitchen"}
-            </span>
-          </div>
+        {/* MAIN INFO CARD (Left, spans 2 columns) */}
+        <div className="col-span-1 lg:col-span-2 bg-card rounded-[2rem] p-6 md:p-8 shadow-sm border border-border/50 flex flex-col justify-center">
           
-          {(recipe.prepTime > 0 || recipe.cookTime > 0 || recipe.servings > 0 || recipe.difficulty !== undefined) && (
-            <>
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 hidden md:block" />
-              <div className="flex items-center gap-4 bg-muted/30 px-4 py-1.5 rounded-full">
-                {recipe.difficulty !== undefined && (
-                  <div className="flex items-center gap-1.5" title="Zorluk">
-                    <ChefHat className="w-4 h-4" />
-                    <span className="font-bold">
-                      {recipe.difficulty === 1 || String(recipe.difficulty) === 'Easy' ? 'Kolay' :
-                       recipe.difficulty === 2 || String(recipe.difficulty) === 'Medium' ? 'Orta' :
-                       recipe.difficulty === 3 || String(recipe.difficulty) === 'Hard' ? 'Zor' : 'Belirtilmedi'}
-                    </span>
-                  </div>
-                )}
-                
-                {recipe.servings > 0 && (
-                  <div className="flex items-center gap-1.5" title="Porsiyon">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span className="font-bold">{recipe.servings} Kişilik</span>
-                  </div>
-                )}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            {/* Categories & Tags */}
+            <div className="flex flex-wrap items-center gap-2">
+              {recipe.categories?.slice(0, 2).map((cat) => (
+                <div key={`hero-cat-${cat.id}`} className="px-3 py-1.5 bg-primary text-primary-foreground font-bold rounded-xl text-sm shadow-sm">
+                  {cat.name}
+                </div>
+              ))}
+              {recipe.tags?.slice(0, 3).map((tag) => (
+                <div key={`hero-tag-${tag.id}`} className="px-3 py-1.5 bg-muted text-muted-foreground font-medium rounded-xl text-sm">
+                  #{tag.name}
+                </div>
+              ))}
+            </div>
 
-                {recipe.prepTime > 0 && (
-                  <div className="flex items-center gap-1.5" title="Hazırlık Süresi">
-                    <Clock className="w-4 h-4" />
-                    <span className="font-bold">{recipe.prepTime} dk Hazırlık</span>
-                  </div>
-                )}
-                
-                {recipe.cookTime > 0 && (
-                  <div className="flex items-center gap-1.5" title="Pişirme Süresi">
-                    <Flame className="w-4 h-4 text-orange-500" />
-                    <span className="font-bold">{recipe.cookTime} dk Pişirme</span>
-                  </div>
-                )}
-              </div>
-            </>
+            {/* Rating */}
+            <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1.5 rounded-xl font-bold text-sm">
+              <Star className="w-4 h-4 fill-current" />
+              <span>{recipe.statistics.averageRating > 0 ? recipe.statistics.averageRating.toFixed(1) : "--"}</span>
+              <span className="text-amber-600/70 dark:text-amber-400/70 ml-1 font-medium hidden sm:inline">({recipe.statistics.totalRatings} Değerlendirme)</span>
+            </div>
+          </div>
+
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-[1.1] mb-6">
+            {recipe.title}
+          </h1>
+
+          <div className="flex items-center gap-3 mb-6 bg-muted/30 w-fit px-4 py-2 rounded-2xl border border-muted/50">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border border-muted-foreground/20 bg-background shadow-sm">
+              {recipe.author?.profileImageUrl ? (
+                <img src={recipe.author.profileImageUrl} alt={recipe.author.username} className="w-full h-full object-cover" />
+              ) : (
+                <span className="font-bold text-primary text-sm">{(recipe.author?.username || "O")[0].toUpperCase()}</span>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Tarif Sahibi</span>
+              <span className="font-bold text-base text-foreground">{recipe.author?.username || "OleAI Kitchen"}</span>
+            </div>
+            <div className="w-px h-8 bg-border mx-2"></div>
+            <div className="flex flex-col">
+              <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Tarih</span>
+              <span className="font-semibold text-sm text-foreground">{new Date(recipe.createdDate).toLocaleDateString('tr-TR')}</span>
+            </div>
+          </div>
+
+          {recipe.description && (
+            <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
+              {recipe.description}
+            </p>
           )}
+
         </div>
 
-        {recipe.description && (
-          <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
-            {recipe.description}
-          </p>
-        )}
+        {/* STATS & ACTIONS BENTO (Right, 1 column) */}
+        <div className="col-span-1 flex flex-col gap-6">
+          
+          {/* 2x2 Stats Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Difficulty */}
+            <div className="bg-card rounded-[1.5rem] p-5 shadow-sm border border-border/50 flex flex-col items-center justify-center gap-2 text-center hover:bg-muted/30 transition-colors">
+              <div className="bg-primary/10 p-2.5 rounded-2xl"><ChefHat className="w-6 h-6 text-primary" /></div>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Zorluk</span>
+              <span className="font-black text-lg text-foreground">
+                {recipe.difficulty === 1 || String(recipe.difficulty).toLowerCase() === 'easy' ? 'Kolay' :
+                 recipe.difficulty === 2 || String(recipe.difficulty).toLowerCase() === 'medium' ? 'Orta' :
+                 recipe.difficulty === 3 || String(recipe.difficulty).toLowerCase() === 'hard' ? 'Zor' : 'Belirtilmedi'}
+              </span>
+            </div>
 
-        {/* Start Cooking Button */}
-        <div className="flex justify-center mb-10">
+            {/* Servings */}
+            <div className="bg-card rounded-[1.5rem] p-5 shadow-sm border border-border/50 flex flex-col items-center justify-center gap-2 text-center hover:bg-muted/30 transition-colors">
+              <div className="bg-emerald-500/10 p-2.5 rounded-2xl">
+                <svg className="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+              </div>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Porsiyon</span>
+              <span className="font-black text-lg text-foreground">{recipe.servings > 0 ? `${recipe.servings} Kişilik` : 'Belirtilmedi'}</span>
+            </div>
+
+            {/* Prep Time */}
+            <div className="bg-card rounded-[1.5rem] p-5 shadow-sm border border-border/50 flex flex-col items-center justify-center gap-2 text-center hover:bg-muted/30 transition-colors">
+              <div className="bg-blue-500/10 p-2.5 rounded-2xl"><Clock className="w-6 h-6 text-blue-600 dark:text-blue-400" /></div>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Hazırlık</span>
+              <span className="font-black text-lg text-foreground">{recipe.prepTime > 0 ? `${recipe.prepTime} dk` : '--'}</span>
+            </div>
+
+            {/* Cook Time */}
+            <div className="bg-card rounded-[1.5rem] p-5 shadow-sm border border-border/50 flex flex-col items-center justify-center gap-2 text-center hover:bg-muted/30 transition-colors">
+              <div className="bg-orange-500/10 p-2.5 rounded-2xl"><Flame className="w-6 h-6 text-orange-600 dark:text-orange-400" /></div>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Pişirme</span>
+              <span className="font-black text-lg text-foreground">{recipe.cookTime > 0 ? `${recipe.cookTime} dk` : '--'}</span>
+            </div>
+          </div>
+
+          {/* Actions & Like Card */}
+          <div className="bg-card rounded-[2rem] p-4 shadow-sm border border-border/50 flex flex-wrap items-center justify-evenly gap-2">
+            
+            <button 
+              onClick={() => likeMutation.mutate()}
+              disabled={likeMutation.isPending}
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-muted transition-colors w-[70px] ${likeMutation.isPending ? 'opacity-50' : ''}`}
+            >
+              <ThumbsUp className={`w-6 h-6 ${recipe.userInteraction?.isLiked ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+              <span className={`font-bold text-xs ${recipe.userInteraction?.isLiked ? "text-primary" : "text-muted-foreground"}`}>
+                {recipe.statistics.totalLikes >= 1000 ? (recipe.statistics.totalLikes / 1000).toFixed(1) + 'k' : recipe.statistics.totalLikes}
+              </span>
+            </button>
+            
+            <div className="w-px h-10 bg-border"></div>
+
+            <button 
+              onClick={scrollToComments}
+              className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-muted transition-colors w-[70px]"
+            >
+              <MessageSquare className="w-6 h-6 text-muted-foreground" />
+              <span className="font-bold text-xs text-muted-foreground">{recipe.statistics.totalComments}</span>
+            </button>
+
+            <div className="w-px h-10 bg-border"></div>
+
+            <button 
+              onClick={() => saveMutation.mutate()}
+              disabled={saveMutation.isPending}
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-muted transition-colors w-[70px] ${saveMutation.isPending ? 'opacity-50' : ''}`}
+            >
+              <Bookmark className={`w-6 h-6 ${recipe.userInteraction?.isSaved ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+              <span className={`font-bold text-xs ${recipe.userInteraction?.isSaved ? "text-primary" : "text-muted-foreground"}`}>Kaydet</span>
+            </button>
+
+            <div className="w-px h-10 bg-border"></div>
+
+            <button 
+              onClick={handleShare}
+              className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-muted transition-colors w-[70px]"
+            >
+              <Share2 className="w-6 h-6 text-muted-foreground" />
+              <span className="font-bold text-xs text-muted-foreground">Paylaş</span>
+            </button>
+
+          </div>
+
+          {/* Main Action Button */}
           <button 
             onClick={() => setIsCookingModalOpen(true)}
-            className="group relative inline-flex items-center justify-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-full font-black text-lg shadow-xl shadow-primary/30 hover:scale-105 transition-all active:scale-95"
+            className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-5 rounded-[2rem] font-black text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95 group"
           >
             <ChefHat className="w-6 h-6 group-hover:-rotate-12 transition-transform" />
-            <span>Tarifi Yap</span>
-          </button>
-        </div>
-
-        {/* Interaction Bar */}
-        <div className="flex items-center justify-center gap-4 md:gap-8 bg-card border border-muted/20 shadow-lg rounded-full py-3 px-6 md:px-8 mb-16 mx-auto w-fit max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {/* Like */}
-          <button 
-            onClick={() => likeMutation.mutate()}
-            disabled={likeMutation.isPending}
-            className={`flex flex-col md:flex-row items-center gap-1 md:gap-3 transition-colors px-2 md:px-4 group ${likeMutation.isPending ? 'opacity-50 cursor-not-allowed' : 'hover:text-primary'}`}
-          >
-            <ThumbsUp className={`w-5 h-5 ${recipe.userInteraction?.isLiked ? "fill-primary text-primary" : "text-muted-foreground group-hover:text-primary transition-colors"}`} />
-            <span className={`font-bold text-xs md:text-base ${recipe.userInteraction?.isLiked ? "text-primary" : "text-foreground"}`}>
-              {recipe.statistics.totalLikes >= 1000 ? (recipe.statistics.totalLikes / 1000).toFixed(1) + 'k' : recipe.statistics.totalLikes}
-            </span>
-          </button>
-          
-          <div className="w-px h-6 bg-muted/50 hidden md:block" />
-
-          {/* Dislike */}
-          <button 
-            onClick={() => dislikeMutation.mutate()}
-            disabled={dislikeMutation.isPending}
-            className={`flex flex-col md:flex-row items-center gap-1 md:gap-3 transition-colors px-2 md:px-4 group ${dislikeMutation.isPending ? 'opacity-50 cursor-not-allowed' : 'hover:text-primary'}`}
-          >
-            <ThumbsDown className={`w-5 h-5 ${recipe.userInteraction?.isDisliked ? "fill-foreground text-foreground" : "text-muted-foreground group-hover:text-foreground transition-colors"}`} />
-            <span className={`font-bold text-xs md:text-base ${recipe.userInteraction?.isDisliked ? "text-foreground" : "text-muted-foreground group-hover:text-foreground transition-colors"}`}>
-              {recipe.statistics.totalDislikes >= 1000 ? (recipe.statistics.totalDislikes / 1000).toFixed(1) + 'k' : recipe.statistics.totalDislikes}
-            </span>
+            <span>Asistanla Tarifi Yap</span>
           </button>
 
-          <div className="w-px h-6 bg-muted/50 hidden md:block" />
-          
-          {/* Comment */}
-          <button 
-            onClick={scrollToComments}
-            className="flex flex-col md:flex-row items-center gap-1 md:gap-3 hover:text-primary transition-colors px-2 md:px-4 text-muted-foreground"
-          >
-            <MessageSquare className="w-5 h-5 fill-current" />
-            <span className="font-bold text-foreground text-xs md:text-base">{recipe.statistics.totalComments}</span>
-          </button>
-
-          <div className="w-px h-6 bg-muted/50 hidden md:block" />
-          
-          {/* Save */}
-          <button 
-            onClick={() => saveMutation.mutate()}
-            disabled={saveMutation.isPending}
-            className={`flex flex-col md:flex-row items-center gap-1 md:gap-3 transition-colors px-2 md:px-4 group ${saveMutation.isPending ? 'opacity-50 cursor-not-allowed' : 'hover:text-primary'}`}
-          >
-            <Bookmark className={`w-5 h-5 ${recipe.userInteraction?.isSaved ? "fill-primary text-primary" : "text-muted-foreground group-hover:text-primary transition-colors"}`} />
-            <span className={`font-bold text-xs md:text-base ${recipe.userInteraction?.isSaved ? "text-primary" : "text-foreground"}`}>Kaydet</span>
-          </button>
-
-          <div className="w-px h-6 bg-muted/50 hidden md:block" />
-          
-          {/* Share */}
-          <button 
-            onClick={handleShare}
-            className="flex flex-col md:flex-row items-center gap-1 md:gap-3 hover:text-primary transition-colors px-2 md:px-4 group text-muted-foreground"
-          >
-            <Share2 className="w-5 h-5 group-hover:text-primary transition-colors" />
-            <span className="font-bold text-foreground text-xs md:text-base">Paylaş</span>
-          </button>
         </div>
       </div>
 
@@ -392,10 +309,10 @@ export const RecipeHeader = ({ recipe, mockTags = ["VEGETARIAN", "GLUTEN-FREE"],
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }} 
             onClick={() => setSelectedImage(null)}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 cursor-zoom-out backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 cursor-zoom-out backdrop-blur-md"
           >
             <button 
-              className="absolute top-6 right-6 text-white/70 hover:text-white bg-black/50 p-2 rounded-full transition-colors"
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 p-2 rounded-full transition-colors"
               onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
             >
               <XCircle className="w-8 h-8" />

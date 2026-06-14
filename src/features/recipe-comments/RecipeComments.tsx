@@ -100,7 +100,7 @@ export const RecipeComments = ({ recipeId, totalComments }: RecipeCommentsProps)
   };
 
   return (
-    <div id="recipe-comments" className="w-full max-w-4xl mx-auto px-4 mt-8 pb-24 scroll-mt-24">
+    <div id="recipe-comments" className="w-full bg-card rounded-[2.5rem] p-6 md:p-10 shadow-sm border border-border/50 mt-8 pb-10 scroll-mt-24">
       
       {/* Accordion Header */}
       <button 

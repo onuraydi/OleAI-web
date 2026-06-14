@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { pantryApi } from "@/entities/pantry/api/pantryApi";
+import { useAdminRecipeCategories, useAdminTags } from "@/entities/admin-recipe-taxonomy/api/adminRecipeTaxonomyQueries";
 import { 
   MeasurementCategory, 
   MEASUREMENT_CATEGORY_UNITS, 
@@ -51,15 +52,18 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
   const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(initialData.images?.find((i: any) => i.isMain)?.imageUrl || null);
 
-  const [categoryId, setCategoryId] = useState("");
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>(
+    initialData.categories?.map((c: any) => c.id) || []
+  );
   const [difficulty, setDifficulty] = useState("0");
   const [servings, setServings] = useState("4");
   const [prepTime, setPrepTime] = useState("15");
   const [cookTime, setCookTime] = useState("45");
   const [visibility, setVisibility] = useState(initialData.visibility === 1 ? "Public" : "Private");
   
-  const [tags, setTags] = useState<string[]>(["Sağlıklı", "Akşam Yemeği"]);
-  const [tagInput, setTagInput] = useState("");
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
+    initialData.tags?.map((t: any) => t.id) || []
+  );
 
   const [ingredients, setIngredients] = useState<IngredientInput[]>(
     initialData.ingredients && initialData.ingredients.length > 0 
@@ -93,11 +97,37 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
   const [newIngCategory, setNewIngCategory] = useState("");
   const [newIngUnit, setNewIngUnit] = useState<MeasurementUnit>(MeasurementUnit.Piece);
 
-  // Fetch Categories
-  const { data: categories = [] } = useQuery({
+  // Fetch Pantry Categories for Ingredient Modals
+  const { data: pantryCategories = [] } = useQuery({
     queryKey: ["ingredient-categories"],
     queryFn: () => pantryApi.getCategories()
   });
+
+  // Fetch Recipe Taxonomy
+  const { data: recipeCategories = [] } = useAdminRecipeCategories();
+  const { data: recipeTags = [] } = useAdminTags();
+
+  const toggleCategory = (id: number) => {
+    setSelectedCategoryIds(prev => {
+      if (prev.includes(id)) return prev.filter(c => c !== id);
+      if (prev.length >= 3) {
+        alert("En fazla 3 kategori seçebilirsiniz.");
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
+
+  const toggleTag = (id: number) => {
+    setSelectedTagIds(prev => {
+      if (prev.includes(id)) return prev.filter(t => t !== id);
+      if (prev.length >= 5) {
+        alert("En fazla 5 etiket seçebilirsiniz.");
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -111,19 +141,7 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
     }
   };
 
-  const handleAddTag = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && tagInput.trim() !== "") {
-      e.preventDefault();
-      if (!tags.includes(tagInput.trim())) {
-        setTags([...tags, tagInput.trim()]);
-      }
-      setTagInput("");
-    }
-  };
 
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(t => t !== tagToRemove));
-  };
 
   const addIngredient = () => {
     setIngredients(prev => [...prev, { id: Date.now().toString(), qty: "", unitId: "", ingredientId: "", name: "", isSearching: false, searchResults: [] }]);
@@ -252,10 +270,18 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
     const formData = new FormData();
     formData.append("Title", title);
     formData.append("Description", description);
-    formData.append("Visibility", visibility);
+    formData.append("Visibility", visibility === "Public" ? "2" : "1");
     if (coverPhoto) {
       formData.append("NewMainImage", coverPhoto);
     }
+
+    selectedCategoryIds.forEach(id => {
+      formData.append("CategoryIds", id.toString());
+    });
+
+    selectedTagIds.forEach(id => {
+      formData.append("TagIds", id.toString());
+    });
 
     const formattedIngredients = validIngredients.map(i => ({
       IngredientId: i.ingredientId || null,
@@ -367,15 +393,14 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Kategori</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Zorluk</span>
                 <div className="relative">
                   <select 
-                    value={categoryId} 
-                    onChange={(e) => setCategoryId(e.target.value)}
+                    value={difficulty} 
+                    onChange={(e) => setDifficulty(e.target.value)}
                     className="w-full bg-transparent appearance-none font-medium text-foreground outline-none"
                   >
-                    <option value="" disabled className="text-foreground bg-neutral-50 dark:bg-neutral-900">Kategori Seçin</option>
-                    {categories.map(c => <option key={c.id} value={c.id} className="text-foreground bg-neutral-50 dark:bg-neutral-900">{c.name}</option>)}
+                    {DIFFICULTIES.map(d => <option key={d.id} value={d.id} className="text-foreground bg-neutral-50 dark:bg-neutral-900">{d.name}</option>)}
                   </select>
                   <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
@@ -397,21 +422,7 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Zorluk</span>
-                <div className="relative">
-                  <select 
-                    value={difficulty} 
-                    onChange={(e) => setDifficulty(e.target.value)}
-                    className="w-full bg-transparent appearance-none font-medium text-foreground outline-none"
-                  >
-                    {DIFFICULTIES.map(d => <option key={d.id} value={d.id} className="text-foreground bg-neutral-50 dark:bg-neutral-900">{d.name}</option>)}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
-              
+            <div className="grid grid-cols-3 gap-4">
               <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Porsiyon</span>
                 <div className="flex items-center gap-2">
@@ -456,22 +467,52 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
             </div>
 
             <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3">
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Etiketler</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Kategoriler</span>
+                <span className="text-xs font-bold text-primary">{selectedCategoryIds.length}/3 Seçildi</span>
+              </div>
               <div className="flex flex-wrap gap-2">
-                {tags.map(tag => (
-                  <span key={tag} className="bg-white dark:bg-neutral-800 border border-muted/20 px-3 py-1 rounded-full text-sm flex items-center gap-1 shadow-sm">
-                    {tag}
-                    <button onClick={() => removeTag(tag)} className="text-muted-foreground hover:text-red-500"><X className="w-3 h-3" /></button>
-                  </span>
-                ))}
-                <input 
-                  type="text" 
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleAddTag}
-                  placeholder="+ Etiket ekle"
-                  className="bg-transparent text-sm outline-none w-24"
-                />
+                {recipeCategories.map((cat: any) => {
+                  const isSelected = selectedCategoryIds.includes(cat.id);
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => toggleCategory(cat.id)}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
+                        isSelected 
+                          ? 'bg-primary text-primary-foreground border-primary shadow-md' 
+                          : 'bg-white dark:bg-neutral-800 text-muted-foreground border-muted/20 hover:border-primary/50'
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Etiketler</span>
+                <span className="text-xs font-bold text-primary">{selectedTagIds.length}/5 Seçildi</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {recipeTags.map((tag: any) => {
+                  const isSelected = selectedTagIds.includes(tag.id);
+                  return (
+                    <button
+                      key={tag.id}
+                      onClick={() => toggleTag(tag.id)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-bold border transition-all ${
+                        isSelected 
+                          ? 'bg-primary text-primary-foreground border-primary shadow-md' 
+                          : 'bg-white dark:bg-neutral-800 text-muted-foreground border-muted/20 hover:border-primary/50'
+                      }`}
+                    >
+                      # {tag.name}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -730,7 +771,7 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
                     className="w-full bg-neutral-100 dark:bg-neutral-800 p-3 rounded-xl font-medium text-foreground outline-none border-none"
                   >
                     <option value="" disabled>Kategori Seçin</option>
-                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {pantryCategories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
 

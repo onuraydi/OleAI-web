@@ -76,6 +76,7 @@ const getCategoryIcon = (categoryName: string) => {
 export default function PreferencesPage() {
   const [step, setStep] = useState(1);
   const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [profileFile, setProfileFile] = useState<File | null>(null);
@@ -262,11 +263,19 @@ export default function PreferencesPage() {
                         <input 
                           type="text" 
                           value={username}
-                          onChange={(e) => setUsername(e.target.value)}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setUsername(val);
+                            if (val.length > 0 && val.length < 3) setUsernameError("En az 3 karakter olmalıdır.");
+                            else if (val.length > 50) setUsernameError("En fazla 50 karakter olabilir.");
+                            else if (!/^[a-zA-Z0-9_]*$/.test(val)) setUsernameError("Sadece harf, rakam ve alt çizgi içerebilir.");
+                            else setUsernameError("");
+                          }}
                           placeholder="Örn: onuraydin"
-                          className="w-full h-14 pl-12 pr-4 rounded-2xl bg-card border-2 border-transparent focus:border-primary focus:bg-background outline-none transition-all shadow-sm font-medium"
+                          className={`w-full h-14 pl-12 pr-4 rounded-2xl bg-card border-2 ${usernameError ? 'border-destructive' : 'border-transparent focus:border-primary'} focus:bg-background outline-none transition-all shadow-sm font-medium`}
                         />
                       </div>
+                      {usernameError && <p className="text-sm text-destructive px-1">{usernameError}</p>}
                     </div>
 
                     <div className="space-y-2">
@@ -568,7 +577,7 @@ export default function PreferencesPage() {
           )}
 
           <Button 
-            disabled={(step === 1 && (!username || !birthDate)) || (step === 2 && !selectedDiet) || isFinishing}
+            disabled={(step === 1 && (!username || !birthDate || !!usernameError)) || (step === 2 && !selectedDiet) || isFinishing}
             onClick={() => step < 4 ? setStep(step + 1) : handleFinish()}
             className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-xl shadow-primary/20 gap-2 group transition-all"
           >

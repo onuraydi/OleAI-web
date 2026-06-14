@@ -14,7 +14,10 @@ import { useSessionStore } from "@/entities/session";
 const schema = z.object({
   firstName: z.string().min(1, "Ad zorunludur"),
   lastName: z.string().min(1, "Soyad zorunludur"),
-  username: z.string().min(3, "Kullanıcı adı en az 3 karakter olmalıdır"),
+  username: z.string()
+    .min(3, "Kullanıcı adı en az 3 karakter olmalıdır")
+    .max(50, "Kullanıcı adı en fazla 50 karakter olabilir")
+    .regex(/^[a-zA-Z0-9_]+$/, "Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir"),
   birthDate: z.string().optional(),
 });
 

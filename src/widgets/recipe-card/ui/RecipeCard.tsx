@@ -25,6 +25,8 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
   const [isLiking, setIsLiking] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const uniqueTags = recipe.tags?.filter((tag, index, self) => self.findIndex(t => t.id === tag.id) === index) || [];
+
   useEffect(() => {
     if (recipe.isLiked !== undefined) setIsLiked(recipe.isLiked);
     if (recipe.isSaved !== undefined) setIsSaved(recipe.isSaved);
@@ -85,6 +87,22 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
+        {/* Tags on Image */}
+        {uniqueTags.length > 0 && (
+          <div className="absolute top-4 left-4 flex flex-wrap gap-1.5 z-20">
+            {uniqueTags.slice(0, 2).map(tag => (
+              <span key={tag.id} className="text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-md bg-primary text-primary-foreground backdrop-blur-md shadow-sm">
+                {tag.name}
+              </span>
+            ))}
+            {uniqueTags.length > 2 && (
+              <span className="text-[10px] sm:text-xs font-medium px-2 py-1 rounded-md bg-primary text-primary-foreground backdrop-blur-md shadow-sm">
+                +{uniqueTags.length - 2}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Hover Action Buttons */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           {customActions || (

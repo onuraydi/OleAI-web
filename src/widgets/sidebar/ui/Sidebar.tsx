@@ -14,10 +14,13 @@ import {
   ShieldAlert,
   Leaf,
   Users,
-  BookOpen
+  BookOpen,
+  Activity,
+  ExternalLink
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
+import { SystemHealthBadge } from "@/features/system-health";
 
 const menuItems = [
   { icon: Home, label: "Ana Sayfa", path: "/home" },
@@ -37,6 +40,8 @@ const adminMenuItems = [
   { icon: Users, label: "Kullanıcılar", path: "/admin/users" },
   { icon: ChefHat, label: "Tarifler", path: "/admin/recipes" },
   { icon: Tags, label: "Tarif Sınıflandırma", path: "/admin/recipe-taxonomy" },
+  { icon: Activity, label: "Sistem Logları", path: "/admin/logs" },
+  { icon: Activity, label: "Gelişmiş İzleme", path: import.meta.env.VITE_GRAFANA_URL || "http://localhost:3000", isExternal: true },
 ];
 
 export const Sidebar = () => {
@@ -45,6 +50,24 @@ export const Sidebar = () => {
   const userRole = useSessionStore((state) => state.user?.role);
 
   const renderMenuItem = (item: any) => {
+    if (item.isExternal) {
+      return (
+        <a 
+          key={item.label} 
+          href={item.path}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative group block"
+        >
+          <div className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+            <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <span className="font-bold">{item.label}</span>
+            <ExternalLink className="w-4 h-4 ml-auto opacity-50 group-hover:opacity-100 transition-all group-hover:translate-x-1 group-hover:-translate-y-1" />
+          </div>
+        </a>
+      );
+    }
+
     const isActive = location.pathname === item.path || 
                     (item.path !== '/' && item.path !== '/home' && location.pathname.startsWith(item.path));
                     
@@ -101,6 +124,9 @@ export const Sidebar = () => {
         
         {userRole === 'Admin' && (
           <div className="pt-4 pb-2">
+            <div className="px-4 mb-4">
+              <SystemHealthBadge />
+            </div>
             <div className="flex items-center gap-3 px-4 mb-3">
               <div className="h-px bg-muted flex-1"></div>
               <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Admin</span>
