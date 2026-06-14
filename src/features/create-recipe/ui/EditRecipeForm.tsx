@@ -203,13 +203,17 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
   const handleSelectSearchResult = (id: string, result: any) => {
     setIngredients(prev => prev.map(ing => {
       if (ing.id === id) {
+        const familyVal = typeof result.unitFamily === 'string' 
+          ? MeasurementCategory[result.unitFamily as keyof typeof MeasurementCategory] 
+          : result.unitFamily;
+
         return {
           ...ing,
           name: result.displayName,
           ingredientId: result.masterIngredientId,
-          unitFamily: result.unitFamily,
+          unitFamily: familyVal,
           searchResults: [], 
-          unitId: MEASUREMENT_CATEGORY_UNITS[result.unitFamily as MeasurementCategory]?.[0]?.toString() || ""
+          unitId: MEASUREMENT_CATEGORY_UNITS[familyVal as MeasurementCategory]?.[0]?.toString() || ""
         };
       }
       return ing;
