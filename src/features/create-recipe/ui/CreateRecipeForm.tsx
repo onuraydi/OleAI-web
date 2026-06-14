@@ -267,11 +267,24 @@ export const CreateRecipeForm = () => {
     formData.append("PrepTime", prepTime);
     formData.append("CookTime", cookTime);
     
-    selectedCategoryIds.forEach(id => {
+    const uniqueCategoryIds = Array.from(new Set(selectedCategoryIds));
+    const uniqueTagIds = Array.from(new Set(selectedTagIds));
+
+    if (uniqueCategoryIds.length === 0 || uniqueCategoryIds.length > 3) {
+      alert("En az 1, en fazla 3 kategori seçebilirsiniz.");
+      return;
+    }
+
+    if (uniqueTagIds.length > 5) {
+      alert("En fazla 5 etiket seçebilirsiniz.");
+      return;
+    }
+
+    uniqueCategoryIds.forEach(id => {
       formData.append("CategoryIds", id.toString());
     });
 
-    selectedTagIds.forEach(id => {
+    uniqueTagIds.forEach(id => {
       formData.append("TagIds", id.toString());
     });
 

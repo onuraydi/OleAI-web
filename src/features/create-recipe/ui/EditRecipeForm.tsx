@@ -52,14 +52,37 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
   const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(initialData.images?.find((i: any) => i.isMain)?.imageUrl || null);
 
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>(initialData.categories?.map((c: any) => c.id) || []);
-  const [difficulty, setDifficulty] = useState(initialData.difficulty?.toString() || "1");
+  const difficultyMap: Record<string, string> = {
+    "Easy": "1",
+    "Medium": "2",
+    "Hard": "3",
+    "1": "1",
+    "2": "2",
+    "3": "3"
+  };
+
+  const visibilityMap: Record<string, string> = {
+    "Private": "1",
+    "Public": "2",
+    "1": "1",
+    "2": "2"
+  };
+
+  const initialDiff = initialData.difficulty ? (difficultyMap[initialData.difficulty.toString()] || "1") : "1";
+  const initialVis = initialData.visibility ? (visibilityMap[initialData.visibility.toString()] || "2") : "2";
+
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>(
+    Array.from(new Set(initialData.categories?.map((c: any) => c.id) || []))
+  );
+  const [difficulty, setDifficulty] = useState(initialDiff);
   const [servings, setServings] = useState(initialData.servings?.toString() || "4");
   const [prepTime, setPrepTime] = useState(initialData.prepTime?.toString() || "15");
   const [cookTime, setCookTime] = useState(initialData.cookTime?.toString() || "45");
-  const [visibility, setVisibility] = useState(initialData.visibility?.toString() || "2"); 
+  const [visibility, setVisibility] = useState(initialVis); 
   
-  const [selectedTagIds, setSelectedTagIds] = useState<number[]>(initialData.tags?.map((t: any) => t.id) || []);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
+    Array.from(new Set(initialData.tags?.map((t: any) => t.id) || []))
+  );
 
   const [ingredients, setIngredients] = useState<IngredientInput[]>(
     initialData.ingredients && initialData.ingredients.length > 0 
@@ -104,15 +127,25 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
   const { data: recipeTags = [] } = useAdminTags();
 
   const toggleCategory = (id: number) => {
-    setSelectedCategoryIds(prev => 
-      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
-    );
+    setSelectedCategoryIds(prev => {
+      if (prev.includes(id)) return prev.filter(c => c !== id);
+      if (prev.length >= 3) {
+        alert("En fazla 3 kategori seçebilirsiniz.");
+        return prev;
+      }
+      return [...prev, id];
+    });
   };
 
   const toggleTag = (id: number) => {
-    setSelectedTagIds(prev => 
-      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
-    );
+    setSelectedTagIds(prev => {
+      if (prev.includes(id)) return prev.filter(t => t !== id);
+      if (prev.length >= 5) {
+        alert("En fazla 5 etiket seçebilirsiniz.");
+        return prev;
+      }
+      return [...prev, id];
+    });
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -277,11 +310,24 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
     formData.append("PrepTime", prepTime);
     formData.append("CookTime", cookTime);
     
-    selectedCategoryIds.forEach(id => {
+    const uniqueCategoryIds = Array.from(new Set(selectedCategoryIds));
+    const uniqueTagIds = Array.from(new Set(selectedTagIds));
+
+    if (uniqueCategoryIds.length === 0 || uniqueCategoryIds.length > 3) {
+      alert("En az 1, en fazla 3 kategori seçebilirsiniz.");
+      return;
+    }
+
+    if (uniqueTagIds.length > 5) {
+      alert("En fazla 5 etiket seçebilirsiniz.");
+      return;
+    }
+
+    uniqueCategoryIds.forEach(id => {
       formData.append("CategoryIds", id.toString());
     });
 
-    selectedTagIds.forEach(id => {
+    uniqueTagIds.forEach(id => {
       formData.append("TagIds", id.toString());
     });
 
