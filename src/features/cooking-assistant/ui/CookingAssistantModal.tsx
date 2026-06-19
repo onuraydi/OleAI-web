@@ -3,15 +3,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight, ChevronLeft, Check, Loader2, ChefHat } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
-import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";
+import type { RecipeDetailResponse, IngredientResponse } from "@/entities/recipe/api/recipeApi";
 
 interface CookingAssistantModalProps {
   isOpen: boolean;
   onClose: () => void;
   recipe: RecipeDetailResponse;
+  ignoredIngredientIds?: string[];
+  onFinishCooking?: (depletedIngredients: IngredientResponse[]) => void;
 }
 
-export const CookingAssistantModal = ({ isOpen, onClose, recipe }: CookingAssistantModalProps) => {
+export const CookingAssistantModal = ({ isOpen, onClose, recipe, ignoredIngredientIds = [], onFinishCooking }: CookingAssistantModalProps) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false);
   const queryClient = useQueryClient();
@@ -27,17 +29,20 @@ export const CookingAssistantModal = ({ isOpen, onClose, recipe }: CookingAssist
   }, [isOpen]);
 
   const finishCookingMutation = useMutation({
-    mutationFn: () => recipeApi.startCooking(recipe.id),
-    onSuccess: () => {
+    mutationFn: () => recipeApi.startCooking(recipe.id, ignoredIngredientIds),
+    onSuccess: (depletedIngredients) => {
       setIsSuccess(true);
       // Invalidate inventory/pantry queries assuming they exist, and recipe detail
-      queryClient.invalidateQueries({ queryKey: ["inventory"] });
+      queryClient.invalidateQueries({ queryKey: ["pantry"] });
       queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipe.id] });
       
-      // Auto close after 3 seconds on success
+      // Auto close after 2 seconds on success and notify parent
       setTimeout(() => {
         onClose();
-      }, 3000);
+        if (onFinishCooking) {
+          onFinishCooking(depletedIngredients);
+        }
+      }, 2000);
     }
   });
 
