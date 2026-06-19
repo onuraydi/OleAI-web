@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Input } from "@/shared/ui/input";
 import { Search } from "lucide-react";
@@ -7,6 +7,7 @@ interface MultiSelectBoxProps {
   options: { id: string; label: string }[];
   value: string[];
   onChange: (value: string[]) => void;
+  onSearch?: (value: string) => void;
   placeholder?: string;
   emptyMessage?: string;
 }
@@ -15,16 +16,46 @@ export const MultiSelectBox = ({
   options,
   value,
   onChange,
+  onSearch,
   placeholder = "Ara...",
   emptyMessage = "Bulunamadı",
 }: MultiSelectBoxProps) => {
   const [search, setSearch] = useState("");
+  const [cachedOptions, setCachedOptions] = useState<{ id: string; label: string }[]>([]);
+  
+  useEffect(() => {
+    setCachedOptions((prev) => {
+      const selectedFromPrev = prev.filter((p) => value.includes(p.id));
+      const newlySelected = options.filter(
+        (o) => value.includes(o.id) && !selectedFromPrev.some((p) => p.id === o.id)
+      );
+      return [...selectedFromPrev, ...newlySelected];
+    });
+  }, [options, value]);
+
+  const displayOptions = useMemo(() => {
+    const all = [...options];
+    cachedOptions.forEach((co) => {
+      if (!all.some((a) => a.id === co.id)) {
+        all.push(co);
+      }
+    });
+    return all;
+  }, [options, cachedOptions]);
 
   const filteredOptions = useMemo(() => {
-    return options.filter((opt) =>
+    if (onSearch) return displayOptions; // If server-side search is enabled, assume options are already filtered
+    return displayOptions.filter((opt) =>
       opt.label.toLowerCase().includes(search.toLowerCase())
     );
-  }, [options, search]);
+  }, [displayOptions, search, onSearch]);
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    if (onSearch) {
+      onSearch(val);
+    }
+  };
 
   const handleToggle = (id: string, checked: boolean) => {
     if (checked) {
@@ -43,7 +74,7 @@ export const MultiSelectBox = ({
         <Input
           placeholder={placeholder}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           className="border-0 focus-visible:ring-0 rounded-none pl-9"
         />
       </div>
