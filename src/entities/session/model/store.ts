@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { userApi } from '@/entities/user/api/userApi';
+import { sessionApi } from '@/entities/session/api/sessionApi';
+import { queryClient } from '@/app/providers/query/QueryProvider';
+import { toast } from 'sonner';
 
 interface User {
   id: string;
@@ -16,7 +19,7 @@ interface SessionState {
   user: User | null;
   isInitialized: boolean;
   setAuth: (isAuth: boolean, user?: User | null) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   initialize: () => Promise<void>;
 }
 
@@ -27,9 +30,16 @@ export const useSessionStore = create<SessionState>()(
       user: null,
       isInitialized: false,
       setAuth: (isAuth, user = null) => set({ isAuth, user, isInitialized: true }),
-      logout: () => {
-        // Clear cookies should be handled by backend or manual call
-        set({ isAuth: false, user: null, isInitialized: true });
+      logout: async () => {
+        try {
+          await sessionApi.logout();
+        } catch (error) {
+          console.error("Logout failed", error);
+          toast.error("Oturum kapatılırken sunucuyla iletişim kurulamadı. Güvenliğiniz için yerel veriler temizlendi.");
+        } finally {
+          set({ isAuth: false, user: null, isInitialized: true });
+          queryClient.clear();
+        }
       },
       initialize: async () => {
         try {

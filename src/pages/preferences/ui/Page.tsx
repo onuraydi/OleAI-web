@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/shared/ui";
 import { 
@@ -27,7 +27,9 @@ import {
   Grape,
   Camera,
   User,
-  Calendar
+  Calendar,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -81,7 +83,7 @@ export default function PreferencesPage() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [profileFile, setProfileFile] = useState<File | null>(null);
   
-  const [selectedDiet, setSelectedDiet] = useState<string | null>(null);
+  const [selectedDiets, setSelectedDiets] = useState<string[]>([]);
   const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
   const [selectedDislikedIngredients, setSelectedDislikedIngredients] = useState<{id: string, name: string}[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -129,10 +131,27 @@ export default function PreferencesPage() {
     enabled: debouncedSearchQuery.length >= 2,
   });
 
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const { current } = scrollRef;
+      const scrollAmount = direction === 'left' ? -current.offsetWidth : current.offsetWidth;
+      current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   const toggleAllergy = (id: string) => {
     setSelectedAllergies(prev => 
       prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
     );
+  };
+
+  const toggleDiet = (id: string) => {
+    setSelectedDiets(prev => {
+      if (id === "none") return [];
+      return prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id];
+    });
   };
 
   const toggleDislikedIngredient = (id: string, name: string) => {
@@ -161,8 +180,7 @@ export default function PreferencesPage() {
       });
 
       // 2. Diyet tercihini kaydet
-      const dietaryPreferenceIds = selectedDiet === "none" ? [] : (selectedDiet ? [selectedDiet] : []);
-      await userApi.updateDietaryPreferences({ dietaryPreferenceIds });
+      await userApi.updateDietaryPreferences({ dietaryPreferenceIds: selectedDiets });
       
       // 2. Alerjileri kaydet
       await userApi.updateAllergies({ allergyRestrictionIds: selectedAllergies });
@@ -315,27 +333,27 @@ export default function PreferencesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {diets?.map((diet) => (
+                  {diets?.filter(d => d.isActive).map((diet) => (
                     <motion.button
                       key={diet.id}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedDiet(diet.id)}
+                      onClick={() => toggleDiet(diet.id)}
                       className={`relative flex flex-col items-start p-6 rounded-3xl border-2 transition-all text-left ${
-                        selectedDiet === diet.id 
+                        selectedDiets.includes(diet.id) 
                           ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" 
                           : "border-transparent bg-card shadow-sm hover:shadow-md"
                       }`}
                     >
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
-                        selectedDiet === diet.id ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
+                        selectedDiets.includes(diet.id) ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
                       }`}>
                         {getDietIcon(diet.name)}
                       </div>
                       <h3 className="font-bold text-xl mb-1 text-foreground">{diet.name}</h3>
                       <p className="text-sm text-muted-foreground line-clamp-2">{diet.description}</p>
                       
-                      {selectedDiet === diet.id && (
+                      {selectedDiets.includes(diet.id) && (
                         <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                           <Check className="w-4 h-4 text-white" />
                         </div>
@@ -346,15 +364,15 @@ export default function PreferencesPage() {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setSelectedDiet("none")}
+                    onClick={() => toggleDiet("none")}
                     className={`relative flex flex-col items-start p-6 rounded-3xl border-2 transition-all text-left ${
-                      selectedDiet === "none" 
+                      selectedDiets.length === 0 
                         ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" 
                         : "border-transparent bg-card shadow-sm hover:shadow-md"
                     }`}
                   >
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
-                      selectedDiet === "none" ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
+                      selectedDiets.length === 0 ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
                     }`}>
                       <UtensilsCrossed />
                     </div>
@@ -380,33 +398,56 @@ export default function PreferencesPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                  {allergies?.map((allergy) => (
-                    <motion.button
-                      key={allergy.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => toggleAllergy(allergy.id)}
-                      className={`relative flex items-center gap-4 p-5 rounded-3xl border-2 transition-all ${
-                        selectedAllergies.includes(allergy.id)
-                          ? "border-primary bg-primary/5 shadow-xl shadow-primary/10"
-                          : "border-transparent bg-card shadow-sm"
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        selectedAllergies.includes(allergy.id) ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
-                      }`}>
-                        {getAllergyIcon(allergy.name)}
-                      </div>
-                      <span className="font-bold text-lg text-foreground">{allergy.name}</span>
-                      
-                      {selectedAllergies.includes(allergy.id) && (
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center border-4 border-[#fafafa] dark:border-[#0a0a0a]">
-                          <Check className="w-3 h-3 text-white" />
-                        </div>
-                      )}
-                    </motion.button>
-                  ))}
+                <div className="relative group">
+                  <div 
+                    ref={scrollRef}
+                    className="overflow-x-auto pb-4 snap-x -mx-2 px-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                  >
+                    <div className="grid grid-rows-4 grid-flow-col auto-cols-[240px] md:auto-cols-[280px] gap-4 w-max">
+                      {allergies?.filter(a => a.isActive).map((allergy) => (
+                        <motion.button
+                          key={allergy.id}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => toggleAllergy(allergy.id)}
+                          className={`relative snap-start flex flex-col items-start p-6 rounded-3xl border-2 transition-all text-left ${
+                            selectedAllergies.includes(allergy.id)
+                              ? "border-primary bg-primary/5 shadow-xl shadow-primary/10"
+                              : "border-transparent bg-card shadow-sm hover:shadow-md"
+                          }`}
+                        >
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
+                            selectedAllergies.includes(allergy.id) ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
+                          }`}>
+                            {getAllergyIcon(allergy.name)}
+                          </div>
+                          <h3 className="font-bold text-lg mb-1 text-foreground">{allergy.name}</h3>
+                          {allergy.description && (
+                            <p className="text-xs text-muted-foreground line-clamp-2">{allergy.description}</p>
+                          )}
+                          
+                          {selectedAllergies.includes(allergy.id) && (
+                            <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          )}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => scroll('left')}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-12 h-12 bg-background border-2 border-border rounded-full flex items-center justify-center shadow-lg text-foreground hover:border-primary hover:text-primary transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button 
+                    onClick={() => scroll('right')}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-12 h-12 bg-background border-2 border-border rounded-full flex items-center justify-center shadow-lg text-foreground hover:border-primary hover:text-primary transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
                 </div>
               </motion.div>
             ) : step === 4 ? (
@@ -577,7 +618,7 @@ export default function PreferencesPage() {
           )}
 
           <Button 
-            disabled={(step === 1 && (!username || !birthDate || !!usernameError)) || (step === 2 && !selectedDiet) || isFinishing}
+            disabled={(step === 1 && (!username || !birthDate || !!usernameError)) || isFinishing}
             onClick={() => step < 4 ? setStep(step + 1) : handleFinish()}
             className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-xl shadow-primary/20 gap-2 group transition-all"
           >

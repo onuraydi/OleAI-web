@@ -32,7 +32,7 @@ export const sessionApi = {
     return response.data;
   },
   logout: async (): Promise<void> => {
-    await apiInstance.post("/auth/logout");
+    await apiInstance.post("/auth/logout", {});
   },
   forgotPassword: async (email: string): Promise<void> => {
     await apiInstance.post("/auth/forgot-password", {

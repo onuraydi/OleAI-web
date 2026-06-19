@@ -62,5 +62,10 @@ export const shoppingListApi = {
   removeItem: async (id: string) => {
     const response = await apiInstance.delete<{ message: string }>(`/shopping-list/${id}`);
     return response.data;
+  },
+
+  syncDepleted: async (itemsToRestock: { ingredientId: string; quantity: number; unit: number }[]) => {
+    const response = await apiInstance.post<{ message: string }>("/shopping-list/sync-depleted", { itemsToRestock });
+    return response.data;
   }
 };

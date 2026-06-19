@@ -1,4 +1,21 @@
 import { apiInstance } from "@/shared/api";
+import type { RecipeListItem } from "@/entities/recipe/api/recipeApi";
+
+export enum RecommendationMode {
+  Default = 0,
+  Ultimate = 1,
+  Strict = 2,
+  ForYou = 3,
+  Quick = 4,
+  Explore = 5,
+  MinimalShopping = 6
+}
+
+export interface RecipeRecommendationDto {
+  recipe: RecipeListItem;
+  matchScore: number;
+  isFallback?: boolean;
+}
 
 export interface DietaryPreferenceItem {
   id: string;
@@ -93,6 +110,24 @@ export const userApi = {
   },
   updateDislikedIngredients: async (request: UpdateUserDislikedIngredientsRequest): Promise<{ message: string }> => {
     const response = await apiInstance.put<{ message: string }>("/users/me/disliked-ingredients", request);
+    return response.data;
+  },
+  getRecommendations: async (
+    mode: RecommendationMode, 
+    useZeroWaste: boolean = false, 
+    useAllergyFilters: boolean = true,
+    useDietFilters: boolean = true,
+    useDislikedFilters: boolean = true
+  ): Promise<RecipeRecommendationDto[]> => {
+    const response = await apiInstance.get<RecipeRecommendationDto[]>("/users/me/recommendations", {
+      params: { 
+        mode, 
+        useZeroWaste, 
+        useAllergyFilters, 
+        useDietFilters, 
+        useDislikedFilters 
+      }
+    });
     return response.data;
   },
 };

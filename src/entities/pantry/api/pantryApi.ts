@@ -15,6 +15,7 @@ export interface PantryItemResponse {
 
 export interface IngredientSearchResultResponse {
   masterIngredientId: string;
+  aliasId?: string;
   displayName: string;
   isAlias: boolean;
   unitFamily: MeasurementCategory;
@@ -38,6 +39,7 @@ export interface PopularCategoryResponse {
 
 export interface AddUserIngredientRequest {
   ingredientId?: string;
+  aliasId?: string;
   requestedName?: string;
   suggestedCategoryId?: string;
   quantity: number;
