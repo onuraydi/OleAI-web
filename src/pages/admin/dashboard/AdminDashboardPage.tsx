@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import {
@@ -7,6 +8,7 @@ import {
   RecipeStatusChart,
   InteractionStats,
   DifficultyDistribution,
+  AdminGlobalNotificationForm,
 } from "@/widgets/admin-overview";
 import { useAdminDashboardStats } from "@/entities/admin-dashboard";
 import { Sparkles } from "lucide-react";
@@ -17,7 +19,7 @@ const sectionVariant = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.45, ease: "easeOut" },
+    transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" as any },
   }),
 };
 
@@ -79,19 +81,35 @@ export const AdminDashboardPage = () => {
             </div>
           </motion.section>
 
-          {/* ── Row 3: Interaction + Difficulty + Activity ── */}
+          {/* ── Row 3: Interaction + Difficulty + Global Notification ── */}
           <motion.section
             custom={2}
             variants={sectionVariant}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
-            <InteractionStats stats={stats} isLoading={isLoading} />
-            <DifficultyDistribution stats={stats} isLoading={isLoading} />
+            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <InteractionStats stats={stats} isLoading={isLoading} />
+              <DifficultyDistribution stats={stats} isLoading={isLoading} />
+            </div>
+            <div className="lg:col-span-1">
+              <AdminGlobalNotificationForm />
+            </div>
+          </motion.section>
+
+          {/* ── Row 4: Activity Timeline ── */}
+          <motion.section
+            custom={3}
+            variants={sectionVariant}
+            initial="hidden"
+            animate="visible"
+            className="pb-20"
+          >
             <RecentActivityTimeline stats={stats} isLoading={isLoading} />
           </motion.section>
         </div>
+        <Footer />
       </main>
     </div>
   );
