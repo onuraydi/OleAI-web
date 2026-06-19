@@ -30,6 +30,7 @@ export interface Ingredient {
   categoryIconName: string;
   unitFamily: MeasurementCategory;
   isPolarizing: boolean;
+  isStaple: boolean;
   estimatedShelfLifeInDays?: number | null;
   defaultExpirationMode: ExpirationMode;
   deletedDate: string | null;
@@ -76,6 +77,7 @@ export interface CreateIngredientRequest {
   categoryId: string;
   unitFamily: MeasurementCategory;
   isPolarizing: boolean;
+  isStaple: boolean;
   estimatedShelfLifeInDays?: number | null;
   defaultExpirationMode: ExpirationMode;
 }
@@ -85,6 +87,7 @@ export interface UpdateIngredientRequest {
   categoryId: string;
   unitFamily: MeasurementCategory;
   isPolarizing: boolean;
+  isStaple: boolean;
   estimatedShelfLifeInDays?: number | null;
   defaultExpirationMode: ExpirationMode;
 }

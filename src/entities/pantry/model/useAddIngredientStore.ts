@@ -6,6 +6,7 @@ import type { IngredientSearchResultResponse } from '@/entities/pantry/api/pantr
 export interface StagedItem {
   id: string; // temp id
   ingredient: IngredientSearchResultResponse | null;
+  aliasId?: string;
   customName?: string;
   categoryId?: string;
   categoryName?: string;
