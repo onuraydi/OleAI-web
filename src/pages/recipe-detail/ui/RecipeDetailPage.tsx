@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ChevronLeft, Loader2, Edit2, Trash2 } from "lucide-react";
@@ -59,7 +60,8 @@ export const RecipeDetailPage = () => {
             <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
             <p className="text-muted-foreground font-medium">Tarif detayları getiriliyor...</p>
           </div>
-        </main>
+          <Footer />
+      </main>
       </div>
     );
   }
@@ -80,7 +82,8 @@ export const RecipeDetailPage = () => {
               Tariflere Dön
             </button>
           </div>
-        </main>
+          <Footer />
+      </main>
       </div>
     );
   }
@@ -202,6 +205,7 @@ export const RecipeDetailPage = () => {
             </motion.div>
           </div>
         </div>
+        <Footer />
       </main>
     </div>
   );

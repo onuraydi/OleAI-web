@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { Footer } from '@/widgets/footer';
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
@@ -10,9 +11,19 @@ import type { RecipeCategoryDto, TagDto } from "@/entities/recipe/api/recipeApi"
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { RecipeCard } from "@/widgets/recipe-card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
 export const RecipesPage = () => {
   const navigate = useNavigate();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollCategories = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300;
+      scrollContainerRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 500);
   const [page, setPage] = useState(0);
@@ -228,25 +239,27 @@ export const RecipesPage = () => {
                 {/* Dietary Preferences Filter (Tag) */}
                 <div className="space-y-3">
                   <h3 className="font-bold text-foreground">Diyet / Etiket</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button 
-                      onClick={() => setSelectedTag(undefined)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedTag === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                      }`}>Tümü</button>
-                    {tags?.map(tag => (
+                  <div className="max-h-48 overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
+                    <div className="flex flex-wrap gap-2">
                       <button 
-                        key={tag.id}
-                        onClick={() => setSelectedTag(tag.id)}
+                        onClick={() => setSelectedTag(undefined)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          selectedTag === tag.id 
-                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
-                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                        }`}
-                      >
-                        {tag.name}
-                      </button>
-                    ))}
+                          selectedTag === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                        }`}>Tümü</button>
+                      {tags?.map(tag => (
+                        <button 
+                          key={tag.id}
+                          onClick={() => setSelectedTag(tag.id)}
+                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                            selectedTag === tag.id 
+                              ? "bg-primary/10 text-primary border-2 border-primary/20" 
+                              : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                          }`}
+                        >
+                          {tag.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -270,29 +283,43 @@ export const RecipesPage = () => {
         )}
       </AnimatePresence>
 
-      {/* Decorative Categories (Static for aesthetic, to match design) */}
-      <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      {/* Decorative Categories */}
+      <div className="relative group flex items-center">
         <button 
-          onClick={() => {
-            setSelectedCategory(undefined);
-            setAppliedCategory(undefined);
-          }}
-          className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors ${appliedCategory === undefined ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-card text-muted-foreground hover:bg-neutral-50'}`}
+          onClick={() => scrollCategories('left')}
+          className="absolute -left-2 z-10 p-2 rounded-full bg-background/90 shadow-sm border hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          Tümü
+          <ChevronLeft className="w-5 h-5 text-foreground" />
         </button>
-        {categories?.slice(0, 6).map((cat) => (
+        <div ref={scrollContainerRef} className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide w-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <button 
-            key={cat.id}
             onClick={() => {
-              setSelectedCategory(cat.id);
-              setAppliedCategory(cat.id);
+              setSelectedCategory(undefined);
+              setAppliedCategory(undefined);
             }}
-            className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors ${appliedCategory === cat.id ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-card text-muted-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}
+            className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors shrink-0 ${appliedCategory === undefined ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-card text-muted-foreground hover:bg-neutral-50'}`}
           >
-            {cat.name}
+            Tümü
           </button>
-        ))}
+          {categories?.map((cat) => (
+            <button 
+              key={cat.id}
+              onClick={() => {
+                setSelectedCategory(cat.id);
+                setAppliedCategory(cat.id);
+              }}
+              className={`px-5 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-colors shrink-0 ${appliedCategory === cat.id ? 'bg-primary text-primary-foreground shadow-primary/20' : 'bg-card text-muted-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+        <button 
+          onClick={() => scrollCategories('right')}
+          className="absolute -right-2 z-10 p-2 rounded-full bg-background/90 shadow-sm border hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <ChevronRight className="w-5 h-5 text-foreground" />
+        </button>
       </div>
 
       {/* Content */}
@@ -390,6 +417,7 @@ export const RecipesPage = () => {
         </>
       )}
         </div>
+        <Footer />
       </main>
     </div>
   );

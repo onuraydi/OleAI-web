@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { CreateRecipeForm } from "@/features/create-recipe/ui/CreateRecipeForm";
@@ -19,6 +20,7 @@ export const CreateRecipePage = () => {
             <CreateRecipeForm />
           </motion.div>
         </div>
+        <Footer />
       </main>
     </div>
   );

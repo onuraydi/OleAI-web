@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { ProfileRecipesTab } from "@/widgets/profile-recipes/ui/ProfileRecipesTab";
@@ -13,6 +14,7 @@ export const MyRecipeBookPage = () => {
         <div className="flex-1 p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
           <ProfileRecipesTab />
         </div>
+        <Footer />
       </main>
     </div>
   );

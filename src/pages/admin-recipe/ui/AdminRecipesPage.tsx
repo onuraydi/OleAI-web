@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import React from 'react';
 import { AdminRecipesTable, AdminDeletedRecipesTable } from '@/widgets/admin-recipe';
 import { ChefHat, AlertCircle, CheckSquare, List, Trash2 } from 'lucide-react';
@@ -83,6 +84,7 @@ export function AdminRecipesPage() {
             </Tabs>
           </motion.div>
         </div>
+        <Footer />
       </main>
     </div>
   );
