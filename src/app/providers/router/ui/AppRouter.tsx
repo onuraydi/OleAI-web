@@ -1,28 +1,37 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage, PantryPage, RecipeDetailPage, CreateRecipePage, EditRecipePage, RecipesPage, ShoppingListPage, AdminDashboardPage, AdminIngredientsPage, AdminCategoriesPage, AdminAllergiesPage, AdminDietsPage, AdminUsersPage, AdminRecipesPage, AdminRecipeDetailPage, AdminEditRecipePage, AdminRecipeTaxonomyPage, PrivacyPage, TermsPage, ContactPage, HelpPage, ProfilePage, MyRecipeBookPage, AdminLogsPage } from '@/pages';
+import { HomePage, LoginPage, NotFoundPage, LandingPage, ForgotPasswordPage, RegisterPage, VerifyEmailPage, OnboardingPage, PreferencesPage, PantryPage, RecipeDetailPage, CreateRecipePage, EditRecipePage, RecipesPage, ShoppingListPage, AdminDashboardPage, AdminIngredientsPage, AdminCategoriesPage, AdminAllergiesPage, AdminDietsPage, AdminUsersPage, AdminRecipesPage, AdminRecipeDetailPage, AdminEditRecipePage, AdminRecipeTaxonomyPage, PrivacyPage, TermsPage, ContactPage, HelpPage, ProfilePage, MyRecipeBookPage, AdminLogsPage, AiRecommendationsPage, AdminContactMessagesPage, NotificationsPage } from '@/pages';
 import { ProtectedRoute } from './ProtectedRoute';
-
+import { GuestRoute } from './GuestRoute';
+import { GlobalErrorElement } from './GlobalErrorElement';
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <LandingPage />,
-  },
-  {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/register',
-    element: <RegisterPage />,
-  },
-  {
-    path: '/verify-email',
-    element: <VerifyEmailPage />,
-  },
-  {
-    path: '/forgot-password',
-    element: <ForgotPasswordPage />,
+    errorElement: <GlobalErrorElement />,
+    children: [
+      {
+        element: <GuestRoute />,
+    children: [
+      {
+        path: '/',
+        element: <LandingPage />,
+      },
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/register',
+        element: <RegisterPage />,
+      },
+      {
+        path: '/verify-email',
+        element: <VerifyEmailPage />,
+      },
+      {
+        path: '/forgot-password',
+        element: <ForgotPasswordPage />,
+      },
+    ],
   },
   {
     path: '/privacy',
@@ -72,6 +81,10 @@ const router = createBrowserRouter([
         element: <CreateRecipePage />,
       },
       {
+        path: '/ai-recommendations',
+        element: <AiRecommendationsPage />,
+      },
+      {
         path: '/recipes/:id',
         element: <RecipeDetailPage />,
       },
@@ -86,6 +99,10 @@ const router = createBrowserRouter([
       {
         path: '/profile',
         element: <ProfilePage />,
+      },
+      {
+        path: '/notifications',
+        element: <NotificationsPage />,
       },
     ],
   },
@@ -137,15 +154,21 @@ const router = createBrowserRouter([
         path: 'logs',
         element: <AdminLogsPage />,
       },
+      {
+        path: 'contact-messages',
+        element: <AdminContactMessagesPage />,
+      },
     ],
   },
-  {
-    path: '/404',
-    element: <NotFoundPage />,
-  },
-  {
-    path: '*',
-    element: <NotFoundPage />,
+      {
+        path: '/404',
+        element: <NotFoundPage />,
+      },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
+    ],
   },
 ]);
 
