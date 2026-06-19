@@ -3,11 +3,15 @@ import { QueryProvider } from './providers/query/QueryProvider';
 import { ThemeProvider } from './providers/theme';
 import { AppRouter } from './providers/router';
 import { useSessionStore } from '@/entities/session';
+import { useForegroundNotifications } from '@/features/notifications/hooks/usePushNotifications';
 import '../index.css';
 
-function App() {
+function InnerApp() {
   const initialize = useSessionStore((s) => s.initialize);
   const logout = useSessionStore((s) => s.logout);
+  const isAuth = useSessionStore((s) => s.isAuth);
+
+  useForegroundNotifications(isAuth);
 
   useEffect(() => {
     initialize();
@@ -19,10 +23,14 @@ function App() {
     return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
   }, [initialize, logout]);
 
+  return <AppRouter />;
+}
+
+function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <QueryProvider>
-        <AppRouter />
+        <InnerApp />
       </QueryProvider>
     </ThemeProvider>
   );
