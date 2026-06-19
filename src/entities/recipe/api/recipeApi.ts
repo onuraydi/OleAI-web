@@ -36,6 +36,19 @@ export interface RecipeIngredientResponse {
   unitFamily: number;
 }
 
+export interface IngredientResponse {
+  id: string;
+  name: string;
+  categoryName: string;
+  categoryIconName: string;
+  unitFamily: number;
+  isPolarizing: boolean;
+  estimatedShelfLifeInDays: number | null;
+  defaultExpirationMode: number;
+  isStaple: boolean;
+  deletedDate: string | null;
+}
+
 export interface RecipeStepResponse {
   id: string;
   stepNumber: number;
@@ -109,6 +122,7 @@ export interface RecipeDetailResponse {
   description: string;
   visibility: number;
   status: number;
+  llmReviewResultJson?: string;
   createdDate: string;
   updatedDate: string | null;
   difficulty: number;
@@ -178,8 +192,12 @@ export const recipeApi = {
     const response = await apiInstance.delete<{ message: string }>(`/recipes/comments/${commentId}`);
     return response.data;
   },
-  startCooking: async (id: string) => {
-    const response = await apiInstance.post<{ message: string }>(`/recipes/${id}/start-cooking`);
+  startCooking: async (id: string, ignoredIngredientIds: string[] = []) => {
+    const response = await apiInstance.post<IngredientResponse[]>(`/recipes/${id}/start-cooking`, { ignoredIngredientIds });
+    return response.data;
+  },
+  getMissingIngredients: async (id: string): Promise<IngredientResponse[]> => {
+    const response = await apiInstance.get<IngredientResponse[]>(`/recipes/${id}/missing-ingredients`);
     return response.data;
   },
   createRecipe: async (formData: FormData) => {
@@ -240,6 +258,14 @@ export const recipeApi = {
     const response = await apiInstance.get<Paginate<MyComment>>("/recipes/my-comments", {
       params: { page, size, searchTerm, sortBy }
     });
+    return response.data;
+  },
+  analyzeWithAi: async (id: string) => {
+    const response = await apiInstance.post<{ message: string }>(`/recipes/${id}/analyze-with-ai`);
+    return response.data;
+  },
+  approveRecipe: async (id: string, data?: { editedDescription?: string; editedSteps?: { stepNumber: number; instruction: string }[] }) => {
+    const response = await apiInstance.post<{ message: string }>(`/Recipes/${id}/approve`, data);
     return response.data;
   },
 };

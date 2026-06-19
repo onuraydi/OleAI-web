@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, X, ImagePlus, ChevronDown, Plus, GripVertical, Search, Loader2 } from "lucide-react";
@@ -130,7 +131,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
     setSelectedCategoryIds(prev => {
       if (prev.includes(id)) return prev.filter(c => c !== id);
       if (prev.length >= 3) {
-        alert("En fazla 3 kategori seçebilirsiniz.");
+        toast.error("En fazla 3 kategori seçebilirsiniz.");
         return prev;
       }
       return [...prev, id];
@@ -141,7 +142,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
     setSelectedTagIds(prev => {
       if (prev.includes(id)) return prev.filter(t => t !== id);
       if (prev.length >= 5) {
-        alert("En fazla 5 etiket seçebilirsiniz.");
+        toast.error("En fazla 5 etiket seçebilirsiniz.");
         return prev;
       }
       return [...prev, id];
@@ -272,36 +273,37 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
       queryClient.invalidateQueries({ queryKey: ["recipe-detail", initialData.id] });
       navigate(`/recipes/${initialData.id}`);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Failed to update recipe", error);
-      alert("Tarif güncellenirken bir hata oluştu.");
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || "Tarif güncellenirken bir hata oluştu.";
+      toast.error(errorMessage);
     }
   });
 
   const handleSubmit = () => {
     if (!title.trim() || selectedCategoryIds.length === 0) {
-      alert("Lütfen Tarif Adı ve en az bir kategori alanını eksiksiz doldurun.");
+      toast.error("Lütfen Tarif Adı ve en az bir kategori alanını eksiksiz doldurun.");
       return;
     }
 
     if (!difficulty) {
-      alert("Lütfen bir zorluk derecesi seçin.");
+      toast.error("Lütfen bir zorluk derecesi seçin.");
       return;
     }
 
     if (!servings || parseInt(servings) <= 0) {
-      alert("Porsiyon 0'dan büyük olmalıdır.");
+      toast.error("Porsiyon 0'dan büyük olmalıdır.");
       return;
     }
 
     if (!prepTime || parseInt(prepTime) < 0 || !cookTime || parseInt(cookTime) < 0) {
-      alert("Lütfen geçerli bir hazırlık ve pişirme süresi girin.");
+      toast.error("Lütfen geçerli bir hazırlık ve pişirme süresi girin.");
       return;
     }
 
     const validIngredients = ingredients.filter(i => (i.ingredientId || i.isPending) && i.qty && i.unitId);
     if (validIngredients.length === 0) {
-      alert("Lütfen en az bir geçerli malzeme ekleyin.");
+      toast.error("Lütfen en az bir geçerli malzeme ekleyin.");
       return;
     }
 
@@ -318,12 +320,12 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
     const uniqueTagIds = Array.from(new Set(selectedTagIds));
 
     if (uniqueCategoryIds.length === 0 || uniqueCategoryIds.length > 3) {
-      alert("En az 1, en fazla 3 kategori seçebilirsiniz.");
+      toast.error("En az 1, en fazla 3 kategori seçebilirsiniz.");
       return;
     }
 
     if (uniqueTagIds.length > 5) {
-      alert("En fazla 5 etiket seçebilirsiniz.");
+      toast.error("En fazla 5 etiket seçebilirsiniz.");
       return;
     }
 
@@ -454,12 +456,12 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
                   <select 
                     value={difficulty} 
                     onChange={(e) => setDifficulty(e.target.value)}
-                    className="w-full bg-transparent appearance-none font-medium text-foreground outline-none"
+                    className="w-full bg-muted/40 border border-muted hover:border-primary/30 rounded-xl px-4 py-3 appearance-none font-medium text-foreground outline-none focus:border-primary/50 transition-colors"
                   >
                     <option value="" disabled className="text-foreground bg-neutral-50 dark:bg-neutral-900">Zorluk Seçin</option>
                     {DIFFICULTIES.map(d => <option key={d.id} value={d.id} className="text-foreground bg-neutral-50 dark:bg-neutral-900">{d.name}</option>)}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
 
@@ -469,12 +471,12 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
                   <select 
                     value={visibility} 
                     onChange={(e) => setVisibility(e.target.value)}
-                    className="w-full bg-transparent appearance-none font-medium text-foreground outline-none"
+                    className="w-full bg-muted/40 border border-muted hover:border-primary/30 rounded-xl px-4 py-3 appearance-none font-medium text-foreground outline-none focus:border-primary/50 transition-colors"
                   >
                     <option value="2" className="text-foreground bg-neutral-50 dark:bg-neutral-900">Herkese Açık (Public)</option>
                     <option value="1" className="text-foreground bg-neutral-50 dark:bg-neutral-900">Sadece Ben (Private)</option>
                   </select>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
             </div>
@@ -482,9 +484,8 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Porsiyon</span>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="number" 
+                <div className="flex items-center gap-2 bg-muted/40 border border-muted rounded-xl px-4 py-3 focus-within:border-primary/50 transition-colors hover:border-primary/30">
+                  <input type="number" 
                     value={servings} 
                     onChange={(e) => setServings(e.target.value)}
                     className="w-full bg-transparent font-medium text-foreground outline-none"
@@ -496,9 +497,8 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
 
               <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Hazırlık</span>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="number" 
+                <div className="flex items-center gap-2 bg-muted/40 border border-muted rounded-xl px-4 py-3 focus-within:border-primary/50 transition-colors hover:border-primary/30">
+                  <input type="number" 
                     value={prepTime} 
                     onChange={(e) => setPrepTime(e.target.value)}
                     className="w-full bg-transparent font-medium text-foreground outline-none"
@@ -510,9 +510,8 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
 
               <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Pişirme</span>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="number" 
+                <div className="flex items-center gap-2 bg-muted/40 border border-muted rounded-xl px-4 py-3 focus-within:border-primary/50 transition-colors hover:border-primary/30">
+                  <input type="number" 
                     value={cookTime} 
                     onChange={(e) => setCookTime(e.target.value)}
                     className="w-full bg-transparent font-medium text-foreground outline-none"
@@ -535,7 +534,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
                       className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
                         isSelected 
                           ? 'bg-primary text-primary-foreground border-primary shadow-md' 
-                          : 'bg-white dark:bg-neutral-800 text-muted-foreground border-muted/20 hover:border-primary/50'
+                          : 'bg-muted/40 dark:bg-neutral-800 text-muted-foreground border-muted/50 hover:border-primary/50'
                       }`}
                     >
                       {cat.name}
@@ -557,7 +556,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
                       className={`px-3 py-1.5 rounded-full text-sm font-bold border transition-all ${
                         isSelected 
                           ? 'bg-primary text-primary-foreground border-primary shadow-md' 
-                          : 'bg-white dark:bg-neutral-800 text-muted-foreground border-muted/20 hover:border-primary/50'
+                          : 'bg-muted/40 dark:bg-neutral-800 text-muted-foreground border-muted/50 hover:border-primary/50'
                       }`}
                     >
                       # {tag.name}
@@ -575,7 +574,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
           <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-[2rem] p-6 md:p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white dark:bg-neutral-800 flex items-center justify-center shadow-sm border border-muted/20">
+                <div className="w-10 h-10 rounded-full bg-muted/40 dark:bg-neutral-800 flex items-center justify-center shadow-sm border border-muted/20">
                   <span className="text-primary font-bold text-lg">⚖️</span>
                 </div>
                 <h3 className="text-2xl font-bold text-foreground">Malzemeler</h3>
@@ -598,7 +597,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
                   : ALL_UNITS;
 
                 return (
-                  <div key={ing.id} className="grid grid-cols-[auto_60px_100px_1fr_auto] gap-4 items-center bg-white dark:bg-neutral-800 p-2 rounded-xl shadow-sm border border-muted/10 group relative">
+                  <div key={ing.id} className="grid grid-cols-[auto_60px_100px_1fr_auto] gap-4 items-center bg-muted/40 dark:bg-neutral-800 p-2 rounded-xl shadow-sm border border-muted/10 group relative">
                     <div className="w-6 flex items-center justify-center text-muted-foreground/30 cursor-grab">
                       <GripVertical className="w-4 h-4" />
                     </div>
@@ -649,7 +648,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 5 }}
-                            className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-muted/20 z-50 overflow-hidden max-h-56 overflow-y-auto"
+                            className="absolute top-full left-0 right-0 mt-2 bg-muted/40 dark:bg-neutral-800 rounded-xl shadow-xl border border-muted/20 z-50 overflow-hidden max-h-56 overflow-y-auto"
                           >
                             {ing.searchResults.length > 0 ? (
                               ing.searchResults.map((result, idx) => (
@@ -702,7 +701,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
           <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-[2rem] p-6 md:p-8">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white dark:bg-neutral-800 flex items-center justify-center shadow-sm border border-muted/20">
+                <div className="w-10 h-10 rounded-full bg-muted/40 dark:bg-neutral-800 flex items-center justify-center shadow-sm border border-muted/20">
                   <span className="text-primary font-bold text-lg">📖</span>
                 </div>
                 <h3 className="text-2xl font-bold text-foreground">Hazırlanışı</h3>
@@ -718,7 +717,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
                   <div className="w-12 h-12 rounded-full bg-[#588157] text-white flex items-center justify-center font-black flex-shrink-0 shadow-md">
                     {index + 1}
                   </div>
-                  <div className="flex-1 bg-white dark:bg-neutral-800 rounded-2xl p-5 shadow-sm border border-muted/10 relative">
+                  <div className="flex-1 bg-muted/40 dark:bg-neutral-800 rounded-2xl p-5 shadow-sm border border-muted/10 relative">
                     <textarea 
                       value={step.instruction}
                       onChange={(e) => updateStep(step.id, "instruction", e.target.value)}
@@ -768,7 +767,7 @@ export const EditRecipeForm = ({ initialData }: { initialData: RecipeDetailRespo
                     {steps.length > 1 && (
                       <button 
                         onClick={() => removeStep(step.id)}
-                        className="absolute -right-3 -top-3 w-8 h-8 rounded-full bg-white dark:bg-neutral-800 border border-muted/20 shadow-sm flex items-center justify-center text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                        className="absolute -right-3 -top-3 w-8 h-8 rounded-full bg-muted/40 dark:bg-neutral-800 border border-muted/20 shadow-sm flex items-center justify-center text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                       >
                         <X className="w-4 h-4" />
                       </button>
