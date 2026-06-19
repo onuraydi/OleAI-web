@@ -1,8 +1,9 @@
+import { Footer } from '@/widgets/footer';
 import React from 'react';
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { ShieldAlert } from "lucide-react";
-import { AdminLogsTable } from '@/widgets/admin-log';
+import { AdminLogsTable, AdminLogFilesTable } from '@/widgets/admin-log';
 import { motion } from "framer-motion";
 
 export function AdminLogsPage() {
@@ -39,11 +40,13 @@ export function AdminLogsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="w-full"
+            className="w-full space-y-8"
           >
             <AdminLogsTable />
+            <AdminLogFilesTable />
           </motion.div>
         </div>
+        <Footer />
       </main>
     </div>
   );
