@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { useState } from 'react';
 import { Sidebar } from '@/widgets/sidebar/ui/Sidebar';
 import { DashboardHeader } from '@/widgets/dashboard-header/ui/DashboardHeader';
@@ -96,6 +97,7 @@ export const AdminRecipeTaxonomyPage = () => {
             </Tabs>
           </motion.div>
         </div>
+        <Footer />
       </main>
 
       {/* Shared Modals */}
