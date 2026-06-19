@@ -4,7 +4,6 @@ import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/shared/ui/dropdown-menu';

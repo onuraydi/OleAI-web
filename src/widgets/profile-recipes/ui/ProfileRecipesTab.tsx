@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, Loader2, Sparkles, Clock, ChefHat, Bookmark, Star, ChevronLeft, ChevronRight, Search, ThumbsDown, Trash2, Edit2, Globe, Lock, AlertCircle, X, Check, SlidersHorizontal, BookOpen } from "lucide-react";
-import type { RecipeCategoryDto, TagDto } from "@/entities/recipe/api/recipeApi";
+import { Heart, Loader2, Sparkles, ChefHat, Bookmark, ChevronLeft, ChevronRight, Search, ThumbsDown, Trash2, Edit2, Globe, Lock, AlertCircle, SlidersHorizontal, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSessionStore } from "@/entities/session";
 import { RecipeCard } from "@/widgets/recipe-card";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
 type SubTab = "created" | "saved" | "liked" | "disliked";
 
@@ -64,6 +61,7 @@ export const ProfileRecipesTab = () => {
     setAppliedVisibility(undefined);
   };
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: recipeApi.getRecipeCategories });
   const { data: tags } = useQuery({ queryKey: ["tags"], queryFn: recipeApi.getRecipeTags });
 const [searchTerm, setSearchTerm] = useState("");
@@ -91,12 +89,14 @@ const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (location.state?.subTab) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveSubTab(location.state.subTab as SubTab);
     }
   }, [location.state]);
 
   // Reset page when search or tab changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(0);
   }, [debouncedSearch, size, activeSubTab, appliedRating, appliedDifficulty, appliedTime, appliedTag, appliedVisibility, sortBy]);
 

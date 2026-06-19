@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
-import { Loader2, Plus, Tags, Pencil, Trash2, Archive, ArchiveRestore, Edit2 } from "lucide-react";
-import { useAdminIngredients, useAllAliases, useDeleteIngredientMutation, type Ingredient, MeasurementCategory, ExpirationMode } from "@/entities/admin-ingredient";
+import { useState, useEffect } from "react";
+import { Loader2, Tags, Trash2, Archive, ArchiveRestore, Edit2 } from "lucide-react";
+import { useAdminIngredients, useAllAliases, useDeleteIngredientMutation, type Ingredient, MeasurementCategory } from "@/entities/admin-ingredient";
 import { UpdateIngredientDialog, ManageAliasesDialog } from "@/features/admin-ingredient";
 import { Button } from "@/shared/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
@@ -44,6 +44,7 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
 
   // When searchTerm changes, reset page to 0
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(0);
   }, [searchTerm]);
 
@@ -210,9 +211,13 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
 
       {/* Advanced Pagination Footer */}
       {data && (() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const count = data.count ?? (data as any).totalItems ?? 0;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const pagesCount = data.pages ?? (data as any).totalPages ?? 1;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const hasPrev = data.hasPrevious ?? (data as any).hasPreviousPage ?? false;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const hasNxt = data.hasNext ?? (data as any).hasNextPage ?? false;
 
         return (

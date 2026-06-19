@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import * as LucideIcons from 'lucide-react';
-import { Loader2, Plus, Pencil, Trash2, Search, HelpCircle } from 'lucide-react';
+import { Pencil, Trash2, Search, HelpCircle } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import {
@@ -16,7 +16,6 @@ import {
 import { useAdminRecipeCategories, useDeleteRecipeCategory } from '@/entities/admin-recipe-taxonomy/api/adminRecipeTaxonomyQueries';
 import type { RecipeCategory } from '@/entities/admin-recipe-taxonomy/model/types';
 import { UpdateRecipeCategoryDialog } from './UpdateRecipeCategoryDialog';
-import { CreateRecipeCategoryDialog } from './CreateRecipeCategoryDialog';
 
 const toPascalCase = (str: string) => {
   return str
@@ -32,6 +31,7 @@ export const AdminRecipeCategoryTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<RecipeCategory | null>(null);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -107,6 +107,7 @@ export const AdminRecipeCategoryTable = () => {
               ) : (
                 filteredCategories.map((category: RecipeCategory) => {
                   const parsedIconName = category.iconName ? toPascalCase(category.iconName) : "";
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const IconComponent = parsedIconName ? (LucideIcons as any)[parsedIconName] : null;
 
                   return (

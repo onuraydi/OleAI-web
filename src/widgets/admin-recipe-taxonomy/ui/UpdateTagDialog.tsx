@@ -17,6 +17,7 @@ export const UpdateTagDialog = ({ tag, open, onOpenChange }: UpdateTagDialogProp
   const updateMutation = useUpdateTag();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setName(tag.name);
   }, [tag]);
 

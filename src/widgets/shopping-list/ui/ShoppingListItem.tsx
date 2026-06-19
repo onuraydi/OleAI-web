@@ -1,6 +1,6 @@
-import { Check, Edit2, Trash2, X, Plus, Minus } from "lucide-react";
+import { Check, Edit2, Trash2, Plus, Minus } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import type { ShoppingListItem as IShoppingListItem } from "@/entities/shopping-list/api/shoppingListApi";
 import { MEASUREMENT_UNIT_LABELS, MeasurementUnit, ALL_UNITS, UNIT_SHORT_LABELS, MeasurementCategory, MEASUREMENT_CATEGORY_UNITS } from "@/shared/constants/measurement";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
@@ -25,6 +25,7 @@ export const ShoppingListItem = ({
   onUpdate
 }: ShoppingListItemProps) => {
   // Helper to safely parse string enums from API to numeric enum values
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parseUnit = (u: any): MeasurementUnit => {
     if (typeof u === "number") return u;
     if (typeof u === "string") {

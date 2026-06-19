@@ -8,7 +8,7 @@ import { pantryApi } from "@/entities/pantry/api/pantryApi";
 import { RecipeCard } from "@/widgets/recipe-card/ui/RecipeCard";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
-import { Sparkles, Zap, Flame, Compass, PackageMinus, BrainCircuit, Heart, Info, Loader2, Salad, Target, ChevronDown, Leaf, HeartPulse, ShieldAlert, ThumbsDown } from "lucide-react";
+import { Sparkles, Zap, Flame, Compass, PackageMinus, BrainCircuit, Heart, Info, Loader2, Salad, Target, ChevronDown, Leaf, ShieldAlert, ThumbsDown } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 
@@ -62,12 +62,14 @@ export const AiRecommendationsPage = () => {
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (isFetching) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoadingStep(0);
       interval = setInterval(() => {
         setLoadingStep((prev) => (prev + 1) % loadingTexts.length);
       }, 1500);
     }
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
   const handleGenerate = () => {

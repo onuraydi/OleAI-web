@@ -1,7 +1,7 @@
 import { Footer } from '@/widgets/footer';
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ChevronLeft, Loader2, Edit2, Trash2 } from "lucide-react";
+import { Loader2, Edit2, Trash2 } from "lucide-react";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { RecipeHero } from "@/widgets/recipe-header/RecipeHero";
 import { RecipeSidebar } from "@/widgets/recipe-header/RecipeSidebar";

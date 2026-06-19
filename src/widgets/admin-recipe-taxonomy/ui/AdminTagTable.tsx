@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Loader2, Plus, Pencil, Trash2, Tag as TagIcon, Search } from 'lucide-react';
+import { Pencil, Trash2, Tag as TagIcon, Search } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import {
@@ -14,7 +14,6 @@ import {
 } from '@/shared/ui/alert-dialog';
 import { useAdminTags, useDeleteTag } from '@/entities/admin-recipe-taxonomy/api/adminRecipeTaxonomyQueries';
 import type { Tag } from '@/entities/admin-recipe-taxonomy/model/types';
-import { CreateTagDialog } from './CreateTagDialog';
 import { UpdateTagDialog } from './UpdateTagDialog';
 
 export const AdminTagTable = () => {
@@ -24,6 +23,7 @@ export const AdminTagTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 

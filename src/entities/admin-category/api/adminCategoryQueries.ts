@@ -34,6 +34,7 @@ export const useCreateCategory = () => {
       queryClient.invalidateQueries({ queryKey: adminCategoryKeys.lists() });
       toast.success("Kategori başarıyla eklendi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Kategori eklenirken bir hata oluştu";
       toast.error(message);
@@ -50,6 +51,7 @@ export const useUpdateCategory = () => {
       queryClient.invalidateQueries({ queryKey: adminCategoryKeys.lists() });
       toast.success("Kategori başarıyla güncellendi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Kategori güncellenirken bir hata oluştu";
       toast.error(message);
@@ -66,6 +68,7 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({ queryKey: adminCategoryKeys.lists() });
       toast.success("Kategori başarıyla silindi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Kategori silinirken bir hata oluştu.";
       toast.error(message);
@@ -82,6 +85,7 @@ export const useRestoreCategory = () => {
       queryClient.invalidateQueries({ queryKey: adminCategoryKeys.lists() });
       toast.success("Kategori başarıyla geri yüklendi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Kategori geri yüklenirken bir hata oluştu";
       toast.error(message);

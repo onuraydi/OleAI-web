@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminUserApi } from './adminUserApi';
-import type { AdminUserDTO, AssignRoleRequest, BanUserRequest, UnlockUserRequest, PaginatedAdminUsersResponse } from '../types';
+import type { AssignRoleRequest, BanUserRequest, UnlockUserRequest, PaginatedAdminUsersResponse } from '../types';
 
 export const ADMIN_USERS_KEY = ['admin-users'] as const;
 

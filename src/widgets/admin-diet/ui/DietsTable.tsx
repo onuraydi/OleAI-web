@@ -137,9 +137,11 @@ export const DietsTable = () => {
                 </td>
               </tr>
             ) : (
+              // eslint-disable-next-line unused-imports/no-unused-vars
               filteredDiets.map((diet, index) => {
                 const isDeleted = !!diet.deletedDate;
                 const parsedIconName = diet.iconName ? diet.iconName : "Leaf";
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const IconComponent = (LucideIcons as any)[parsedIconName] || LucideIcons.Leaf;
 
                 return (

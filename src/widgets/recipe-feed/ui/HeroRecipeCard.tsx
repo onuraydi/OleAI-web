@@ -21,6 +21,7 @@ const HeroSlide = ({ recipe }: { recipe: RecipeListItem }) => {
   const uniqueTags = recipe.tags?.filter((tag, index, self) => self.findIndex(t => t.id === tag.id) === index) || [];
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (recipe.isLiked !== undefined) setIsLiked(recipe.isLiked);
     if (recipe.isSaved !== undefined) setIsSaved(recipe.isSaved);
   }, [recipe.isLiked, recipe.isSaved]);

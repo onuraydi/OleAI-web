@@ -74,6 +74,7 @@ export const RecipeStatusChart = ({ stats, isLoading }: RecipeStatusChartProps) 
             const strokeDasharray = `${strokeLength} ${circumference}`;
             const strokeDashoffset = -currentOffset;
             
+            // eslint-disable-next-line react-hooks/immutability
             currentOffset += strokeLength;
 
             return (

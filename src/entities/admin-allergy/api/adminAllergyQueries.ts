@@ -34,6 +34,7 @@ export const useCreateAllergy = () => {
       queryClient.invalidateQueries({ queryKey: adminAllergyKeys.lists() });
       toast.success("Alerji başarıyla eklendi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Alerji eklenirken bir hata oluştu";
       toast.error(message);
@@ -50,6 +51,7 @@ export const useUpdateAllergy = () => {
       queryClient.invalidateQueries({ queryKey: adminAllergyKeys.lists() });
       toast.success("Alerji başarıyla güncellendi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Alerji güncellenirken bir hata oluştu";
       toast.error(message);
@@ -66,6 +68,7 @@ export const useDeleteAllergy = () => {
       queryClient.invalidateQueries({ queryKey: adminAllergyKeys.lists() });
       toast.success("Alerji başarıyla silindi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Alerji silinirken bir hata oluştu.";
       toast.error(message);
@@ -82,6 +85,7 @@ export const useRestoreAllergy = () => {
       queryClient.invalidateQueries({ queryKey: adminAllergyKeys.lists() });
       toast.success("Alerji başarıyla geri yüklendi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Alerji geri yüklenirken bir hata oluştu.";
       toast.error(message);

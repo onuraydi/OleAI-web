@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Search, X, Loader2, Plus, CalendarIcon, Trash2, ArrowRight, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,6 +12,7 @@ interface AddIngredientModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialKeyword?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmitOverride?: (request: any) => void;
   isLoadingOverride?: boolean;
   mode?: 'pantry' | 'shopping-list';
@@ -42,6 +43,7 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setKeyword(initialKeyword || "");
       setSelectedIngredient(null);
       setQuantity("1");

@@ -10,6 +10,7 @@ export const useForegroundNotifications = (isAuth: boolean) => {
     // Listen for foreground messages
     const listen = onMessageListener();
     listen
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((payload: any) => {
         toast(payload?.notification?.title || 'Yeni Bildirim', {
           description: payload?.notification?.body,

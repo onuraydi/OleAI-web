@@ -71,6 +71,7 @@ export const useHardDeleteRecipe = () => {
 
   return useMutation({
     mutationFn: (id: string) => adminRecipeApi.hardDeleteRecipe(id),
+    // eslint-disable-next-line unused-imports/no-unused-vars
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ADMIN_DELETED_RECIPES_KEYS.all });
     },

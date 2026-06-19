@@ -9,7 +9,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/shared/ui";
-import { Loader2, CheckCircle2, Utensils, ArrowRight, Mail } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowRight, Mail } from "lucide-react";
 import { sessionApi } from "@/entities/session";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 

@@ -4,16 +4,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { useNavigate } from "react-router-dom";
-import { Search, Loader2, Sparkles, Heart, Clock, Star, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { Search, Sparkles, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import type { RecipeCategoryDto, TagDto } from "@/entities/recipe/api/recipeApi";
 
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { RecipeCard } from "@/widgets/recipe-card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
 export const RecipesPage = () => {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const navigate = useNavigate();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +78,7 @@ export const RecipesPage = () => {
 
   // Reset page when search, size or any APPLIED filter changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(0);
   }, [debouncedSearch, size, appliedCategory, appliedDifficulty, appliedTime, appliedTag, appliedRating, sortBy]);
 

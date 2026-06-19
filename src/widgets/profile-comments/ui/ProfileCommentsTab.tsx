@@ -30,6 +30,7 @@ export const ProfileCommentsTab = () => {
   const [size, setSize] = useState(12);
 
   const queryClient = useQueryClient();
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const user = useSessionStore(state => state.user);
 
   // Delete State

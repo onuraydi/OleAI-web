@@ -18,6 +18,7 @@ export const UpdateRecipeCategoryDialog = ({ category, open, onOpenChange }: Upd
   const updateMutation = useUpdateRecipeCategory();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setName(category.name);
     setIconName(category.iconName);
   }, [category]);

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/shared/ui";
-import { ArrowRight, Utensils, Sparkles, Box, Users } from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
+import { ArrowRight, Sparkles, Box, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import aiMagicImg from "@/shared/assets/onboarding/ai-magic.png";
 import pantryImg from "@/shared/assets/onboarding/pantry-real.png";
 import communityImg from "@/shared/assets/onboarding/community-real.png";

@@ -93,6 +93,7 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
   const [searchMaster, setSearchMaster] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const selectedAction = watch("action");
 
   // Reset form when request changes
@@ -120,6 +121,7 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
       toast.success("Talep başarıyla karara bağlandı");
       onOpenChange(false);
       reset();
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error("İşlem sırasında bir hata oluştu");
     }
@@ -134,7 +136,8 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
       const parsed = JSON.parse(displayName);
       displayName = parsed.RequestedName || parsed.Name || "Bilinmeyen Malzeme (JSON Hatası)";
       isJson = true;
-    } catch (e) {}
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    } catch { /* ignore */ }
   }
 
   const filteredMasterIngredients = ingredientsData?.items.filter(ing => 

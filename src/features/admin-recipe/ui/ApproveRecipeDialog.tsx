@@ -27,6 +27,7 @@ export function ApproveRecipeDialog({ recipeId, recipeTitle }: ApproveRecipeDial
       await approveRecipe(recipeId);
       toast.success(`${recipeTitle} başarıyla onaylandı.`);
       setOpen(false);
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error('Tarif onaylanırken bir hata oluştu.');
     }

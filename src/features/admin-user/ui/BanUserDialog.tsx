@@ -30,6 +30,7 @@ export function BanUserDialog({ userId, userName, triggerContext }: BanUserDialo
       await banUser({ userId });
       toast.success(`${userName} kullanıcısı başarıyla banlandı.`);
       setOpen(false);
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error('Kullanıcı banlanırken bir hata oluştu.');
     }

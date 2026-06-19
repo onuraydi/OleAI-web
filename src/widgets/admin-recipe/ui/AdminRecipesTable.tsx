@@ -5,7 +5,7 @@ import { ApproveRecipeDialog, RejectRecipeDialog } from '@/features/admin-recipe
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { Search, ChefHat, ExternalLink, AlertCircle, Eye } from 'lucide-react';
+import { Search, ChefHat, AlertCircle, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -17,6 +17,7 @@ export function AdminRecipesTable({ fixedStatus }: AdminRecipesTableProps) {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [statusFilter, setStatusFilter] = useState('All');
   const [visibilityFilter, setVisibilityFilter] = useState('All');
 

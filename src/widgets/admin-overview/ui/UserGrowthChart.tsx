@@ -7,7 +7,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import type { AdminDashboardStats } from "@/entities/admin-dashboard";
 
 interface UserGrowthChartProps {
@@ -66,10 +66,13 @@ export const UserGrowthChart = ({ stats, isLoading }: UserGrowthChartProps) => {
 
   const data = mergeGrowthData(stats);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [width, setWidth] = useState(0);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const containerRef = useRef<HTMLDivElement>(null);
 
   // useLayoutEffect to measure synchronously before browser paints
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useLayoutEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {

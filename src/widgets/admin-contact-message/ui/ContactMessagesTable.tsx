@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/shared/ui/button";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Check, CheckCircle2, Trash2, MailOpen, Headset, Briefcase, Megaphone, MoreHorizontal } from "lucide-react";
+import { Trash2, MailOpen, Headset, Briefcase, Megaphone, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import { useState } from "react";
 import {
@@ -34,7 +34,9 @@ export const ContactMessagesTable = () => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const { data, isLoading } = useAdminContactMessages(page, size);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { mutate: markAsRead, isPending: isMarking } = useMarkMessageAsRead();
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { mutate: deleteMessage, isPending: isDeleting } = useDeleteMessage();
 
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);

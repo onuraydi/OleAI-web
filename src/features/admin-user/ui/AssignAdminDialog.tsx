@@ -30,6 +30,7 @@ export function AssignAdminDialog({ userId, userName, triggerContext }: AssignAd
       await assignAdmin({ userId });
       toast.success(`${userName} kullanıcısına Admin yetkisi başarıyla verildi.`);
       setOpen(false);
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error('Admin yetkisi verilirken bir hata oluştu.');
     }

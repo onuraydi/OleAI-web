@@ -30,6 +30,7 @@ export function UnlockUserDialog({ userId, userName, triggerContext }: UnlockUse
       await unlockUser({ userId });
       toast.success(`${userName} kullanıcısının kilidi başarıyla açıldı.`);
       setOpen(false);
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error('Kullanıcı kilidi açılırken bir hata oluştu.');
     }

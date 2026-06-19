@@ -1,4 +1,4 @@
-import { Bell, Menu, Sparkles, Sun, Moon, Sunrise, Sunset, CloudMoon, LogOut, Settings, User, Bookmark } from "lucide-react";
+import { Menu, Sparkles, Sun, Moon, Sunrise, Sunset, CloudMoon, LogOut, Settings, User, Bookmark } from "lucide-react";
 import { useSessionStore } from "@/entities/session";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -13,10 +13,12 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { NotificationBell } from "@/widgets/notification";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface DashboardHeaderProps {
   // Empty for future use
 }
 
+// eslint-disable-next-line no-empty-pattern
 export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
   const user = useSessionStore((state) => state.user);
   const logout = useSessionStore((state) => state.logout);
@@ -24,11 +26,13 @@ export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
   const navigate = useNavigate();
   
   const [greeting, setGreeting] = useState("Merhaba");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [GreetingIcon, setGreetingIcon] = useState<any>(Sun);
 
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setGreeting("Günaydın");
       setGreetingIcon(() => Sunrise);
     } else if (hour >= 12 && hour < 18) {

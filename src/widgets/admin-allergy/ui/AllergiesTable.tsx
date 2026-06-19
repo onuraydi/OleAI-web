@@ -6,7 +6,9 @@ import { useAdminAllergies, useRestoreAllergy } from "@/entities/admin-allergy";
 import * as LucideIcons from "lucide-react";
 
 interface AllergiesTableProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onEdit: (allergy: any) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onDelete: (allergy: any) => void;
 }
 
@@ -19,10 +21,12 @@ export const AllergiesTable = ({ onEdit, onDelete }: AllergiesTableProps) => {
     if (!data) return [];
     
     // Check if the API response is wrapped in { items: [] } or just []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const items = Array.isArray(data) ? data : (data as any).items || [];
 
     if (!searchQuery) return items;
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return items.filter((allergy: any) =>
       allergy.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       allergy.description?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -79,8 +83,10 @@ export const AllergiesTable = ({ onEdit, onDelete }: AllergiesTableProps) => {
                 </td>
               </tr>
             ) : (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               filteredAllergies.map((allergy: any) => {
                 const isPassive = !!allergy.deletedDate;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const IconComponent = allergy.iconName ? (LucideIcons as any)[allergy.iconName] : ShieldAlert;
 
                 return (

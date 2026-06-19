@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,6 +22,7 @@ const formSchema = z.object({
   iconName: z.string().min(2, "İkon adı zorunludur").refine(
     (val) => {
       const pascalCaseName = toPascalCase(val);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return !!(LucideIcons as any)[pascalCaseName];
     },
     {
@@ -55,8 +55,10 @@ export const CreateCategoryDialog = ({ isOpen, onClose }: CreateCategoryDialogPr
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const currentIconName = watch("iconName");
   const parsedIconName = currentIconName ? toPascalCase(currentIconName) : "";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = parsedIconName ? (LucideIcons as any)[parsedIconName] : null;
 
   const onSubmit = (data: FormValues) => {

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Star, ChevronLeft, ChevronRight, Maximize2, XCircle, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, XCircle } from "lucide-react";
 import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";
 import { motion, AnimatePresence } from "framer-motion";
 

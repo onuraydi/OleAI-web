@@ -1,7 +1,7 @@
 import { Header } from "@/widgets/header"
 import { Footer } from "@/widgets/footer"
 import { Container, Button, Input, Label } from "@/shared/ui"
-import { Mail, MapPin, Phone, Building, Loader2, Check, Headset, Briefcase, Megaphone, MoreHorizontal } from "lucide-react"
+import { Mail, Phone, Building, Loader2, Check, Headset, Briefcase, Megaphone, MoreHorizontal } from "lucide-react"
 import { useState } from "react"
 import { useCreateContactMessage } from "@/entities/contact-message"
 

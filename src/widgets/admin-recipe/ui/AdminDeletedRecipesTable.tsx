@@ -4,8 +4,7 @@ import type { AdminRecipeDTO } from '@/entities/admin-recipe';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { Search, Trash2, RefreshCw, AlertCircle, Eye } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, Trash2, RefreshCw, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function AdminDeletedRecipesTable() {

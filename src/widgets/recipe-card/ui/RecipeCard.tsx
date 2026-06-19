@@ -28,6 +28,7 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
   const uniqueTags = recipe.tags?.filter((tag, index, self) => self.findIndex(t => t.id === tag.id) === index) || [];
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (recipe.isLiked !== undefined) setIsLiked(recipe.isLiked);
     if (recipe.isSaved !== undefined) setIsSaved(recipe.isSaved);
   }, [recipe.isLiked, recipe.isSaved]);
@@ -42,6 +43,7 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
     try {
       await recipeApi.toggleLike(recipe.id);
       toast.success(isLiked ? "Beğeni geri alındı." : "Tarif beğenildi!");
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (err) {
       // Revert on error
       setIsLiked(isLiked);
@@ -61,6 +63,7 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
     try {
       await recipeApi.toggleSave(recipe.id);
       toast.success(isSaved ? "Tarif kaydedilenlerden çıkarıldı." : "Tarif kaydedildi!");
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (err) {
       // Revert on error
       setIsSaved(isSaved);

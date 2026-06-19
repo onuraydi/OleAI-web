@@ -24,6 +24,7 @@ export const MultiSelectBox = ({
   const [cachedOptions, setCachedOptions] = useState<{ id: string; label: string }[]>([]);
   
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCachedOptions((prev) => {
       const selectedFromPrev = prev.filter((p) => value.includes(p.id));
       const newlySelected = options.filter(

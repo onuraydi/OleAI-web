@@ -66,6 +66,7 @@ const container = {
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as any } },
 };
 

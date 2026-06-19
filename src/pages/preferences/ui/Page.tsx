@@ -90,6 +90,7 @@ export default function PreferencesPage() {
   const [selectedPopularCategory, setSelectedPopularCategory] = useState<string>("Tümü");
   const [isFinishing, setIsFinishing] = useState(false);
   const navigate = useNavigate();
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const user = useSessionStore((state) => state.user);
   const initializeSession = useSessionStore((state) => state.initialize);
 

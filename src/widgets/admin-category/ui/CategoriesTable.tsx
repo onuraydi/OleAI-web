@@ -80,6 +80,7 @@ export const CategoriesTable = ({ onEdit, onDelete }: CategoriesTableProps) => {
             ) : (
               filteredCategories.map((category) => {
                 const parsedIconName = category.iconName ? toPascalCase(category.iconName) : "";
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const IconComponent = parsedIconName ? (LucideIcons as any)[parsedIconName] : null;
                 const isPassive = !!category.deletedDate;
 

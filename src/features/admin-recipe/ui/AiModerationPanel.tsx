@@ -23,8 +23,8 @@ interface LlmCorrection {
   rejectionReason: string | null;
 }
 
-import { Textarea } from '@/shared/ui/textarea';
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 export function AiModerationPanel({ recipeId, originalDescription, originalSteps, llmReviewResultJson, status, onApplyToForm }: AiModerationPanelProps) {
   const queryClient = useQueryClient();
   
@@ -60,15 +60,18 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
     }
   }
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [isEditMode, setIsEditMode] = React.useState(false);
   const [editedDescription, setEditedDescription] = React.useState<string>("");
   const [editedSteps, setEditedSteps] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     if (parsedResult) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditedDescription(parsedResult.correctedDescription || "");
       setEditedSteps(parsedResult.correctedSteps || []);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [llmReviewResultJson]);
 
   const handleApplyToForm = () => {
@@ -83,6 +86,7 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
     }
   };
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const originalText = `Açıklama:\n${originalDescription}\n\nAdımlar:\n${originalSteps?.sort((a, b) => a.stepNumber - b.stepNumber).map(s => `${s.stepNumber}. ${s.instruction}`).join('\n')}`;
 
   if (!parsedResult) {

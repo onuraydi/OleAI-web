@@ -1,9 +1,9 @@
 import { Footer } from '@/widgets/footer';
 import { useState } from "react";
-import { Plus, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { DietsTable } from "@/widgets/admin-diet";
-import { CreateDietDialog, UpdateDietDialog } from "@/features/admin-diet";
+import { CreateDietDialog } from "@/features/admin-diet";
 import { motion } from "framer-motion";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";

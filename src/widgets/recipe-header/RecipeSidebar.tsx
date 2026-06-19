@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MessageSquare, Bookmark, Share2, ThumbsUp, ThumbsDown, ChefHat, Clock, Flame, Star, Calendar, Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
-import type { RecipeDetailResponse, RecipeIngredientResponse, IngredientResponse } from "@/entities/recipe/api/recipeApi";
+import type { RecipeDetailResponse, IngredientResponse } from "@/entities/recipe/api/recipeApi";
 import { CookingAssistantModal } from "@/features/cooking-assistant/ui/CookingAssistantModal";
 import { PreCookSyncModal } from "@/features/cooking-assistant/ui/PreCookSyncModal";
 import { PostCookDepletedModal } from "@/features/cooking-assistant/ui/PostCookDepletedModal";

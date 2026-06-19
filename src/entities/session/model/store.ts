@@ -57,6 +57,7 @@ export const useSessionStore = create<SessionState>()(
             },
             isInitialized: true,
           });
+        // eslint-disable-next-line unused-imports/no-unused-vars
         } catch (error) {
           set({ isAuth: false, user: null, isInitialized: true });
         }

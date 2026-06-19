@@ -19,6 +19,7 @@ const sectionVariant = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" as any },
   }),
 };

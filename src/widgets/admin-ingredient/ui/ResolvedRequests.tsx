@@ -43,6 +43,7 @@ export const ResolvedRequests = ({ searchTerm = "" }: { searchTerm?: string }) =
   
   const { data, isLoading } = useResolvedRequests(page, size);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const filteredItems = useMemo(() => {
     if (!data?.items) return [];
     if (!searchTerm) return data.items;

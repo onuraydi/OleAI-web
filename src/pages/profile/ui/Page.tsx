@@ -51,6 +51,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (location.state?.activeTab) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(location.state.activeTab as TabId);
     }
   }, [location.state]);

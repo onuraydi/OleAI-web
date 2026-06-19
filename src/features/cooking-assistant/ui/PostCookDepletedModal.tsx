@@ -47,6 +47,7 @@ export const PostCookDepletedModal = ({ isOpen, onClose, depletedIngredients, on
           unit: defaultUnit
         };
       });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setItemsData(initial);
     }
   }, [isOpen, depletedIngredients]);

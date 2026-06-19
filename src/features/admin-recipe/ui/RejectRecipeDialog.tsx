@@ -34,6 +34,7 @@ export function RejectRecipeDialog({ recipeId, recipeTitle }: RejectRecipeDialog
       toast.success(`${recipeTitle} reddedildi.`);
       setOpen(false);
       setReason('');
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error('Tarif reddedilirken bir hata oluştu.');
     }

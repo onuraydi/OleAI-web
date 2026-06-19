@@ -22,16 +22,20 @@ import {
 
 export const AdminAllergiesPage = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedAllergy, setSelectedAllergy] = useState<any | null>(null);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { mutate: deleteAllergy, isPending: isDeleting } = useDeleteAllergy();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEdit = (allergy: any) => {
     setSelectedAllergy(allergy);
     setIsEditOpen(true);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDeleteClick = (allergy: any) => {
     setSelectedAllergy(allergy);
     setIsDeleteOpen(true);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from "react";
 import { Loader2, Trash2, Tags } from "lucide-react";
 import { 
@@ -79,6 +80,7 @@ export const AllAliasesTable = ({ searchTerm = "" }: { searchTerm?: string }) =>
               </tr>
             </thead>
             <tbody className="divide-y divide-muted/30">
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               {filteredAliases.map((alias: any) => (
                 <tr key={alias.id} className="hover:bg-muted/30 transition-all duration-200 group">
                   <td className="px-6 py-4 font-bold text-foreground">

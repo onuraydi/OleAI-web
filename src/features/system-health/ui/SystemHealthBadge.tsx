@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getHealthStatus } from '@/shared/api/healthApi';
 import { Activity } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 export const SystemHealthBadge = () => {
   const { data, isLoading, isError } = useQuery({

@@ -24,6 +24,7 @@ export const useMarkMessageAsRead = () => {
       queryClient.invalidateQueries({ queryKey: adminContactMessageKeys.lists() });
       toast.success("Mesaj okundu olarak işaretlendi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "İşlem sırasında bir hata oluştu";
       toast.error(message);
@@ -40,6 +41,7 @@ export const useDeleteMessage = () => {
       queryClient.invalidateQueries({ queryKey: adminContactMessageKeys.lists() });
       toast.success("Mesaj başarıyla silindi");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error?.response?.data?.detail || error?.response?.data?.message || "Mesaj silinirken bir hata oluştu.";
       toast.error(message);

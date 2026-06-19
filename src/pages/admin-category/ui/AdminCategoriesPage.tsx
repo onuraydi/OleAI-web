@@ -2,7 +2,7 @@ import { Footer } from '@/widgets/footer';
 import { useState } from "react";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
-import { Database, Tags, LayoutDashboard } from "lucide-react";
+import { Tags } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { CategoriesTable } from "@/widgets/admin-category/ui/CategoriesTable";
 import { CreateCategoryDialog } from "@/features/admin-category/ui/CreateCategoryDialog";

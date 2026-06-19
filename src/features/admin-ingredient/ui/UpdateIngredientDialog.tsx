@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, CalendarIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { 
   Dialog,
   DialogContent,
@@ -18,7 +18,6 @@ import { Checkbox } from "@/shared/ui/checkbox";
 import { type Ingredient, MeasurementCategory, ExpirationMode, useIngredientCategories, useUpdateIngredientMutation } from "@/entities/admin-ingredient";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
 
 const updateIngredientSchema = z.object({
   name: z.string().min(2, "Malzeme adı en az 2 karakter olmalıdır"),
@@ -93,6 +92,7 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
       });
       toast.success("Malzeme başarıyla güncellendi");
       onOpenChange(false);
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error("Malzeme güncellenirken bir hata oluştu");
     }
@@ -121,6 +121,7 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
             <Label>Kategori</Label>
             <Select 
               onValueChange={(val) => setValue("categoryId", val)} 
+              // eslint-disable-next-line react-hooks/incompatible-library
               value={watch("categoryId")}
               disabled={isLoadingCategories}
             >

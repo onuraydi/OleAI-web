@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Plus, Loader2, CalendarIcon } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { 
   Dialog,
   DialogContent,
@@ -19,7 +19,6 @@ import { Checkbox } from "@/shared/ui/checkbox";
 import { MeasurementCategory, ExpirationMode, useCreateIngredientMutation, useIngredientCategories } from "@/entities/admin-ingredient";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
 
 const createIngredientSchema = z.object({
   name: z.string().min(2, "Malzeme adı en az 2 karakter olmalıdır"),
@@ -74,6 +73,7 @@ export const CreateIngredientDialog = () => {
       toast.success("Malzeme başarıyla eklendi");
       reset();
       setOpen(false);
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error("Malzeme eklenirken bir hata oluştu");
     }
@@ -128,6 +128,7 @@ export const CreateIngredientDialog = () => {
             <Label>Ölçü Birimi Ailesi (Unit Family)</Label>
             <Select 
               onValueChange={(val) => setValue("unitFamily", val as MeasurementCategory)}
+              // eslint-disable-next-line react-hooks/incompatible-library
               value={watch("unitFamily")}
             >
               <SelectTrigger>

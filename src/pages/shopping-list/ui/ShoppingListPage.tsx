@@ -37,6 +37,7 @@ export const ShoppingListPage = () => {
     }
   });
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const addMutation = useMutation({
     mutationFn: shoppingListApi.addItem,
     onSuccess: () => {
@@ -248,8 +249,10 @@ export const ShoppingListPage = () => {
         onClose={() => setIsAddModalOpen(false)}
         mode="shopping-list"
         isLoadingOverride={bulkAddMutation.isPending}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onSubmitOverride={(request: any) => {
           const bulkRequest = {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             items: request.ingredients.map((item: any) => ({
               ingredientId: item.ingredientId,
               requestedName: item.requestedName,

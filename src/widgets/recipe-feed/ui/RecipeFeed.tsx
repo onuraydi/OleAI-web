@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { HeroCarousel } from "./HeroRecipeCard";
 import { RecipeCard } from "@/widgets/recipe-card/ui/RecipeCard";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const TrendingHero = () => {
   const { data: trendingData, isLoading: isTrendingLoading } = useQuery({

@@ -1,17 +1,15 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Leaf, Apple, Beef, Fish, Milk, Wheat, Flame, Coffee, Grape, Sparkles, Loader2, ChevronDown, ChevronUp, Plus, MoreHorizontal, MoreVertical, ShoppingCart, Trash2, Edit2, Minus } from "lucide-react";
+import { Search, Loader2, ChevronDown, ChevronUp, Plus, ShoppingCart, Trash2, Edit2, Minus } from "lucide-react";
 import { pantryApi } from "@/entities/pantry/api/pantryApi";
 import type { PantryItemResponse } from "@/entities/pantry/api/pantryApi";
 import { shoppingListApi } from "@/entities/shopping-list/api/shoppingListApi";
 import { motion, AnimatePresence } from "framer-motion";
 import { AddIngredientModal } from "@/features/add-pantry-item/ui/AddIngredientModal";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/ui/alert-dialog";
 import { toast } from "sonner";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
-import { MEASUREMENT_UNIT_LABELS } from "@/shared/constants/measurement";
 
 // Karta özel kısa birim gösterimleri
 const UNIT_SHORT_LABELS: Record<string, string> = {
@@ -131,6 +129,7 @@ const PantryItemCard = ({
       toast.success(`${item.name} alışveriş listesine eklendi.`);
       setIsShoppingListModalOpen(false);
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       if(error?.response?.status === 409) {
         toast.error("Bu malzeme zaten alışveriş listesinde mevcut.");

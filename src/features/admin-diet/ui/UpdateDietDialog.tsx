@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/shared/ui/dialog";
-import { ListFilter, PencilLine, AlertCircle, Sparkles, Leaf } from "lucide-react";
+import { ListFilter, PencilLine, AlertCircle, Sparkles } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { HelpCircle } from "lucide-react";
 import { Button } from "@/shared/ui/button";
@@ -26,6 +26,7 @@ const formSchema = z.object({
   iconName: z.string().min(2, "İkon adı zorunludur").refine(
     (val) => {
       const pascalCaseName = toPascalCase(val);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return !!(LucideIcons as any)[pascalCaseName];
     },
     {
@@ -79,14 +80,18 @@ export const UpdateDietDialog = ({ dietId, onClose }: UpdateDietDialogProps) => 
         description: diet.description || "",
         iconName: diet.iconName || "Leaf",
         isActive: diet.isActive,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         excludedIngredientIds: diet.excludedIngredients?.map((i: any) => i.id) || [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         excludedCategoryIds: diet.excludedCategories?.map((c: any) => c.id) || [],
       });
     }
   }, [diet, reset]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchIconName = watch("iconName");
   const parsedIconName = watchIconName ? toPascalCase(watchIconName) : "";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = parsedIconName ? (LucideIcons as any)[parsedIconName] : null;
 
   const onSubmit = (data: FormValues) => {
@@ -110,12 +115,18 @@ export const UpdateDietDialog = ({ dietId, onClose }: UpdateDietDialogProps) => 
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ingredientsList = Array.isArray(ingredientsData) ? ingredientsData : (ingredientsData as any)?.items || [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const categoriesList = Array.isArray(categoriesData) ? categoriesData : (categoriesData as any)?.items || [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const activeIngredients = ingredientsList.filter((i: any) => !i.deletedDate && i.isActive !== false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const activeCategories = categoriesList.filter((c: any) => !c.deletedDate && c.isActive !== false);
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ingredientOptions = activeIngredients.map((i: any) => ({ id: i.id, label: i.name }));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const categoryOptions = activeCategories.map((c: any) => ({ id: c.id, label: c.name }));
 
   return (

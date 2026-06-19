@@ -35,7 +35,9 @@ export const PreCookSyncModal = ({ isOpen, onClose, missingIngredients, recipeIn
   const handleContinue = async () => {
     setIsSyncing(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const shoppingListItems: any[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const pantryItems: any[] = [];
       const ignoredIds: string[] = [];
 
@@ -75,6 +77,7 @@ export const PreCookSyncModal = ({ isOpen, onClose, missingIngredients, recipeIn
       }
 
       onContinue(ignoredIds);
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       toast.error("İşlem sırasında bir hata oluştu.");
       onContinue([]); // Proceed anyway if it fails

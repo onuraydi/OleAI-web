@@ -1,5 +1,5 @@
 import { apiInstance as api } from '@/shared/api/base';
-import type { AdminUserDTO, AssignRoleRequest, UnlockUserRequest, BanUserRequest, AuthActionResponse, PaginatedAdminUsersResponse } from '../types';
+import type { AssignRoleRequest, UnlockUserRequest, BanUserRequest, AuthActionResponse, PaginatedAdminUsersResponse } from '../types';
 
 export const adminUserApi = {
   getUsers: async (page = 1, size = 10): Promise<PaginatedAdminUsersResponse> => {

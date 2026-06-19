@@ -7,7 +7,7 @@ import { BanUserDialog } from '@/features/admin-user/ui/BanUserDialog';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { Search, ShieldAlert, ShieldCheck, UserX, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ShieldCheck, UserX, AlertCircle } from 'lucide-react';
 
 export function AdminUsersTable() {
   const [page, setPage] = useState(1);

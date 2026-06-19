@@ -77,6 +77,7 @@ export const PendingRequests = ({ searchTerm = "" }: { searchTerm?: string }) =>
                     const parsed = JSON.parse(displayName);
                     displayName = parsed.RequestedName || parsed.Name || "Bilinmeyen Malzeme (JSON Hatası)";
                     isJson = true;
+                  // eslint-disable-next-line unused-imports/no-unused-vars
                   } catch (e) {
                     // ignore
                   }

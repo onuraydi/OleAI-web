@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { MessageSquare, Bookmark, Share2, Star, ThumbsDown, ThumbsUp, ChevronLeft, ChevronRight, ChefHat, Clock, Flame, Calendar, Maximize2, XCircle } from "lucide-react";
+import { MessageSquare, Bookmark, Share2, Star, ThumbsUp, ChevronLeft, ChevronRight, ChefHat, Clock, Flame, Maximize2, XCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";

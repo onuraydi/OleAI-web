@@ -23,6 +23,7 @@ export const CookingAssistantModal = ({ isOpen, onClose, recipe, ignoredIngredie
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentStepIndex(0);
       setIsSuccess(false);
     }
