@@ -24,7 +24,7 @@ interface IngredientInput {
   name: string;
   unitFamily?: MeasurementCategory;
   isSearching: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   searchResults: any[];
   isPending?: boolean;
   suggestedCategoryId?: string;
@@ -60,7 +60,7 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
   const [title, setTitle] = useState(initialData.title);
   const [description, setDescription] = useState(initialData.description);
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(initialData.images?.find((i: any) => i.isMain)?.imageUrl || null);
 
   const difficultyMap: Record<string, string> = {
@@ -75,7 +75,7 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
   const initialDiff = initialData.difficulty ? (difficultyMap[initialData.difficulty.toString()] || "1") : "1";
 
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     Array.from(new Set(initialData.categories?.map((c: any) => c.id) || []))
   );
   const [difficulty, setDifficulty] = useState(initialDiff);
@@ -85,7 +85,7 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
   const [visibility, setVisibility] = useState(initialData.visibility === 1 ? "Private" : "Public");
   
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     initialData.tags?.map((t: any) => t.id) || []
   );
 
@@ -109,7 +109,7 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
       ? initialData.steps.map(s => ({
           id: s.id,
           instruction: s.instruction,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           imagePreview: initialData.images?.find((i: any) => i.stepId === s.id)?.imageUrl || null
         }))
       : [{ id: "1", instruction: "" }]
@@ -135,7 +135,7 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
       const parsed = JSON.parse(initialData.llmReviewResultJson);
       aiCorrectedDescription = parsed.correctedDescription || null;
       aiCorrectedSteps = parsed.correctedSteps || [];
-    // eslint-disable-next-line unused-imports/no-unused-vars
+     
     } catch { /* ignore */ }
   }
 
@@ -205,7 +205,7 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
     });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const updateIngredient = (id: string, field: keyof IngredientInput, value: any) => {
     setIngredients(prev => prev.map(ing => ing.id === id ? { ...ing, [field]: value } : ing));
   };
@@ -231,7 +231,7 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const handleSelectSearchResult = (id: string, result: any) => {
     setIngredients(prev => prev.map(ing => {
       if (ing.id === id) {
@@ -284,7 +284,7 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
     setSteps(prev => [...prev, { id: Date.now().toString(), instruction: "" }]);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const updateStep = (id: string, field: keyof StepInput, value: any) => {
     setSteps(prev => prev.map(step => step.id === id ? { ...step, [field]: value } : step));
   };

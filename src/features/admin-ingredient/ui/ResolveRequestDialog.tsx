@@ -136,7 +136,7 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
       const parsed = JSON.parse(displayName);
       displayName = parsed.RequestedName || parsed.Name || "Bilinmeyen Malzeme (JSON Hatası)";
       isJson = true;
-    // eslint-disable-next-line unused-imports/no-unused-vars
+     
     } catch { /* ignore */ }
   }
 

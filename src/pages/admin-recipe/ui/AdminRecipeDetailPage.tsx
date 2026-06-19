@@ -202,11 +202,11 @@ export function AdminRecipeDetailPage() {
                     {recipe.images?.find((img: any) => img.isMain) && (
                       <div 
                         className="w-full rounded-2xl overflow-hidden aspect-video bg-muted/10 relative group cursor-zoom-in"
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                         
                         onClick={() => setSelectedImage(recipe.images.find((img: any) => img.isMain)?.imageUrl || null)}
                       >
                         <img 
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                           
                           src={recipe.images.find((img: any) => img.isMain)?.imageUrl} 
                           alt={recipe.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

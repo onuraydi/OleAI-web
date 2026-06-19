@@ -198,7 +198,7 @@ export const NotificationsPage = () => {
                 {/* Pagination Controls */}
                 <div className="flex items-center justify-between pt-8 border-t border-border/50 mt-8">
                   <p className="text-sm font-medium text-muted-foreground">
-                    Sayfa {(data?.index || 0) + 1} / {data?.pages || 1} <span className="mx-2 opacity-50">|</span> Toplam {data?.count || 0} kayıt
+                    Sayfa {(data?.page || 0) + 1} / {data?.pages || 1} <span className="mx-2 opacity-50">|</span> Toplam {data?.count || 0} kayıt
                   </p>
                   <div className="flex items-center gap-2">
                     <Button

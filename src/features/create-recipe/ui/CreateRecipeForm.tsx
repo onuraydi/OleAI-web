@@ -24,7 +24,7 @@ interface IngredientInput {
   name: string;
   unitFamily?: MeasurementCategory;
   isSearching: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   searchResults: any[];
   isPending?: boolean;
   suggestedCategoryId?: string;
@@ -136,7 +136,7 @@ export const CreateRecipeForm = () => {
     });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const updateIngredient = (id: string, field: keyof IngredientInput, value: any) => {
     setIngredients(prev => prev.map(ing => ing.id === id ? { ...ing, [field]: value } : ing));
   };
@@ -162,7 +162,7 @@ export const CreateRecipeForm = () => {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const handleSelectSearchResult = (id: string, result: any) => {
     setIngredients(prev => prev.map(ing => {
       if (ing.id === id) {
@@ -215,7 +215,7 @@ export const CreateRecipeForm = () => {
     setSteps(prev => [...prev, { id: Date.now().toString(), instruction: "" }]);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const updateStep = (id: string, field: keyof StepInput, value: any) => {
     setSteps(prev => prev.map(step => step.id === id ? { ...step, [field]: value } : step));
   };
@@ -236,7 +236,7 @@ export const CreateRecipeForm = () => {
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
       navigate("/home");
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     onError: (error: any) => {
       console.error("Failed to create recipe", error);
       const errorMessage = error.response?.data?.detail || error.response?.data?.message || "Tarif kaydedilirken bir hata oluştu. Lütfen tüm alanları doldurduğunuzdan emin olun.";
