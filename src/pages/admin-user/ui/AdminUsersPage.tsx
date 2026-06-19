@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import React from 'react';
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
@@ -44,6 +45,7 @@ export function AdminUsersPage() {
             <AdminUsersTable />
           </motion.div>
         </div>
+        <Footer />
       </main>
     </div>
   );

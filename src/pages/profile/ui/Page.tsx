@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -519,6 +520,7 @@ export default function ProfilePage() {
             </AnimatePresence>
           </div>
         </div>
+        <Footer />
       </main>
     </div>
   );

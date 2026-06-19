@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { useState } from "react";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
@@ -14,6 +15,7 @@ export default function PantryPage() {
         <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
           <PantryFeed />
         </div>
+        <Footer />
       </main>
     </div>
   );

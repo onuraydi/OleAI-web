@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { motion } from "framer-motion";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
@@ -39,7 +40,7 @@ export default function HomePage() {
           <section>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link 
-                to="/recipes/create"
+                to="/ai-recommendations"
                 className="p-5 rounded-2xl bg-gradient-to-br from-primary to-primary/80 hover:from-primary hover:to-primary text-white shadow-xl shadow-primary/20 flex flex-col gap-3 transition-transform hover:-translate-y-1 group relative overflow-hidden"
               >
                 <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
@@ -114,6 +115,7 @@ export default function HomePage() {
             </ErrorBoundary>
           </section>
         </div>
+        <Footer />
       </main>
     </div>
   );

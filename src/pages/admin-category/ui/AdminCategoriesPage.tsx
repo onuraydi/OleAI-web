@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { useState } from "react";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
@@ -70,6 +71,7 @@ export const AdminCategoriesPage = () => {
             <CategoriesTable onEdit={handleEdit} onDelete={handleDelete} />
           </motion.div>
         </div>
+        <Footer />
       </main>
 
       {/* Modals */}
