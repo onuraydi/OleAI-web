@@ -155,6 +155,7 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
     const newItem: StagedItem = {
       id: Math.random().toString(36).substr(2, 9),
       ingredient: selectedIngredient,
+      aliasId: selectedIngredient?.aliasId,
       customName: selectedIngredient ? undefined : keyword.trim(),
       categoryId: selectedIngredient ? selectedIngredient.categoryId : (suggestedCategoryId || undefined),
       categoryName: selectedIngredient ? selectedIngredient.categoryName : (suggestedCategoryId ? categories?.find(c => c.id === suggestedCategoryId)?.name : undefined),
@@ -194,6 +195,7 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
 
         if (item.ingredient) {
           req.ingredientId = item.ingredient.masterIngredientId;
+          req.aliasId = item.aliasId;
         } else {
           req.requestedName = item.customName;
           if (item.categoryId) {

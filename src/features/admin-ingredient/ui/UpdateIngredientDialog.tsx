@@ -27,6 +27,7 @@ const updateIngredientSchema = z.object({
     message: "Lütfen geçerli bir ölçü birimi ailesi seçin"
   }),
   isPolarizing: z.boolean(),
+  isStaple: z.boolean(),
   estimatedShelfLifeInDays: z.number().nullable().optional(),
 });
 
@@ -56,6 +57,7 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
       categoryId: "",
       unitFamily: MeasurementCategory.Other,
       isPolarizing: false,
+      isStaple: false,
       estimatedShelfLifeInDays: null,
     }
   });
@@ -71,6 +73,7 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
         categoryId: cat?.id || "",
         unitFamily: ingredient.unitFamily,
         isPolarizing: ingredient.isPolarizing,
+        isStaple: ingredient.isStaple,
         estimatedShelfLifeInDays: ingredient.estimatedShelfLifeInDays ?? null,
       });
     }
@@ -84,6 +87,7 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
         categoryId: data.categoryId,
         unitFamily: data.unitFamily,
         isPolarizing: data.isPolarizing,
+        isStaple: data.isStaple,
         estimatedShelfLifeInDays: data.estimatedShelfLifeInDays || null,
         defaultExpirationMode: ExpirationMode.ShelfLife
       });
@@ -165,7 +169,11 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
                 min="1"
                 placeholder="Örn: 5" 
                 {...register("estimatedShelfLifeInDays", { 
-                  setValueAs: v => v === "" ? null : parseInt(v, 10) 
+                  setValueAs: v => {
+                    if (v === "" || v === null || v === undefined) return null;
+                    const parsed = parseInt(v, 10);
+                    return isNaN(parsed) ? null : parsed;
+                  }
                 })} 
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Gün</span>
@@ -185,6 +193,22 @@ export const UpdateIngredientDialog = ({ ingredient, open, onOpenChange }: Updat
               </Label>
               <p className="text-sm text-muted-foreground">
                 Bamya, kişniş veya sakatat gibi toplumda sıkça sevilmeyen bir malzemeyse işaretleyin.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 pt-2">
+            <Checkbox 
+              id="update-isStaple" 
+              checked={watch("isStaple")}
+              onCheckedChange={(checked) => setValue("isStaple", checked as boolean)}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label htmlFor="update-isStaple" className="font-bold text-foreground cursor-pointer">
+                Temel Gıda (Staple)
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Tuz, karabiber, su gibi hemen her evde bulunan ve yapay zeka önerilerinde "eksik" sayılmayacak malzemeyse işaretleyin.
               </p>
             </div>
           </div>
