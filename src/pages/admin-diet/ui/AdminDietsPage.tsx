@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { useState } from "react";
 import { Plus, Info } from "lucide-react";
 import { Button } from "@/shared/ui/button";
@@ -68,6 +69,7 @@ export const AdminDietsPage = () => {
             <DietsTable />
           </motion.div>
         </div>
+        <Footer />
       </main>
 
       <CreateDietDialog 
