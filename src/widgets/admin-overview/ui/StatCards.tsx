@@ -1,6 +1,7 @@
 import { Users, Utensils, MessageSquare, Package } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import type { AdminDashboardStats } from "@/entities/admin-dashboard";
 import type { LucideIcon } from "lucide-react";
 
@@ -63,9 +64,9 @@ const container = {
   },
 };
 
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as any } },
 };
 
 function StatCardSkeleton() {
@@ -103,7 +104,7 @@ export const StatCards = ({ stats, isLoading }: StatCardsProps) => {
       {cards.map((card) => (
         <motion.div
           key={card.key}
-          variants={item}
+          variants={itemVariants}
           className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-shadow"
         >
           <div className="flex justify-between items-start mb-4">

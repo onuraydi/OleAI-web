@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { toast } from 'sonner';
 
 /**
  * Hardened Axios instance for OleAI Web.
@@ -89,6 +90,15 @@ apiInstance.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
+    }
+
+    // Handle 500+ and Network Errors globally
+    if (!error.response) {
+      // Network error (no response)
+      toast.error('Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.');
+    } else if (error.response.status >= 500) {
+      // 500 Internal Server Error, 502, 503, etc.
+      toast.error('Sunucu tarafında beklenmeyen bir hata oluştu. Teknik ekip bilgilendirildi.');
     }
 
     return Promise.reject(error);

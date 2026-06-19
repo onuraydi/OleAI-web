@@ -28,3 +28,6 @@ export * from './contact';
 export * from './help';
 export * from './my-recipe-book';
 export * from './admin-log';
+export * from './ai-recommendations';
+export * from './admin-contact-message';
+export * from './notifications/ui/NotificationsPage';

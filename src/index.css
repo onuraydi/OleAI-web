@@ -5,6 +5,10 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+  body {
+    overflow-x: hidden;
   }
   :root {
     --background: 84 12% 97%; /* Very light green tint */
