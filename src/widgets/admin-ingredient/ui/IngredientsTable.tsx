@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { Loader2, Plus, Tags, Pencil, Trash2, Archive, ArchiveRestore, Edit2 } from "lucide-react";
-import { useAdminIngredients, useDeleteIngredientMutation, type Ingredient, MeasurementCategory, ExpirationMode } from "@/entities/admin-ingredient";
+import { useAdminIngredients, useAllAliases, useDeleteIngredientMutation, type Ingredient, MeasurementCategory, ExpirationMode } from "@/entities/admin-ingredient";
 import { UpdateIngredientDialog, ManageAliasesDialog } from "@/features/admin-ingredient";
 import { Button } from "@/shared/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
@@ -33,6 +33,7 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
   
   // Use a debounced value or just use searchTerm directly. We will pass it directly for now.
   const { data, isLoading } = useAdminIngredients(page, size, searchTerm);
+  const { data: allAliases } = useAllAliases();
   const deleteMutation = useDeleteIngredientMutation();
 
   const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | null>(null);
@@ -81,6 +82,7 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
             <tbody className="divide-y divide-muted/30">
               {items.map((ingredient) => {
                 const iconColorClass = getCategoryColorClass(ingredient.categoryIconName || ingredient.categoryName);
+                const itemAliases = allAliases?.filter(a => a.ingredientId === ingredient.id && !a.deletedDate) || [];
                 
                 return (
                 <tr key={ingredient.id} className="hover:bg-muted/30 transition-all duration-200 group">
@@ -97,7 +99,24 @@ export const IngredientsTable = ({ searchTerm = "" }: { searchTerm?: string }) =
                               Yaygın Olarak Sevilmeyen
                             </span>
                           )}
+                          {ingredient.isStaple && (
+                            <span className="bg-blue-500/10 text-blue-600 border border-blue-500/20 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider">
+                              Temel Gıda
+                            </span>
+                          )}
                         </span>
+                        
+                        {itemAliases.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {itemAliases.map(alias => (
+                              <span key={alias.id} className="flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-secondary/50 text-secondary-foreground border border-border/50 shadow-sm">
+                                <Tags className="w-3 h-3" />
+                                {alias.aliasName}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
                         {ingredient.deletedDate && (
                           <span className="flex items-center gap-1 text-[10px] text-destructive uppercase tracking-widest mt-1 font-black">
                             <Archive className="w-3 h-3" /> Pasif / Silinmiş
