@@ -1,9 +1,30 @@
 import { Header } from "@/widgets/header"
 import { Footer } from "@/widgets/footer"
 import { Container, Button, Input, Label } from "@/shared/ui"
-import { Mail, MapPin, Phone, Building } from "lucide-react"
+import { Mail, MapPin, Phone, Building, Loader2, Check, Headset, Briefcase, Megaphone, MoreHorizontal } from "lucide-react"
+import { useState } from "react"
+import { useCreateContactMessage } from "@/entities/contact-message"
 
 export default function ContactPage() {
+  const [name, setName] = useState("");
+  const [department, setDepartment] = useState("support");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const { mutate: createMessage, isPending } = useCreateContactMessage();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !message) return;
+    
+    createMessage({ name, department, email, message }, {
+      onSuccess: () => {
+        setName("");
+        setEmail("");
+        setMessage("");
+        setDepartment("support");
+      }
+    });
+  };
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -71,38 +92,68 @@ export default function ContactPage() {
                   <p className="text-muted-foreground">Formu doldurun, ilgili departmanımız en geç 24 saat içinde size dönüş yapsın.</p>
                 </div>
                 
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-sm font-semibold">Ad Soyad / Ünvan</Label>
-                      <Input id="name" placeholder="Kurumsal veya bireysel adınız" className="h-12 bg-background/50" />
+                      <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Kurumsal veya bireysel adınız" className="h-12 bg-background/50" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="department" className="text-sm font-semibold">İlgili Departman</Label>
-                      <select 
-                        id="department" 
-                        className="flex h-12 w-full rounded-2xl border border-input bg-background/50 px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                      >
-                        <option value="support">Müşteri Destek</option>
-                        <option value="business">İş Geliştirme & Ortaklık</option>
-                        <option value="press">Basın ve Medya</option>
-                        <option value="other">Diğer</option>
-                      </select>
+                      <Label htmlFor="email" className="text-sm font-semibold">Kurumsal E-Posta</Label>
+                      <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="iletisim@sirketiniz.com" className="h-12 bg-background/50" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-semibold">Kurumsal E-Posta</Label>
-                    <Input id="email" type="email" placeholder="iletisim@sirketiniz.com" className="h-12 bg-background/50" />
+                  
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold">İlgili Departman</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {[
+                        { id: 'support', name: 'Müşteri Destek', icon: Headset },
+                        { id: 'business', name: 'İş Geliştirme', icon: Briefcase },
+                        { id: 'press', name: 'Basın ve Medya', icon: Megaphone },
+                        { id: 'other', name: 'Diğer', icon: MoreHorizontal },
+                      ].map((dept) => {
+                        const isActive = department === dept.id;
+                        const Icon = dept.icon;
+                        return (
+                          <button
+                            key={dept.id}
+                            type="button"
+                            onClick={() => setDepartment(dept.id)}
+                            className={`relative flex items-center gap-3 p-4 rounded-2xl border-2 font-bold text-sm transition-all duration-200 text-left
+                              ${isActive
+                                ? "border-primary bg-primary/10 text-primary shadow-sm scale-[1.02]"
+                                : "border-muted/60 hover:border-primary/40 text-foreground hover:bg-muted/30"
+                              }`}
+                          >
+                            <Icon className={`w-5 h-5 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                            <span className="leading-snug">{dept.name}</span>
+                            {isActive && (
+                              <span className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                                <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="message" className="text-sm font-semibold">Mesajınız</Label>
                     <textarea 
                       id="message" 
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      required
                       placeholder="Konuyu detaylıca açıklayınız..." 
                       className="flex min-h-[160px] w-full rounded-2xl border border-input bg-background/50 px-4 py-3 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                     />
                   </div>
-                  <Button type="submit" className="w-full h-14 rounded-full text-lg font-bold shadow-lg shadow-primary/20">Gönder</Button>
+                  <Button type="submit" disabled={isPending} className="w-full h-14 rounded-full text-lg font-bold shadow-lg shadow-primary/20">
+                    {isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+                    {isPending ? "Gönderiliyor..." : "Gönder"}
+                  </Button>
                   <p className="text-xs text-muted-foreground text-center mt-4">
                     Formu göndererek <a href="/privacy" className="underline hover:text-primary">Gizlilik Politikası</a> şartlarını kabul etmiş sayılırsınız.
                   </p>
