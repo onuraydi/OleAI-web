@@ -17,6 +17,8 @@ import { useAdminIngredients } from "@/entities/admin-ingredient/api/adminIngred
 import { useAdminCategories } from "@/entities/admin-category/api/adminCategoryQueries";
 import { MultiSelectBox } from "@/shared/ui/multi-select-box";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
+import { useDebounce } from "@/shared/hooks/useDebounce";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Alerji adı en az 2 karakter olmalıdır"),
@@ -43,9 +45,12 @@ interface UpdateAllergyDialogProps {
 }
 
 export const UpdateAllergyDialog = ({ allergyId, onClose }: UpdateAllergyDialogProps) => {
+  const [ingredientSearch, setIngredientSearch] = useState("");
+  const debouncedIngredientSearch = useDebounce(ingredientSearch, 300);
+
   const { data: allergy, isLoading: isLoadingAllergy } = useAdminAllergyById(allergyId as string);
   const { mutate: updateAllergy, isPending } = useUpdateAllergy();
-  const { data: ingredientsData, isLoading: isLoadingIngredients } = useAdminIngredients();
+  const { data: ingredientsData, isLoading: isLoadingIngredients } = useAdminIngredients(0, 10, debouncedIngredientSearch);
   const { data: categoriesData, isLoading: isLoadingCategories } = useAdminCategories();
 
   const {
@@ -299,6 +304,7 @@ export const UpdateAllergyDialog = ({ allergyId, onClose }: UpdateAllergyDialogP
                                 options={ingredientOptions}
                                 value={field.value}
                                 onChange={field.onChange}
+                                onSearch={setIngredientSearch}
                                 placeholder={isLoadingIngredients ? "Yükleniyor..." : "Malzeme ara..."}
                               />
                             )}

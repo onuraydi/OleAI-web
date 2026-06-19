@@ -1,3 +1,4 @@
+import { Footer } from '@/widgets/footer';
 import { useState } from "react";
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
@@ -94,6 +95,7 @@ export const AdminAllergiesPage = () => {
             <AllergiesTable onEdit={handleEdit} onDelete={handleDeleteClick} />
           </motion.div>
         </div>
+        <Footer />
       </main>
 
       {/* Modals */}
