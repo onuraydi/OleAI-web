@@ -25,3 +25,9 @@ export interface GetDatabaseLogsParams {
   correlationId?: string;
   keyword?: string;
 }
+
+export interface LogFileDto {
+  name: string;
+  sizeBytes: number;
+  lastModified: string;
+}

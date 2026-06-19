@@ -1,5 +1,5 @@
 import { apiInstance as api } from '@/shared/api/base';
-import type { PaginatedAdminLogsResponse, GetDatabaseLogsParams } from '../types';
+import type { PaginatedAdminLogsResponse, GetDatabaseLogsParams, LogFileDto } from '../types';
 
 export const adminLogApi = {
   getDatabaseLogs: async (params: GetDatabaseLogsParams): Promise<PaginatedAdminLogsResponse> => {
@@ -25,8 +25,8 @@ export const adminLogApi = {
     return data;
   },
 
-  getLogFiles: async (): Promise<string[]> => {
-    const { data } = await api.get<string[]>('/admin/logs/files');
+  getLogFiles: async (): Promise<LogFileDto[]> => {
+    const { data } = await api.get<LogFileDto[]>('/admin/logs/files');
     return data;
   },
   

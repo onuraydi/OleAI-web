@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { adminLogApi } from './adminLogApi';
-import type { GetDatabaseLogsParams, PaginatedAdminLogsResponse } from '../types';
+import type { GetDatabaseLogsParams, PaginatedAdminLogsResponse, LogFileDto } from '../types';
 
 export const adminLogKeys = {
   all: ['adminLogs'] as const,
@@ -18,7 +18,7 @@ export const useGetDatabaseLogs = (params: GetDatabaseLogsParams) => {
 };
 
 export const useGetLogFiles = () => {
-  return useQuery<string[], Error>({
+  return useQuery<LogFileDto[], Error>({
     queryKey: adminLogKeys.files(),
     queryFn: () => adminLogApi.getLogFiles(),
   });
