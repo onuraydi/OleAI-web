@@ -1,13 +1,15 @@
+import { Footer } from '@/widgets/footer';
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChefHat, Clock, AlertCircle, CheckCircle2, XCircle, List, Heart, ThumbsDown, Bookmark, MessageSquare, Trash2, Edit, Maximize2 } from 'lucide-react';
+import { ArrowLeft, ChefHat, Clock, AlertCircle, CheckCircle2, XCircle, List, Heart, ThumbsDown, Bookmark, MessageSquare, Trash2, Edit, Maximize2, Tags, FolderOpen, Timer, Gauge } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipeApi } from '@/entities/recipe/api/recipeApi';
-import { ApproveRecipeDialog, RejectRecipeDialog } from '@/features/admin-recipe';
+import { ApproveRecipeDialog, RejectRecipeDialog, AiModerationPanel } from '@/features/admin-recipe';
+import { AdminEditRecipeForm } from '@/features/admin-recipe/ui/AdminEditRecipeForm';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/shared/ui/alert-dialog";
 import { toast } from 'sonner';
 
@@ -18,6 +20,8 @@ export function AdminRecipeDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [aiEdits, setAiEdits] = React.useState<{description: string, steps: string[]} | null>(null);
 
   const deleteMutation = useMutation({
     mutationFn: () => recipeApi.deleteRecipe(id!),
@@ -137,11 +141,11 @@ export function AdminRecipeDetailPage() {
                   
                   <Button 
                     variant="outline" 
-                    onClick={() => navigate(`/admin/recipes/edit/${recipe.id}`)}
+                    onClick={() => setIsEditing(!isEditing)}
                     className="gap-2 font-bold"
                   >
                     <Edit className="w-4 h-4" />
-                    Düzenle
+                    {isEditing ? "İncelemeye Dön" : "Tüm Tarifi Düzenle"}
                   </Button>
 
                   <AlertDialog>
@@ -172,8 +176,22 @@ export function AdminRecipeDetailPage() {
                 </div>
               </div>
 
-              {/* Recipe Content */}
-              <div className="p-6 md:p-8 space-y-8">
+              {/* AI Moderation Panel - ALWAYS VISIBLE */}
+              <div className="p-6 md:p-8 pt-6 border-b border-muted/20">
+                <AiModerationPanel 
+                  recipeId={recipe.id} 
+                  originalDescription={recipe.description}
+                  originalSteps={recipe.steps}
+                  llmReviewResultJson={recipe.llmReviewResultJson}
+                  status={recipe.status}
+                  onApplyToForm={() => setIsEditing(true)}
+                />
+              </div>
+
+              {!isEditing ? (
+                <>
+                  {/* Recipe Content */}
+                  <div className="p-6 md:p-8 space-y-8">
                 {/* Image Gallery & Description */}
                 <div className="flex flex-col lg:flex-row gap-8">
                   <div className="w-full lg:w-1/2 space-y-4">
@@ -221,6 +239,50 @@ export function AdminRecipeDetailPage() {
                     <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
                       {recipe.description}
                     </p>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-muted/20 mt-6">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5"><Timer className="w-3.5 h-3.5"/> Hazırlık</span>
+                        <span className="font-bold text-foreground">{recipe.prepTime} Dk</span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5"><Clock className="w-3.5 h-3.5"/> Pişirme</span>
+                        <span className="font-bold text-foreground">{recipe.cookTime} Dk</span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5"><Gauge className="w-3.5 h-3.5"/> Zorluk</span>
+                        <span className="font-bold text-foreground capitalize">{recipe.difficulty}</span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5"><ChefHat className="w-3.5 h-3.5"/> Porsiyon</span>
+                        <span className="font-bold text-foreground">{recipe.servings}</span>
+                      </div>
+                    </div>
+
+                    {(recipe.categories?.length > 0 || recipe.tags?.length > 0) && (
+                      <div className="flex flex-col gap-3 pt-4">
+                        {recipe.categories?.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <FolderOpen className="w-4 h-4 text-primary mt-0.5" />
+                            <div className="flex flex-wrap gap-2">
+                              {recipe.categories.map((cat: any) => (
+                                <span key={cat.id} className="text-xs font-bold px-2.5 py-1 rounded-md bg-primary/10 text-primary">{cat.name}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {recipe.tags?.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <Tags className="w-4 h-4 text-primary mt-0.5" />
+                            <div className="flex flex-wrap gap-2">
+                              {recipe.tags.map((tag: any) => (
+                                <span key={tag.id} className="text-xs font-bold px-2.5 py-1 rounded-md bg-secondary text-foreground border border-border">#{tag.name}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -256,18 +318,36 @@ export function AdminRecipeDetailPage() {
                           <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black flex-shrink-0">
                             {step.stepNumber}
                           </div>
-                          <p className="text-muted-foreground pt-1">
-                            {step.instruction}
-                          </p>
+                          <div className="flex-1 space-y-3">
+                            <p className="text-muted-foreground pt-1">
+                              {step.instruction}
+                            </p>
+                            {step.imageUrl && (
+                              <div className="w-full max-w-sm rounded-xl overflow-hidden border border-muted/20">
+                                <img src={step.imageUrl} alt={`Adım ${step.stepNumber}`} className="w-full h-auto object-cover" />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
               </div>
+                </>
+              ) : (
+                <div className="p-6 md:p-8">
+                  <AdminEditRecipeForm 
+                    initialData={recipe} 
+                    isReviewMode={recipe.status === 1 || recipe.status === 2} 
+                    onCancel={() => setIsEditing(false)} 
+                  />
+                </div>
+              )}
             </motion.div>
           )}
         </div>
+        <Footer />
       </main>
 
       {/* Fullscreen Image Modal */}

@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Save, X, ImagePlus, ChevronDown, Plus, GripVertical, Search, Loader2 } from "lucide-react";
+import { Save, X, ImagePlus, ChevronDown, Plus, GripVertical, Search, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
@@ -35,14 +36,21 @@ interface StepInput {
 }
 
 const DIFFICULTIES = [
-  { id: "0", name: "Kolay" },
-  { id: "1", name: "Orta" },
-  { id: "2", name: "Zor" },
+  { id: "1", name: "Kolay" },
+  { id: "2", name: "Orta" },
+  { id: "3", name: "Zor" },
 ];
 
 import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";
 
-export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetailResponse }) => {
+interface AdminEditRecipeFormProps {
+  initialData: RecipeDetailResponse;
+  isReviewMode?: boolean;
+  prefillAiEdits?: { description: string; steps: string[] } | null;
+  onCancel?: () => void;
+}
+
+export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefillAiEdits, onCancel }: AdminEditRecipeFormProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -52,14 +60,25 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
   const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(initialData.images?.find((i: any) => i.isMain)?.imageUrl || null);
 
+  const difficultyMap: Record<string, string> = {
+    "Easy": "1",
+    "Medium": "2",
+    "Hard": "3",
+    "1": "1",
+    "2": "2",
+    "3": "3"
+  };
+
+  const initialDiff = initialData.difficulty ? (difficultyMap[initialData.difficulty.toString()] || "1") : "1";
+
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>(
-    initialData.categories?.map((c: any) => c.id) || []
+    Array.from(new Set(initialData.categories?.map((c: any) => c.id) || []))
   );
-  const [difficulty, setDifficulty] = useState("0");
-  const [servings, setServings] = useState("4");
-  const [prepTime, setPrepTime] = useState("15");
-  const [cookTime, setCookTime] = useState("45");
-  const [visibility, setVisibility] = useState(initialData.visibility === 1 ? "Public" : "Private");
+  const [difficulty, setDifficulty] = useState(initialDiff);
+  const [servings, setServings] = useState(initialData.servings?.toString() || "4");
+  const [prepTime, setPrepTime] = useState(initialData.prepTime?.toString() || "15");
+  const [cookTime, setCookTime] = useState(initialData.cookTime?.toString() || "45");
+  const [visibility, setVisibility] = useState(initialData.visibility === 1 ? "Private" : "Public");
   
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
     initialData.tags?.map((t: any) => t.id) || []
@@ -89,6 +108,28 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
         }))
       : [{ id: "1", instruction: "" }]
   );
+
+  useEffect(() => {
+    if (prefillAiEdits) {
+      setDescription(prefillAiEdits.description);
+      setSteps(prefillAiEdits.steps.map((s, idx) => ({
+        id: Date.now().toString() + idx,
+        instruction: s,
+        imagePreview: null
+      })));
+    }
+  }, [prefillAiEdits]);
+
+  let aiCorrectedDescription: string | null = null;
+  let aiCorrectedSteps: string[] = [];
+  
+  if (isReviewMode && initialData.llmReviewResultJson) {
+    try {
+      const parsed = JSON.parse(initialData.llmReviewResultJson);
+      aiCorrectedDescription = parsed.correctedDescription || null;
+      aiCorrectedSteps = parsed.correctedSteps || [];
+    } catch(e) {}
+  }
 
   // Modal State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -246,28 +287,47 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
     });
   };
 
+  const approveMutation = useMutation({
+    mutationFn: () => recipeApi.approveRecipe(initialData.id),
+    onSuccess: () => {
+      toast.success("Tarif başarıyla onaylandı!");
+      queryClient.invalidateQueries({ queryKey: ["admin-recipes"] });
+      queryClient.invalidateQueries({ queryKey: ["recipe-detail", initialData.id] });
+      navigate('/admin/recipes');
+    },
+    onError: (error) => {
+      console.error("Failed to approve recipe", error);
+      toast.error("Tarif kaydedildi ancak onaylanırken bir hata oluştu.");
+    }
+  });
+
   const updateMutation = useMutation({
     mutationFn: (formData: FormData) => recipeApi.updateRecipe(initialData.id, formData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-recipes"] });
-      queryClient.invalidateQueries({ queryKey: ["recipe-detail", initialData.id] });
-      navigate(`/admin/recipes/${initialData.id}`);
+      if (isReviewMode) {
+        approveMutation.mutate();
+      } else {
+        toast.success("Tarif başarıyla güncellendi!");
+        queryClient.invalidateQueries({ queryKey: ["admin-recipes"] });
+        queryClient.invalidateQueries({ queryKey: ["recipe-detail", initialData.id] });
+        navigate(`/admin/recipes/${initialData.id}`);
+      }
     },
     onError: (error) => {
       console.error("Failed to update recipe", error);
-      alert("Tarif kaydedilirken bir hata oluştu.");
+      toast.error("Tarif kaydedilirken bir hata oluştu.");
     }
   });
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      alert("Lütfen Tarif Adı alanını eksiksiz doldurun.");
+      toast.error("Lütfen Tarif Adı alanını eksiksiz doldurun.");
       return;
     }
 
     const validIngredients = ingredients.filter(i => (i.ingredientId || i.isPending) && i.qty && i.unitId);
     if (validIngredients.length === 0) {
-      alert("Lütfen en az bir geçerli malzeme ekleyin.");
+      toast.error("Lütfen en az bir geçerli malzeme ekleyin.");
       return;
     }
 
@@ -275,6 +335,10 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
     formData.append("Title", title);
     formData.append("Description", description);
     formData.append("Visibility", visibility === "Public" ? "2" : "1");
+    formData.append("Difficulty", difficulty);
+    formData.append("Servings", servings);
+    formData.append("PrepTime", prepTime);
+    formData.append("CookTime", cookTime);
     if (coverPhoto) {
       formData.append("NewMainImage", coverPhoto);
     }
@@ -326,18 +390,18 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
         </div>
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => navigate(-1)}
-            disabled={updateMutation.isPending}
+            onClick={() => onCancel ? onCancel() : navigate(-1)}
+            disabled={updateMutation.isPending || approveMutation.isPending}
             className="px-6 py-2.5 rounded-xl font-bold text-foreground hover:bg-muted/50 transition-colors"
           >
             İptal
           </button>
           <button 
             onClick={handleSubmit}
-            disabled={updateMutation.isPending}
-            className="px-6 py-2.5 rounded-xl font-bold bg-[#588157] hover:bg-[#3a5a39] text-white transition-colors flex items-center gap-2 shadow-lg shadow-[#588157]/20 disabled:opacity-50"
+            disabled={updateMutation.isPending || approveMutation.isPending}
+            className="px-6 py-2.5 rounded-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground transition-colors flex items-center gap-2 shadow-lg shadow-primary/20 disabled:opacity-50"
           >
-            {updateMutation.isPending ? <span className="animate-pulse">Güncelleniyor...</span> : <><Save className="w-4 h-4" /> Tarifi Güncelle</>}
+            {(updateMutation.isPending || approveMutation.isPending) ? <span className="animate-pulse">İşleniyor...</span> : <><Save className="w-4 h-4" /> {isReviewMode ? "Değişiklikleri Kaydet ve Onayla" : "Tarifi Güncelle"}</>}
           </button>
         </div>
       </div>
@@ -361,6 +425,23 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
               onChange={(e) => setDescription(e.target.value)}
               className="text-lg text-muted-foreground placeholder:text-muted-foreground/50 bg-transparent border-none outline-none w-full resize-none min-h-[100px]"
             />
+            {aiCorrectedDescription && aiCorrectedDescription !== description && (
+              <div className="mt-1 p-4 bg-primary/5 border border-primary/20 rounded-xl flex flex-col gap-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                    <Sparkles className="w-4 h-4" /> Yapay Zeka Önerisi
+                  </div>
+                  <button 
+                    onClick={() => setDescription(aiCorrectedDescription!)}
+                    className="flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Bunu Uygula
+                  </button>
+                </div>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{aiCorrectedDescription}</p>
+              </div>
+            )}
           </div>
 
           {/* Cover Photo Upload */}
@@ -678,6 +759,23 @@ export const AdminEditRecipeForm = ({ initialData }: { initialData: RecipeDetail
                       placeholder="Bu adımda ne yapılması gerektiğini açıklayın..."
                       className="w-full bg-transparent outline-none resize-none text-foreground leading-relaxed min-h-[60px]"
                     />
+                    
+                    {aiCorrectedSteps && aiCorrectedSteps[index] && aiCorrectedSteps[index] !== step.instruction && (
+                      <div className="mt-3 mb-2 p-3 bg-primary/5 border border-primary/20 rounded-xl flex flex-col gap-2 relative">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 text-primary font-bold text-xs">
+                            <Sparkles className="w-3.5 h-3.5" /> AI Önerisi
+                          </div>
+                          <button 
+                            onClick={() => updateStep(step.id, "instruction", aiCorrectedSteps[index])}
+                            className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded text-[10px] font-bold hover:bg-primary/90 transition-colors shadow-sm"
+                          >
+                            <CheckCircle2 className="w-3 h-3" /> Uygula
+                          </button>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{aiCorrectedSteps[index]}</p>
+                      </div>
+                    )}
                     
                     <div className="mt-4 flex items-center gap-4">
                       <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
