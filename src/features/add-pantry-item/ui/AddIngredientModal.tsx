@@ -155,7 +155,7 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
     }
 
     const newItem: StagedItem = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: crypto.randomUUID(),
       ingredient: selectedIngredient,
       aliasId: selectedIngredient?.aliasId,
       customName: selectedIngredient ? undefined : keyword.trim(),
