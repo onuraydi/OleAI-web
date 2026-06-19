@@ -9,6 +9,7 @@ import { RecipeCard } from "@/widgets/recipe-card";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
 type SubTab = "created" | "saved" | "liked" | "disliked";
 
@@ -359,25 +360,27 @@ const [searchTerm, setSearchTerm] = useState("");
                 {/* Dietary Preferences Filter (Tag) */}
                 <div className="space-y-3">
                   <h3 className="font-bold text-foreground">Diyet / Etiket</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button 
-                      onClick={() => setSelectedTag(undefined)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedTag === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                      }`}>Tümü</button>
-                    {tags?.map(tag => (
+                  <div className="max-h-48 overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
+                    <div className="flex flex-wrap gap-2">
                       <button 
-                        key={tag.id}
-                        onClick={() => setSelectedTag(tag.id)}
+                        onClick={() => setSelectedTag(undefined)}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          selectedTag === tag.id 
-                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
-                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                        }`}
-                      >
-                        {tag.name}
-                      </button>
-                    ))}
+                          selectedTag === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                        }`}>Tümü</button>
+                      {tags?.map(tag => (
+                        <button 
+                          key={tag.id}
+                          onClick={() => setSelectedTag(tag.id)}
+                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                            selectedTag === tag.id 
+                              ? "bg-primary/10 text-primary border-2 border-primary/20" 
+                              : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+                          }`}
+                        >
+                          {tag.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

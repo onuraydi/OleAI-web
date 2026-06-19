@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { MessageSquare, Bookmark, Share2, ThumbsUp, ThumbsDown, ChefHat, Clock, Flame, Star, Calendar } from "lucide-react";
+import { MessageSquare, Bookmark, Share2, ThumbsUp, ThumbsDown, ChefHat, Clock, Flame, Star, Calendar, Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
-import type { RecipeDetailResponse } from "@/entities/recipe/api/recipeApi";
+import type { RecipeDetailResponse, RecipeIngredientResponse, IngredientResponse } from "@/entities/recipe/api/recipeApi";
 import { CookingAssistantModal } from "@/features/cooking-assistant/ui/CookingAssistantModal";
+import { PreCookSyncModal } from "@/features/cooking-assistant/ui/PreCookSyncModal";
+import { PostCookDepletedModal } from "@/features/cooking-assistant/ui/PostCookDepletedModal";
+import { shoppingListApi } from "@/entities/shopping-list/api/shoppingListApi";
+import { toast } from "sonner";
 
 interface RecipeSidebarProps {
   recipe: RecipeDetailResponse;
@@ -12,7 +16,42 @@ interface RecipeSidebarProps {
 export const RecipeSidebar = ({ recipe }: RecipeSidebarProps) => {
   const queryClient = useQueryClient();
   const [isCookingModalOpen, setIsCookingModalOpen] = useState(false);
+  const [isPreCookModalOpen, setIsPreCookModalOpen] = useState(false);
+  const [isPostCookModalOpen, setIsPostCookModalOpen] = useState(false);
+
+  const [missingIngredients, setMissingIngredients] = useState<IngredientResponse[]>([]);
+  const [depletedIngredients, setDepletedIngredients] = useState<IngredientResponse[]>([]);
+  const [ignoredIngredientIds, setIgnoredIngredientIds] = useState<string[]>([]);
+
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+
+  const checkMissingMutation = useMutation({
+    mutationFn: () => recipeApi.getMissingIngredients(recipe.id),
+    onSuccess: (data) => {
+      if (data && data.length > 0) {
+        setMissingIngredients(data);
+        setIsPreCookModalOpen(true);
+      } else {
+        setIsCookingModalOpen(true);
+      }
+    },
+    onError: () => {
+      toast.error("Eksik malzemeler kontrol edilirken bir hata oluştu.");
+      setIsCookingModalOpen(true);
+    }
+  });
+
+  const syncDepletedMutation = useMutation({
+    mutationFn: (items: { ingredientId: string; quantity: number; unit: number }[]) => shoppingListApi.syncDepleted(items),
+    onSuccess: () => {
+      toast.success("Biten malzemeler alışveriş listesine eklendi!");
+      setIsPostCookModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["shopping-list"] });
+    },
+    onError: () => {
+      toast.error("Alışveriş listesine eklerken hata oluştu.");
+    }
+  });
 
   const likeMutation = useMutation({
     mutationFn: () => recipeApi.toggleLike(recipe.id),
@@ -267,17 +306,45 @@ export const RecipeSidebar = ({ recipe }: RecipeSidebarProps) => {
 
       {/* 4. MAIN ACTION BUTTON */}
       <button 
-        onClick={() => setIsCookingModalOpen(true)}
-        className="w-full flex items-center justify-center gap-3 bg-primary text-primary-foreground px-6 py-6 rounded-[2rem] font-black text-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95 group mt-2"
+        onClick={() => checkMissingMutation.mutate()}
+        disabled={checkMissingMutation.isPending}
+        className="w-full flex items-center justify-center gap-3 bg-primary text-primary-foreground px-6 py-6 rounded-[2rem] font-black text-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95 group mt-2 disabled:opacity-70"
       >
-        <ChefHat className="w-7 h-7 group-hover:-rotate-12 transition-transform" />
-        <span>Tarifi Yap</span>
+        {checkMissingMutation.isPending ? <Loader2 className="w-7 h-7 animate-spin" /> : <ChefHat className="w-7 h-7 group-hover:-rotate-12 transition-transform" />}
+        <span>{checkMissingMutation.isPending ? "Kontrol Ediliyor..." : "Tarifi Yap"}</span>
       </button>
+
+      <PreCookSyncModal
+        isOpen={isPreCookModalOpen}
+        onClose={() => setIsPreCookModalOpen(false)}
+        missingIngredients={missingIngredients}
+        recipeIngredients={recipe.ingredients}
+        onContinue={(ignoredIds) => {
+          setIgnoredIngredientIds(ignoredIds);
+          setIsPreCookModalOpen(false);
+          setIsCookingModalOpen(true);
+        }}
+      />
 
       <CookingAssistantModal 
         isOpen={isCookingModalOpen} 
         onClose={() => setIsCookingModalOpen(false)} 
         recipe={recipe} 
+        ignoredIngredientIds={ignoredIngredientIds}
+        onFinishCooking={(depleted) => {
+          if (depleted && depleted.length > 0) {
+            setDepletedIngredients(depleted);
+            setIsPostCookModalOpen(true);
+          }
+        }}
+      />
+
+      <PostCookDepletedModal
+        isOpen={isPostCookModalOpen}
+        onClose={() => setIsPostCookModalOpen(false)}
+        depletedIngredients={depletedIngredients}
+        onSync={(items) => syncDepletedMutation.mutate(items)}
+        isSyncing={syncDepletedMutation.isPending}
       />
     </div>
   );

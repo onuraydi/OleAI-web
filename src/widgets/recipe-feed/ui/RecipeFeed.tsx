@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { recipeApi } from "@/entities/recipe/api/recipeApi";
 import { HeroCarousel } from "./HeroRecipeCard";
@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 export const TrendingHero = () => {
   const { data: trendingData, isLoading: isTrendingLoading } = useQuery({
     queryKey: ["recipes", "daily_trend"],
-    queryFn: () => recipeApi.getPublishedRecipes(0, 3, "", undefined, undefined, undefined, undefined, "daily_trend"),
+    queryFn: () => recipeApi.getPublishedRecipes(0, 3, "", undefined, undefined, undefined, undefined, undefined, "daily_trend"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -31,6 +31,14 @@ export const RecipeFeed = () => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(12);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>(undefined);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollCategories = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300;
+      scrollContainerRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   const { data: categories } = useQuery({ 
     queryKey: ["categories"], 
@@ -40,7 +48,7 @@ export const RecipeFeed = () => {
 
   const { data: forYouData, isLoading: isForYouLoading, isFetching: isForYouFetching } = useQuery({
     queryKey: ["recipes", "forYou", page, size, selectedCategoryId],
-    queryFn: () => recipeApi.getPublishedRecipes(page, size, "", selectedCategoryId, undefined, undefined, undefined, "newest", true),
+    queryFn: () => recipeApi.getPublishedRecipes(page, size, "", selectedCategoryId, undefined, undefined, undefined, undefined, "newest", true),
   });
 
   return (
@@ -52,36 +60,50 @@ export const RecipeFeed = () => {
         </div>
 
         {categories && categories.length > 0 && (
-          <div className="flex items-center gap-3 overflow-x-auto pb-4 pt-2 snap-x hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div className="relative group flex items-center">
             <button 
-              onClick={() => {
-                setSelectedCategoryId(undefined);
-                setPage(0);
-              }}
-              className={`snap-start shrink-0 px-6 py-2.5 rounded-full font-bold whitespace-nowrap shadow-sm transition-all border-2 ${
-                selectedCategoryId === undefined 
-                  ? 'bg-primary text-primary-foreground border-primary' 
-                  : 'bg-card text-muted-foreground border-transparent hover:bg-muted'
-              }`}
+              onClick={() => scrollCategories('left')}
+              className="absolute -left-2 z-10 p-2 rounded-full bg-background/90 shadow-sm border hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              Tümü
+              <ChevronLeft className="w-5 h-5 text-foreground" />
             </button>
-            {categories.slice(0, 6).map((cat) => (
+            <div ref={scrollContainerRef} className="flex items-center gap-3 overflow-x-auto pb-4 pt-2 snap-x hide-scrollbar scroll-smooth w-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <button 
-                key={cat.id}
                 onClick={() => {
-                  setSelectedCategoryId(cat.id);
+                  setSelectedCategoryId(undefined);
                   setPage(0);
                 }}
                 className={`snap-start shrink-0 px-6 py-2.5 rounded-full font-bold whitespace-nowrap shadow-sm transition-all border-2 ${
-                  selectedCategoryId === cat.id 
+                  selectedCategoryId === undefined 
                     ? 'bg-primary text-primary-foreground border-primary' 
                     : 'bg-card text-muted-foreground border-transparent hover:bg-muted'
                 }`}
               >
-                {cat.name}
+                Tümü
               </button>
-            ))}
+              {categories.map((cat) => (
+                <button 
+                  key={cat.id}
+                  onClick={() => {
+                    setSelectedCategoryId(cat.id);
+                    setPage(0);
+                  }}
+                  className={`snap-start shrink-0 px-6 py-2.5 rounded-full font-bold whitespace-nowrap shadow-sm transition-all border-2 ${
+                    selectedCategoryId === cat.id 
+                      ? 'bg-primary text-primary-foreground border-primary' 
+                      : 'bg-card text-muted-foreground border-transparent hover:bg-muted'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+            <button 
+              onClick={() => scrollCategories('right')}
+              className="absolute -right-2 z-10 p-2 rounded-full bg-background/90 shadow-sm border hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <ChevronRight className="w-5 h-5 text-foreground" />
+            </button>
           </div>
         )}
 

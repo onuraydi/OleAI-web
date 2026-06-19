@@ -16,7 +16,8 @@ import {
   Users,
   BookOpen,
   Activity,
-  ExternalLink
+  ExternalLink,
+  Mailbox
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
@@ -24,6 +25,7 @@ import { SystemHealthBadge } from "@/features/system-health";
 
 const menuItems = [
   { icon: Home, label: "Ana Sayfa", path: "/home" },
+  { icon: Sparkles, label: "Yapay Zeka Asistanı", path: "/ai-recommendations" },
   { icon: ChefHat, label: "Keşfet", path: "/recipes" },
   { icon: BookOpen, label: "Tarif Defterim", path: "/my-recipe-book" },
   { icon: Refrigerator, label: "Mutfak Dolabım", path: "/pantry" },
@@ -40,6 +42,7 @@ const adminMenuItems = [
   { icon: Users, label: "Kullanıcılar", path: "/admin/users" },
   { icon: ChefHat, label: "Tarifler", path: "/admin/recipes" },
   { icon: Tags, label: "Tarif Sınıflandırma", path: "/admin/recipe-taxonomy" },
+  { icon: Mailbox, label: "İletişim Mesajları", path: "/admin/contact-messages" },
   { icon: Activity, label: "Sistem Logları", path: "/admin/logs" },
   { icon: Activity, label: "Gelişmiş İzleme", path: import.meta.env.VITE_GRAFANA_URL || "http://localhost:3000", isExternal: true },
 ];
@@ -49,7 +52,7 @@ export const Sidebar = () => {
   const logout = useSessionStore((state) => state.logout);
   const userRole = useSessionStore((state) => state.user?.role);
 
-  const renderMenuItem = (item: any) => {
+  const renderMenuItem = (item: { icon: React.ElementType; label: string; path: string; isExternal?: boolean }) => {
     if (item.isExternal) {
       return (
         <a 

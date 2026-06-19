@@ -33,16 +33,24 @@ export const PantryStatus = () => {
     categoryCounts[item.categoryName] = (categoryCounts[item.categoryName] || 0) + 1;
   });
   
-  const categoryColors = ["bg-primary", "bg-primary/70", "bg-primary/40", "bg-primary/20"];
-  const categoryData = Object.entries(categoryCounts)
-    .map(([name, count]) => ({ 
-      name, 
-      count, 
-      percentage: totalPantry === 0 ? 0 : Math.round((count / totalPantry) * 100) 
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 4)
-    .map((item, idx) => ({ ...item, color: categoryColors[idx] }));
+  const categoryColors = ["bg-primary", "bg-primary/70", "bg-primary/40", "bg-primary/20", "bg-muted"];
+  const sortedCategories = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]);
+  
+  const topCategories = sortedCategories.slice(0, 3);
+  const otherCount = sortedCategories.slice(3).reduce((acc, curr) => acc + curr[1], 0);
+  
+  const finalCategories = [...topCategories];
+  if (otherCount > 0) {
+    finalCategories.push(["Diğer", otherCount]);
+  }
+  
+  const categoryData = finalCategories
+    .map(([name, count], idx) => ({ 
+      name: name as string, 
+      count: count as number, 
+      percentage: totalPantry === 0 ? 0 : Math.round((count as number / totalPantry) * 100),
+      color: categoryColors[idx]
+    }));
 
   // 2. Freshness Index
   let fresh = 0, expiring = 0, expired = 0;
@@ -144,25 +152,31 @@ export const PantryStatus = () => {
 
           {totalPantry > 0 ? (
             <div className="mt-auto flex flex-col justify-end">
-              <div className="flex gap-1.5 h-5 w-full rounded-full overflow-hidden mb-6 bg-muted/50">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.max(1, freshPct)}%` }}
-                  transition={{ duration: 1, delay: 0.3 }}
-                  className="bg-emerald-500/80 h-full"
-                />
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.max(1, expiringPct)}%` }}
-                  transition={{ duration: 1, delay: 0.4 }}
-                  className="bg-amber-400/80 h-full"
-                />
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.max(1, expiredPct)}%` }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                  className="bg-rose-500/80 h-full"
-                />
+              <div className="flex h-5 w-full rounded-full overflow-hidden mb-6 bg-muted/50">
+                {freshPct > 0 && (
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${freshPct}%` }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                    className="bg-emerald-500/80 h-full border-r-2 border-card last:border-0"
+                  />
+                )}
+                {expiringPct > 0 && (
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${expiringPct}%` }}
+                    transition={{ duration: 1, delay: 0.4 }}
+                    className="bg-amber-400/80 h-full border-r-2 border-card last:border-0"
+                  />
+                )}
+                {expiredPct > 0 && (
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${expiredPct}%` }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                    className="bg-rose-500/80 h-full border-r-2 border-card last:border-0"
+                  />
+                )}
               </div>
               
               <div className="flex justify-between items-end text-center">
@@ -197,39 +211,47 @@ export const PantryStatus = () => {
             </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-between gap-6 mt-auto">
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-6 h-6 text-primary shrink-0" />
-                <span className="text-base font-bold text-foreground">{purchased} Ürün Alındı</span>
+          {totalShopping > 0 ? (
+            <div className="flex-1 flex items-center justify-between gap-6 mt-auto">
+              <div className="space-y-5">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary shrink-0" />
+                  <span className="text-base font-bold text-foreground">{purchased} Ürün Alındı</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full border-[3px] border-muted-foreground/30 shrink-0"></div>
+                  <span className="text-base font-semibold text-muted-foreground">{totalShopping - purchased} Ürün Bekliyor</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full border-[3px] border-muted-foreground/30 shrink-0"></div>
-                <span className="text-base font-semibold text-muted-foreground">{totalShopping - purchased} Ürün Bekliyor</span>
-              </div>
-            </div>
 
-            <div className="relative w-28 h-28 flex items-center justify-center shrink-0">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/50" />
-                <motion.circle 
-                  cx="50" cy="50" r="40" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="8" 
-                  strokeLinecap="round"
-                  className="text-primary"
-                  initial={{ strokeDashoffset: strokeDasharray }}
-                  animate={{ strokeDashoffset }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  strokeDasharray={strokeDasharray}
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center justify-center">
-                <span className="text-xl font-black text-foreground">%{shoppingPct}</span>
+              <div className="relative w-28 h-28 flex items-center justify-center shrink-0">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/50" />
+                  <motion.circle 
+                    cx="50" cy="50" r="40" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="8" 
+                    strokeLinecap="round"
+                    className="text-primary"
+                    initial={{ strokeDashoffset: strokeDasharray }}
+                    animate={{ strokeDashoffset }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    strokeDasharray={strokeDasharray}
+                  />
+                </svg>
+                <div className="absolute flex flex-col items-center justify-center">
+                  <span className="text-xl font-black text-foreground">%{shoppingPct}</span>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex-1 flex items-center justify-center mt-auto border-2 border-dashed border-muted/50 rounded-2xl py-6">
+              <p className="text-sm font-semibold text-muted-foreground text-center">
+                Alışveriş listeniz şu an boş.
+              </p>
+            </div>
+          )}
         </div>
 
       </div>
