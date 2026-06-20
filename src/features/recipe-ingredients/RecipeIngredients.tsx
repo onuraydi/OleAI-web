@@ -93,6 +93,14 @@ export const RecipeIngredients = ({ ingredients }: RecipeIngredientsProps) => {
             <div 
               key={ing.ingredientId}
               onClick={() => toggleCheck(ing.ingredientId)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  e.currentTarget.click();
+                }
+              }}
               className={`flex items-center gap-5 cursor-pointer group p-4 rounded-2xl transition-all border ${
                 isChecked 
                   ? 'bg-muted/20 border-transparent opacity-60' 

@@ -328,6 +328,14 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
                                 <li 
                                   key={item.masterIngredientId}
                                   onClick={() => handleSelect(item)}
+                                  role="button"
+                                  tabIndex={0}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      e.currentTarget.click();
+                                    }
+                                  }}
                                   className={`px-4 py-3 cursor-pointer flex items-center justify-between transition-all rounded-xl border ${
                                     isCurrentlySelected 
                                       ? 'bg-primary/10 border-primary shadow-sm' 
@@ -356,6 +364,14 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
                             })}
                             <li 
                               onClick={handleCustomAdd}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  e.currentTarget.click();
+                                }
+                              }}
                               className={`px-4 py-4 cursor-pointer flex items-center gap-3 transition-colors rounded-xl mt-4 border ${
                                 !selectedIngredient && keyword.length >= 2 && searchResults.length === 0
                                   ? 'bg-primary/10 border-primary text-primary'
@@ -375,6 +391,14 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
                           !isFetching && (
                             <div 
                               onClick={handleCustomAdd}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  e.currentTarget.click();
+                                }
+                              }}
                               className="p-8 border-2 border-dashed border-primary/30 rounded-2xl bg-primary/5 hover:bg-primary/10 cursor-pointer flex flex-col items-center justify-center text-center transition-colors group"
                             >
                               <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">

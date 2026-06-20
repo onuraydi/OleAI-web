@@ -37,6 +37,14 @@ export const ShoppingListGroup = ({
       <div 
         className="flex items-center justify-between mb-6 border-b border-muted/30 pb-4 cursor-pointer group"
         onClick={() => setIsOpen(!isOpen)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.currentTarget.click();
+          }
+        }}
       >
         <div className="flex items-center gap-3">
           <div className="text-primary">

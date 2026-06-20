@@ -166,6 +166,14 @@ export const PostCookDepletedModal = ({ isOpen, onClose, depletedIngredients, on
                     <div 
                       className="flex items-center gap-4 cursor-pointer flex-1"
                       onClick={() => handleToggle(item.id)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          e.currentTarget.click();
+                        }
+                      }}
                     >
                       <div className={`w-6 h-6 rounded-md flex items-center justify-center border transition-colors flex-shrink-0 ${
                         data.selected

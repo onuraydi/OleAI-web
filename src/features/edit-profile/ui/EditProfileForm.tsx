@@ -79,7 +79,18 @@ export const EditProfileForm = ({ profile }: EditProfileFormProps) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Avatar Upload */}
       <div className="flex items-center gap-6">
-        <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+        <div 
+          className="relative group cursor-pointer" 
+          onClick={() => fileInputRef.current?.click()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.currentTarget.click();
+            }
+          }}
+        >
           {avatarPreview ? (
             <img
               src={avatarPreview}

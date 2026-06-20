@@ -35,7 +35,7 @@ const HeroSlide = ({ recipe }: { recipe: RecipeListItem }) => {
       await recipeApi.toggleLike(recipe.id);
       toast.success(isLiked ? "Beğeni geri alındı." : "Tarif beğenildi!");
     } catch {
-      setIsLiked(isLiked);
+      setIsLiked(prev => !prev);
       toast.error("İşlem sırasında bir hata oluştu.");
     } finally {
       setIsLiking(false);
@@ -51,7 +51,7 @@ const HeroSlide = ({ recipe }: { recipe: RecipeListItem }) => {
       await recipeApi.toggleSave(recipe.id);
       toast.success(isSaved ? "Tarif kaydedilenlerden çıkarıldı." : "Tarif kaydedildi!");
     } catch {
-      setIsSaved(isSaved);
+      setIsSaved(prev => !prev);
       toast.error("İşlem sırasında bir hata oluştu.");
     } finally {
       setIsSaving(false);
