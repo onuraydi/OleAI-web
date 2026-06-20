@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { CookingAssistantModal } from './CookingAssistantModal';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { recipeApi } from '@/entities/recipe/api/recipeApi';
+import { recipeApi, type RecipeDetailResponse } from '@/entities/recipe/api/recipeApi';
 
 vi.mock('@tanstack/react-query', () => ({
   useMutation: vi.fn(),
@@ -21,7 +21,7 @@ describe('CookingAssistantModal', () => {
   const mockOnFinishCooking = vi.fn();
   const mockInvalidateQueries = vi.fn();
 
-  const mockRecipe: Record<string, unknown> = {
+  const mockRecipe = {
     id: 'recipe-1',
     title: 'Test Recipe',
     steps: [
@@ -29,7 +29,7 @@ describe('CookingAssistantModal', () => {
       { id: 's2', stepNumber: 2, instruction: 'Step 2 instruction' },
     ],
     images: [],
-  };
+  } as unknown as RecipeDetailResponse;
 
   beforeEach(() => {
     vi.clearAllMocks();

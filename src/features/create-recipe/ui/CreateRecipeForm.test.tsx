@@ -85,7 +85,7 @@ describe("CreateRecipeForm", () => {
   });
 
   it("calls createMutation when submitted", () => {
-    let capturedOptions: { mutationFn: unknown; onSuccess: () => void; onError: (err: unknown) => void };
+    let capturedOptions!: { mutationFn: unknown; onSuccess: () => void; onError: (err: unknown) => void };
     (useMutation as Mock).mockImplementation((options: { mutationFn: unknown; onSuccess: () => void; onError: (err: unknown) => void }) => {
       capturedOptions = options;
       return { mutate: mockMutate, isPending: false };

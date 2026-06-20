@@ -2,7 +2,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { AdminEditRecipeForm } from './AdminEditRecipeForm';
-import { recipeApi } from '@/entities/recipe/api/recipeApi';
+import { recipeApi, type RecipeDetailResponse } from '@/entities/recipe/api/recipeApi';
 import { toast } from 'sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
@@ -56,7 +56,7 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe('AdminEditRecipeForm', () => {
-  const mockInitialData: Record<string, unknown> = {
+  const mockInitialData = {
     id: '1',
     title: 'Test Recipe',
     description: 'Desc',
@@ -65,7 +65,7 @@ describe('AdminEditRecipeForm', () => {
     servings: 2,
     ingredients: [],
     steps: [],
-  };
+  } as unknown as RecipeDetailResponse;
 
   beforeEach(() => {
     vi.clearAllMocks();

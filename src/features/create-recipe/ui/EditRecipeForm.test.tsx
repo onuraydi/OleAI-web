@@ -88,7 +88,7 @@ describe("EditRecipeForm", () => {
   });
 
   it("calls updateMutation when submitted", () => {
-    let capturedOptions: { mutationFn: (data: unknown) => void; onSuccess: () => void; onError: (err: unknown) => void };
+    let capturedOptions!: { mutationFn: (data: unknown) => void; onSuccess: () => void; onError: (err: unknown) => void };
     (useMutation as Mock).mockImplementation((options: { mutationFn: (data: unknown) => void; onSuccess: () => void; onError: (err: unknown) => void }) => {
       capturedOptions = options;
       return { mutate: mockMutate, isPending: false };

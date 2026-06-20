@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { PreCookSyncModal } from './PreCookSyncModal';
 import { shoppingListApi } from '@/entities/shopping-list/api/shoppingListApi';
 import { pantryApi } from '@/entities/pantry/api/pantryApi';
+import type { IngredientResponse, RecipeIngredientResponse } from '@/entities/recipe/api/recipeApi';
 import { toast } from 'sonner';
 
 vi.mock('@/entities/shopping-list/api/shoppingListApi', () => ({
@@ -29,15 +30,15 @@ describe('PreCookSyncModal', () => {
   const mockOnClose = vi.fn();
   const mockOnContinue = vi.fn();
 
-  const missingIngredients: Record<string, unknown>[] = [
+  const missingIngredients = [
     { id: '1', name: 'Salt' },
     { id: '2', name: 'Pepper' },
-  ];
+  ] as unknown as IngredientResponse[];
 
-  const recipeIngredients: Record<string, unknown>[] = [
+  const recipeIngredients = [
     { ingredientId: '1', amount: 2, unitId: 1 },
     { ingredientId: '2', amount: 5, unitId: 2 },
-  ];
+  ] as unknown as RecipeIngredientResponse[];
 
   beforeEach(() => {
     vi.clearAllMocks();

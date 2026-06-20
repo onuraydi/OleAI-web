@@ -5,7 +5,7 @@ import { ChangePasswordForm } from './ChangePasswordForm';
 import { sessionApi } from '@/entities/session';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { AxiosError } from 'axios';
+import { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 vi.mock('@tanstack/react-query', () => ({
   useMutation: vi.fn(),
@@ -108,7 +108,7 @@ describe('ChangePasswordForm', () => {
       status: 400,
       statusText: 'Bad Request',
       headers: {},
-      config: {} as Record<string, unknown>,
+      config: { headers: {} } as unknown as InternalAxiosRequestConfig,
     };
     (sessionApi.changePassword as Mock).mockRejectedValue(axiosError);
 

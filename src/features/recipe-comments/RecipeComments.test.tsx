@@ -39,7 +39,7 @@ describe('RecipeComments', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useSessionStore as Mock).mockReturnValue({ user: mockUser });
+    (useSessionStore as unknown as Mock).mockReturnValue({ user: mockUser });
     
     // Default API mock
     (recipeApi.getRecipeComments as Mock).mockResolvedValue({

@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { RegisterForm } from './RegisterForm';
 import { sessionApi } from '@/entities/session';
-import { AxiosError } from 'axios';
+import { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 vi.mock('@/entities/session', () => ({
   sessionApi: {
@@ -105,7 +105,7 @@ describe('RegisterForm', () => {
       status: 400,
       statusText: 'Bad Request',
       headers: {},
-      config: {} as Record<string, unknown>,
+      config: { headers: {} } as unknown as InternalAxiosRequestConfig,
     };
     (sessionApi.register as Mock).mockRejectedValue(axiosError);
 

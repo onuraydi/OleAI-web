@@ -3,16 +3,17 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PostCookDepletedModal } from './PostCookDepletedModal';
 import { MeasurementCategory, MeasurementUnit } from '@/shared/constants/measurement';
+import type { IngredientResponse } from '@/entities/recipe/api/recipeApi';
 
 describe('PostCookDepletedModal', () => {
   const mockOnClose = vi.fn();
   const mockOnSync = vi.fn();
 
-  const depletedIngredients: Record<string, unknown>[] = [
+  const depletedIngredients = [
     { id: '1', name: 'Salt', unitFamily: MeasurementCategory.Weight },
     { id: '2', name: 'Water', unitFamily: MeasurementCategory.Volume },
     { id: '3', name: 'Apple', unitFamily: MeasurementCategory.Count },
-  ];
+  ] as unknown as IngredientResponse[];
 
   beforeEach(() => {
     vi.clearAllMocks();
