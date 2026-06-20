@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
@@ -20,7 +20,6 @@ export default defineConfig({
     setupFiles: './vitest.setup.ts',
     coverage: {
       provider: 'v8',
-      all: true,
       include: ['src/**/*.ts', 'src/**/*.tsx'],
       reporter: ['text', 'html', 'json'],
       exclude: [
