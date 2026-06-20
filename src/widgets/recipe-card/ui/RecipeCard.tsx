@@ -46,7 +46,7 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
     // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (err) {
       // Revert on error
-      setIsLiked(isLiked);
+      setIsLiked(prev => !prev);
       toast.error("İşlem sırasında bir hata oluştu.");
     } finally {
       setIsLiking(false);
@@ -66,7 +66,7 @@ export const RecipeCard = ({ recipe, index = 0, initialLiked = false, initialSav
     // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (err) {
       // Revert on error
-      setIsSaved(isSaved);
+      setIsSaved(prev => !prev);
       toast.error("İşlem sırasında bir hata oluştu.");
     } finally {
       setIsSaving(false);

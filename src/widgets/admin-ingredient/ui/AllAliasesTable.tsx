@@ -80,9 +80,10 @@ export const AllAliasesTable = ({ searchTerm = "" }: { searchTerm?: string }) =>
               </tr>
             </thead>
             <tbody className="divide-y divide-muted/30">
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              {filteredAliases.map((alias: any) => (
-                <tr key={alias.id} className="hover:bg-muted/30 transition-all duration-200 group">
+              {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                filteredAliases.map((alias: any) => (
+                  <tr key={alias.id} className="hover:bg-muted/30 transition-all duration-200 group">
                   <td className="px-6 py-4 font-bold text-foreground">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">

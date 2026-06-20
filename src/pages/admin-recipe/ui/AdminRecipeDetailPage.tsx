@@ -223,13 +223,14 @@ export function AdminRecipeDetailPage() {
                     {/* Other Images */}
                     {recipe.images && recipe.images.length > 1 && (
                       <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        {recipe.images.filter((img: any) => !img.isMain).map((img: any, i: number) => (
-                          <div 
-                            key={i} 
-                            className="aspect-square rounded-xl overflow-hidden bg-muted/10 border border-muted/20 hover:border-primary/50 transition-colors group relative cursor-zoom-in"
-                            onClick={() => setSelectedImage(img.imageUrl)}
-                          >
+                        {
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          recipe.images.filter((img: any) => !img.isMain).map((img: any, i: number) => (
+                            <div 
+                              key={i} 
+                              className="aspect-square rounded-xl overflow-hidden bg-muted/10 border border-muted/20 hover:border-primary/50 transition-colors group relative cursor-zoom-in"
+                              onClick={() => setSelectedImage(img.imageUrl)}
+                            >
                             <img src={img.imageUrl} alt={`Ek Fotoğraf ${i+1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                               <Maximize2 className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
@@ -271,10 +272,12 @@ export function AdminRecipeDetailPage() {
                           <div className="flex items-start gap-2">
                             <FolderOpen className="w-4 h-4 text-primary mt-0.5" />
                             <div className="flex flex-wrap gap-2">
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                              {recipe.categories.map((cat: any) => (
-                                <span key={cat.id} className="text-xs font-bold px-2.5 py-1 rounded-md bg-primary/10 text-primary">{cat.name}</span>
-                              ))}
+                              {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                recipe.categories.map((cat: any) => (
+                                  <span key={cat.id} className="text-xs font-bold px-2.5 py-1 rounded-md bg-primary/10 text-primary">{cat.name}</span>
+                                ))
+                              }
                             </div>
                           </div>
                         )}
@@ -282,10 +285,12 @@ export function AdminRecipeDetailPage() {
                           <div className="flex items-start gap-2">
                             <Tags className="w-4 h-4 text-primary mt-0.5" />
                             <div className="flex flex-wrap gap-2">
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                              {recipe.tags.map((tag: any) => (
-                                <span key={tag.id} className="text-xs font-bold px-2.5 py-1 rounded-md bg-secondary text-foreground border border-border">#{tag.name}</span>
-                              ))}
+                              {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                recipe.tags.map((tag: any) => (
+                                  <span key={tag.id} className="text-xs font-bold px-2.5 py-1 rounded-md bg-secondary text-foreground border border-border">#{tag.name}</span>
+                                ))
+                              }
                             </div>
                           </div>
                         )}
@@ -303,15 +308,17 @@ export function AdminRecipeDetailPage() {
                       Malzemeler
                     </h3>
                     <ul className="space-y-3">
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      {recipe.ingredients?.map((ing: any, idx: number) => (
-                        <li key={idx} className="flex justify-between items-center py-2 border-b border-muted/10 last:border-0">
-                          <span className="font-medium">{ing.ingredientName}</span>
-                          <span className="text-muted-foreground font-bold">
-                            {ing.amount} birim
-                          </span>
-                        </li>
-                      ))}
+                      {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        recipe.ingredients?.map((ing: any, idx: number) => (
+                          <li key={idx} className="flex justify-between items-center py-2 border-b border-muted/10 last:border-0">
+                            <span className="font-medium">{ing.ingredientName}</span>
+                            <span className="text-muted-foreground font-bold">
+                              {ing.amount} birim
+                            </span>
+                          </li>
+                        ))
+                      }
                     </ul>
                   </div>
 
@@ -322,24 +329,26 @@ export function AdminRecipeDetailPage() {
                       Adımlar
                     </h3>
                     <div className="space-y-4">
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      {recipe.steps?.sort((a: any, b: any) => a.stepNumber - b.stepNumber).map((step: any) => (
-                        <div key={step.id} className="flex gap-4">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black flex-shrink-0">
-                            {step.stepNumber}
+                      {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        recipe.steps?.sort((a: any, b: any) => a.stepNumber - b.stepNumber).map((step: any) => (
+                          <div key={step.id} className="flex gap-4">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black flex-shrink-0">
+                              {step.stepNumber}
+                            </div>
+                            <div className="flex-1 space-y-3">
+                              <p className="text-muted-foreground pt-1">
+                                {step.instruction}
+                              </p>
+                              {step.imageUrl && (
+                                <div className="w-full max-w-sm rounded-xl overflow-hidden border border-muted/20">
+                                  <img src={step.imageUrl} alt={`Adım ${step.stepNumber}`} className="w-full h-auto object-cover" />
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex-1 space-y-3">
-                            <p className="text-muted-foreground pt-1">
-                              {step.instruction}
-                            </p>
-                            {step.imageUrl && (
-                              <div className="w-full max-w-sm rounded-xl overflow-hidden border border-muted/20">
-                                <img src={step.imageUrl} alt={`Adım ${step.stepNumber}`} className="w-full h-auto object-cover" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      }
                     </div>
                   </div>
                 </div>
