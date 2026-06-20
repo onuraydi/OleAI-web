@@ -44,6 +44,8 @@ jobs:
 
       - name: 🧪 Run Tests & Generate Coverage
         # Vitest ile testleri çalıştırıp SonarQube'un okuyacağı lcov raporunu oluşturuyoruz
+        env:
+          NODE_OPTIONS: "--max_old_space_size=8192"
         run: npm run test:coverage
 
 
