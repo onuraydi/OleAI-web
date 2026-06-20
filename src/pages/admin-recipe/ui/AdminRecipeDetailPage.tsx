@@ -204,6 +204,14 @@ export function AdminRecipeDetailPage() {
                         className="w-full rounded-2xl overflow-hidden aspect-video bg-muted/10 relative group cursor-zoom-in"
                          
                         onClick={() => setSelectedImage(recipe.images.find((img: any) => img.isMain)?.imageUrl || null)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            e.currentTarget.click();
+                          }
+                        }}
                       >
                         <img 
                            
@@ -230,6 +238,14 @@ export function AdminRecipeDetailPage() {
                               key={i} 
                               className="aspect-square rounded-xl overflow-hidden bg-muted/10 border border-muted/20 hover:border-primary/50 transition-colors group relative cursor-zoom-in"
                               onClick={() => setSelectedImage(img.imageUrl)}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  e.currentTarget.click();
+                                }
+                              }}
                             >
                             <img src={img.imageUrl} alt={`Ek Fotoğraf ${i+1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">

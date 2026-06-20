@@ -523,6 +523,14 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
           {/* Cover Photo Upload */}
           <div 
             onClick={() => fileInputRef.current?.click()}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.currentTarget.click();
+              }
+            }}
             className={`w-full aspect-[4/3] md:aspect-[16/9] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group ${coverPhoto ? 'border-primary/50' : 'border-muted/40 hover:bg-muted/5 hover:border-primary/50'}`}
           >
             {coverPhotoPreview ? (
