@@ -11,6 +11,55 @@ import { Sidebar } from "@/widgets/sidebar/ui/Sidebar";
 import { DashboardHeader } from "@/widgets/dashboard-header/ui/DashboardHeader";
 import { RecipeCard } from "@/widgets/recipe-card";
 
+interface FilterGroupProps<T> {
+  title: string;
+  options: { label: string; val: T }[];
+  selectedValue: T | undefined;
+  onSelect: (val: T | undefined) => void;
+  scrollable?: boolean;
+}
+
+function FilterGroup<T extends string | number>({ title, options, selectedValue, onSelect, scrollable }: FilterGroupProps<T>) {
+  const content = (
+    <div className="flex flex-wrap gap-2">
+      <button 
+        onClick={() => onSelect(undefined)}
+        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+          selectedValue === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+        }`}
+      >
+        Tümü
+      </button>
+      {options.map(opt => (
+        <button 
+          key={String(opt.val)}
+          onClick={() => onSelect(opt.val)}
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+            selectedValue === opt.val 
+              ? "bg-primary/10 text-primary border-2 border-primary/20" 
+              : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
+          }`}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="space-y-3">
+      <h3 className="font-bold text-foreground">{title}</h3>
+      {scrollable ? (
+        <div className="max-h-48 overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
+          {content}
+        </div>
+      ) : (
+        content
+      )}
+    </div>
+  );
+}
+
 export const RecipesPage = () => {
   // eslint-disable-next-line unused-imports/no-unused-vars
   const navigate = useNavigate();
@@ -145,123 +194,49 @@ export const RecipesPage = () => {
             <div className="bg-card p-6 rounded-[2rem] shadow-sm border border-muted/30">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {/* Rating Filter */}
-                <div className="space-y-3">
-                  <h3 className="font-bold text-foreground">Değerlendirme Puanı</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button 
-                      onClick={() => setSelectedRating(undefined)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedRating === undefined 
-                          ? "bg-primary/10 text-primary border-2 border-primary/20" 
-                          : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                      }`}
-                    >
-                      Tümü
-                    </button>
-                    {[
-                      { label: "4+ Yıldız", val: 4 }, 
-                      { label: "3+ Yıldız", val: 3 }, 
-                      { label: "2+ Yıldız", val: 2 }
-                    ].map(rating => (
-                      <button 
-                        key={rating.val}
-                        onClick={() => setSelectedRating(rating.val)}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1 ${
-                          selectedRating === rating.val 
-                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
-                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                        }`}
-                      >
-                        {rating.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <FilterGroup 
+                  title="Değerlendirme Puanı" 
+                  selectedValue={selectedRating} 
+                  onSelect={setSelectedRating}
+                  options={[
+                    { label: "4+ Yıldız", val: 4 }, 
+                    { label: "3+ Yıldız", val: 3 }, 
+                    { label: "2+ Yıldız", val: 2 }
+                  ]}
+                />
 
                 {/* Difficulty Filter */}
-                <div className="space-y-3">
-                  <h3 className="font-bold text-foreground">Zorluk</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button 
-                      onClick={() => setSelectedDifficulty(undefined)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedDifficulty === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                      }`}>Tümü</button>
-                    {[
-                      { label: "Kolay", val: 1 }, 
-                      { label: "Orta", val: 2 }, 
-                      { label: "Zor", val: 3 }
-                    ].map(level => (
-                      <button 
-                        key={level.val}
-                        onClick={() => setSelectedDifficulty(level.val)}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          selectedDifficulty === level.val 
-                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
-                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                        }`}
-                      >
-                        {level.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <FilterGroup 
+                  title="Zorluk" 
+                  selectedValue={selectedDifficulty} 
+                  onSelect={setSelectedDifficulty}
+                  options={[
+                    { label: "Kolay", val: 1 }, 
+                    { label: "Orta", val: 2 }, 
+                    { label: "Zor", val: 3 }
+                  ]}
+                />
 
                 {/* Cook Time Filter */}
-                <div className="space-y-3">
-                  <h3 className="font-bold text-foreground">Hazırlama Süresi</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button 
-                      onClick={() => setSelectedTime(undefined)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedTime === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                      }`}>Tümü</button>
-                    {[
-                      { label: "< 15 dk", val: 15 },
-                      { label: "< 30 dk", val: 30 },
-                      { label: "< 60 dk", val: 60 }
-                    ].map(time => (
-                      <button 
-                        key={time.val}
-                        onClick={() => setSelectedTime(time.val)}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          selectedTime === time.val 
-                            ? "bg-primary/10 text-primary border-2 border-primary/20" 
-                            : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                        }`}
-                      >
-                        {time.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <FilterGroup 
+                  title="Hazırlama Süresi" 
+                  selectedValue={selectedTime} 
+                  onSelect={setSelectedTime}
+                  options={[
+                    { label: "< 15 dk", val: 15 },
+                    { label: "< 30 dk", val: 30 },
+                    { label: "< 60 dk", val: 60 }
+                  ]}
+                />
 
                 {/* Dietary Preferences Filter (Tag) */}
-                <div className="space-y-3">
-                  <h3 className="font-bold text-foreground">Diyet / Etiket</h3>
-                  <div className="max-h-48 overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
-                    <div className="flex flex-wrap gap-2">
-                      <button 
-                        onClick={() => setSelectedTag(undefined)}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          selectedTag === undefined ? "bg-primary/10 text-primary border-2 border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                        }`}>Tümü</button>
-                      {tags?.map(tag => (
-                        <button 
-                          key={tag.id}
-                          onClick={() => setSelectedTag(tag.id)}
-                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                            selectedTag === tag.id 
-                              ? "bg-primary/10 text-primary border-2 border-primary/20" 
-                              : "bg-muted/30 text-muted-foreground hover:bg-muted border-2 border-transparent"
-                          }`}
-                        >
-                          {tag.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                <FilterGroup 
+                  title="Diyet / Etiket" 
+                  selectedValue={selectedTag} 
+                  onSelect={setSelectedTag}
+                  scrollable
+                  options={tags?.map(t => ({ label: t.name, val: t.id })) || []}
+                />
               </div>
               
               <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-muted/30">

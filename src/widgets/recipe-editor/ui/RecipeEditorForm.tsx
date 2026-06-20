@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Save, X, ImagePlus, ChevronDown, Plus, GripVertical, Search, Loader2 } from "lucide-react";
+import { Save, X, ImagePlus, ChevronDown, Plus, GripVertical, Search, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { pantryApi } from "@/entities/pantry/api/pantryApi";
 import { useAdminRecipeCategories, useAdminTags } from "@/entities/admin-recipe-taxonomy/api/adminRecipeTaxonomyQueries";
@@ -51,9 +51,77 @@ export interface RecipeEditorFormProps {
   headerTitle: string;
   submitButtonText: string;
   prefillAiEdits?: { description: string; steps: string[] } | null;
+  aiSuggestions?: { description: string | null; steps: string[] } | null;
+  extraActions?: React.ReactNode;
 }
 
-export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, headerTitle, submitButtonText, prefillAiEdits }: RecipeEditorFormProps) => {
+// Reusable Meta Input Component
+function MetaInputBox({ label, unit, value, onChange, min = "0" }: { label: string, unit: string, value: string, onChange: (val: string) => void, min?: string }) {
+  return (
+    <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
+      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{label}</span>
+      <div className="flex items-center gap-2 bg-muted/40 border border-muted rounded-xl px-4 py-3 focus-within:border-primary/50 transition-colors hover:border-primary/30">
+        <input 
+          type="number" 
+          value={value} 
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full bg-transparent font-medium text-foreground outline-none"
+          min={min}
+        />
+        <span className="text-muted-foreground text-sm">{unit}</span>
+      </div>
+    </div>
+  );
+}
+
+// Reusable Select Component
+function MetaSelectBox({ label, value, onChange, options, defaultOption }: { label: string, value: string, onChange: (val: string) => void, options: { id: string, name: string }[], defaultOption?: string }) {
+  return (
+    <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
+      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{label}</span>
+      <div className="relative">
+        <select 
+          value={value} 
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full bg-muted/40 border border-muted hover:border-primary/30 rounded-xl px-4 py-3 appearance-none font-medium text-foreground outline-none focus:border-primary/50 transition-colors"
+        >
+          {defaultOption && <option value="" disabled className="text-foreground bg-neutral-50 dark:bg-neutral-900">{defaultOption}</option>}
+          {options.map(opt => <option key={opt.id} value={opt.id} className="text-foreground bg-neutral-50 dark:bg-neutral-900">{opt.name}</option>)}
+        </select>
+        <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+      </div>
+    </div>
+  );
+}
+
+// Reusable Tag/Category Group
+function TaxonomyGroup({ label, items, selectedIds, onToggle }: { label: string, items: any[], selectedIds: number[], onToggle: (id: number) => void }) {
+  return (
+    <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3">
+      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
+      <div className="flex flex-wrap gap-2">
+        {items.map((item: any) => {
+          const isSelected = selectedIds.includes(item.id);
+          return (
+            <button
+              key={item.id}
+              onClick={() => onToggle(item.id)}
+              className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
+                isSelected 
+                  ? 'bg-primary text-primary-foreground border-primary shadow-md' 
+                  : 'bg-muted/40 dark:bg-neutral-800 text-muted-foreground border-muted/50 hover:border-primary/50'
+              }`}
+            >
+              {item.name}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, headerTitle, submitButtonText, prefillAiEdits, aiSuggestions, extraActions }: RecipeEditorFormProps) => {
 
       const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -403,6 +471,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
           >
             İptal
           </button>
+          {extraActions}
           <button 
             onClick={handleSubmit}
             disabled={isPending}
@@ -432,6 +501,23 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
               onChange={(e) => setDescription(e.target.value)}
               className="text-lg text-muted-foreground placeholder:text-muted-foreground/50 bg-transparent border-none outline-none w-full resize-none min-h-[100px]"
             />
+            {aiSuggestions?.description && aiSuggestions.description !== description && (
+              <div className="mt-1 p-4 bg-primary/5 border border-primary/20 rounded-xl flex flex-col gap-3 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                    <Sparkles className="w-4 h-4" /> Yapay Zeka Önerisi
+                  </div>
+                  <button 
+                    onClick={() => setDescription(aiSuggestions.description!)}
+                    className="flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Bunu Uygula
+                  </button>
+                </div>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{aiSuggestions.description}</p>
+              </div>
+            )}
           </div>
 
           {/* Cover Photo Upload */}
@@ -467,123 +553,40 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
           {/* Meta Information Cards */}
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Zorluk Derecesi</span>
-                <div className="relative">
-                  <select 
-                    value={difficulty} 
-                    onChange={(e) => setDifficulty(e.target.value)}
-                    className="w-full bg-muted/40 border border-muted hover:border-primary/30 rounded-xl px-4 py-3 appearance-none font-medium text-foreground outline-none focus:border-primary/50 transition-colors"
-                  >
-                    <option value="" disabled className="text-foreground bg-neutral-50 dark:bg-neutral-900">Zorluk Seçin</option>
-                    {DIFFICULTIES.map(d => <option key={d.id} value={d.id} className="text-foreground bg-neutral-50 dark:bg-neutral-900">{d.name}</option>)}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
-
-              <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Görünürlük</span>
-                <div className="relative">
-                  <select 
-                    value={visibility} 
-                    onChange={(e) => setVisibility(e.target.value)}
-                    className="w-full bg-muted/40 border border-muted hover:border-primary/30 rounded-xl px-4 py-3 appearance-none font-medium text-foreground outline-none focus:border-primary/50 transition-colors"
-                  >
-                    <option value="2" className="text-foreground bg-neutral-50 dark:bg-neutral-900">Herkese Açık (Public)</option>
-                    <option value="1" className="text-foreground bg-neutral-50 dark:bg-neutral-900">Sadece Ben (Private)</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
+              <MetaSelectBox 
+                label="Zorluk Derecesi"
+                value={difficulty}
+                onChange={setDifficulty}
+                options={DIFFICULTIES}
+                defaultOption="Zorluk Seçin"
+              />
+              <MetaSelectBox 
+                label="Görünürlük"
+                value={visibility}
+                onChange={setVisibility}
+                options={[{ id: "2", name: "Herkese Açık (Public)" }, { id: "1", name: "Sadece Ben (Private)" }]}
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Porsiyon</span>
-                <div className="flex items-center gap-2 bg-muted/40 border border-muted rounded-xl px-4 py-3 focus-within:border-primary/50 transition-colors hover:border-primary/30">
-                  <input type="number" 
-                    value={servings} 
-                    onChange={(e) => setServings(e.target.value)}
-                    className="w-full bg-transparent font-medium text-foreground outline-none"
-                    min="1"
-                  />
-                  <span className="text-muted-foreground text-sm">Kişilik</span>
-                </div>
-              </div>
-
-              <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Hazırlık</span>
-                <div className="flex items-center gap-2 bg-muted/40 border border-muted rounded-xl px-4 py-3 focus-within:border-primary/50 transition-colors hover:border-primary/30">
-                  <input type="number" 
-                    value={prepTime} 
-                    onChange={(e) => setPrepTime(e.target.value)}
-                    className="w-full bg-transparent font-medium text-foreground outline-none"
-                    min="0"
-                  />
-                  <span className="text-muted-foreground text-sm">Dk</span>
-                </div>
-              </div>
-
-              <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Pişirme</span>
-                <div className="flex items-center gap-2 bg-muted/40 border border-muted rounded-xl px-4 py-3 focus-within:border-primary/50 transition-colors hover:border-primary/30">
-                  <input type="number" 
-                    value={cookTime} 
-                    onChange={(e) => setCookTime(e.target.value)}
-                    className="w-full bg-transparent font-medium text-foreground outline-none"
-                    min="0"
-                  />
-                  <span className="text-muted-foreground text-sm">Dk</span>
-                </div>
-              </div>
+              <MetaInputBox label="Porsiyon" unit="Kişilik" value={servings} onChange={setServings} min="1" />
+              <MetaInputBox label="Hazırlık" unit="Dk" value={prepTime} onChange={setPrepTime} />
+              <MetaInputBox label="Pişirme" unit="Dk" value={cookTime} onChange={setCookTime} />
             </div>
 
-            <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3">
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Kategoriler</span>
-              <div className="flex flex-wrap gap-2">
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                {recipeCategories.map((cat: any) => {
-                  const isSelected = selectedCategoryIds.includes(cat.id);
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => toggleCategory(cat.id)}
-                      className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
-                        isSelected 
-                          ? 'bg-primary text-primary-foreground border-primary shadow-md' 
-                          : 'bg-muted/40 dark:bg-neutral-800 text-muted-foreground border-muted/50 hover:border-primary/50'
-                      }`}
-                    >
-                      {cat.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <TaxonomyGroup 
+              label="Kategoriler" 
+              items={recipeCategories} 
+              selectedIds={selectedCategoryIds} 
+              onToggle={toggleCategory} 
+            />
 
-            <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3">
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Etiketler</span>
-              <div className="flex flex-wrap gap-2">
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                {recipeTags.map((tag: any) => {
-                  const isSelected = selectedTagIds.includes(tag.id);
-                  return (
-                    <button
-                      key={tag.id}
-                      onClick={() => toggleTag(tag.id)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-bold border transition-all ${
-                        isSelected 
-                          ? 'bg-primary text-primary-foreground border-primary shadow-md' 
-                          : 'bg-muted/40 dark:bg-neutral-800 text-muted-foreground border-muted/50 hover:border-primary/50'
-                      }`}
-                    >
-                      # {tag.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <TaxonomyGroup 
+              label="Etiketler" 
+              items={recipeTags} 
+              selectedIds={selectedTagIds} 
+              onToggle={toggleTag} 
+            />
           </div>
         </div>
 
@@ -743,6 +746,23 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
                       placeholder="Bu adımda ne yapılması gerektiğini açıklayın..."
                       className="w-full bg-transparent outline-none resize-none text-foreground leading-relaxed min-h-[60px]"
                     />
+                    
+                    {aiSuggestions?.steps && aiSuggestions.steps[index] && aiSuggestions.steps[index] !== step.instruction && (
+                      <div className="mt-3 mb-2 p-3 bg-primary/5 border border-primary/20 rounded-xl flex flex-col gap-2 relative">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 text-primary font-bold text-xs">
+                            <Sparkles className="w-3.5 h-3.5" /> AI Önerisi
+                          </div>
+                          <button 
+                            onClick={(e) => { e.preventDefault(); updateStep(step.id, "instruction", aiSuggestions.steps[index]); }}
+                            className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded text-[10px] font-bold hover:bg-primary/90 transition-colors shadow-sm"
+                          >
+                            <CheckCircle2 className="w-3 h-3" /> Uygula
+                          </button>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{aiSuggestions.steps[index]}</p>
+                      </div>
+                    )}
                     
                     <div className="mt-4 flex items-center gap-4">
                       <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
