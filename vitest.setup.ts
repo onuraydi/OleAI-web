@@ -22,4 +22,26 @@ beforeAll(() => {
       dispatchEvent: vi.fn(),
     })),
   });
+
+  // Mock ResizeObserver
+  class ResizeObserverMock {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  window.ResizeObserver = ResizeObserverMock;
+  global.HTMLElement.prototype.scrollIntoView = vi.fn();
+  global.HTMLElement.prototype.hasPointerCapture = vi.fn();
+  global.HTMLElement.prototype.releasePointerCapture = vi.fn();
+  global.PointerEvent = class PointerEvent extends Event {
+    button: number;
+    ctrlKey: boolean;
+    pointerId: number;
+    constructor(type: string, props: any) {
+      super(type, props);
+      this.button = props?.button || 0;
+      this.ctrlKey = props?.ctrlKey || false;
+      this.pointerId = props?.pointerId || 1;
+    }
+  } as any;
 });
