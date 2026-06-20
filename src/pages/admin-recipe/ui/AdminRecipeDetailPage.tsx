@@ -198,7 +198,6 @@ export function AdminRecipeDetailPage() {
                 <div className="flex flex-col lg:flex-row gap-8">
                   <div className="w-full lg:w-1/2 space-y-4">
                     {/* Main Image */}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     {recipe.images?.find((img: any) => img.isMain) && (
                       <div 
                         className="w-full rounded-2xl overflow-hidden aspect-video bg-muted/10 relative group cursor-zoom-in"
