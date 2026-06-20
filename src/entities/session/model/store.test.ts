@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useSessionStore } from './store';
 import { sessionApi } from '@/entities/session/api/sessionApi';
@@ -37,7 +38,7 @@ describe('useSessionStore', () => {
 
   it('initialize sets user data when API succeeds', async () => {
     const mockProfile = { id: '2', email: 'user@example.com', role: 'Admin', isOnboarded: true };
-    vi.mocked(userApi.getProfile).mockResolvedValueOnce(mockProfile as unknown as Awaited<ReturnType<typeof userApi.getProfile>>);
+    vi.mocked(userApi.getProfile).mockResolvedValueOnce(mockProfile as any as Awaited<ReturnType<typeof userApi.getProfile>>);
 
     await useSessionStore.getState().initialize();
 

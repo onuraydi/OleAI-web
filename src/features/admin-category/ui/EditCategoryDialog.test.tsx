@@ -58,7 +58,7 @@ describe("EditCategoryDialog", () => {
   const mockUpdateCategory = vi.fn();
   const onCloseMock = vi.fn();
 
-  const mockCategory: Category = {
+  const mockCategory: any = {
     id: "cat-1",
     name: "Old Category",
     iconName: "OldIcon",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
@@ -40,7 +41,11 @@ describe('LoginForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+<<<<<<< Updated upstream
     (useSessionStore as unknown as any).mockImplementation((selector: any) =>
+=======
+    (useSessionStore as any as any).mockImplementation((selector: any) =>
+>>>>>>> Stashed changes
       selector({ setAuth: mockSetAuth })
     );
   });

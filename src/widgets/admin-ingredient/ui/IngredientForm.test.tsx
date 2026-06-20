@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { IngredientForm } from "./IngredientForm";
@@ -79,7 +80,7 @@ describe("IngredientForm", () => {
   });
 
   it("populates initial data correctly", () => {
-    const initialData = {
+    const initialData: any = {
       id: "ing-1",
       name: "Elma",
       categoryName: "Meyveler",

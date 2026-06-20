@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { RecipeIngredients } from "./RecipeIngredients";
@@ -20,7 +21,7 @@ describe("RecipeIngredients", () => {
       ingredientId: "1",
       ingredientName: "Flour",
       amount: 100,
-      unitId: MeasurementUnit.Gram as unknown as number,
+      unitId: MeasurementUnit.Gram as any as number,
       unitFamily: 1,
       isRequired: true,
       notes: ""
@@ -29,7 +30,7 @@ describe("RecipeIngredients", () => {
       ingredientId: "2",
       ingredientName: "Sugar",
       amount: 50,
-      unitId: MeasurementUnit.Gram as unknown as number,
+      unitId: MeasurementUnit.Gram as any as number,
       unitFamily: 1,
       isRequired: false,
       notes: ""
