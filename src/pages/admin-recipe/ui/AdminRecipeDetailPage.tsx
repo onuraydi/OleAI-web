@@ -224,7 +224,7 @@ export function AdminRecipeDetailPage() {
                     {recipe.images && recipe.images.length > 1 && (
                       <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                         {
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                           
                           recipe.images.filter((img: any) => !img.isMain).map((img: any, i: number) => (
                             <div 
                               key={i} 
@@ -273,7 +273,7 @@ export function AdminRecipeDetailPage() {
                             <FolderOpen className="w-4 h-4 text-primary mt-0.5" />
                             <div className="flex flex-wrap gap-2">
                               {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                 
                                 recipe.categories.map((cat: any) => (
                                   <span key={cat.id} className="text-xs font-bold px-2.5 py-1 rounded-md bg-primary/10 text-primary">{cat.name}</span>
                                 ))
@@ -286,7 +286,7 @@ export function AdminRecipeDetailPage() {
                             <Tags className="w-4 h-4 text-primary mt-0.5" />
                             <div className="flex flex-wrap gap-2">
                               {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                 
                                 recipe.tags.map((tag: any) => (
                                   <span key={tag.id} className="text-xs font-bold px-2.5 py-1 rounded-md bg-secondary text-foreground border border-border">#{tag.name}</span>
                                 ))
@@ -309,7 +309,7 @@ export function AdminRecipeDetailPage() {
                     </h3>
                     <ul className="space-y-3">
                       {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                         
                         recipe.ingredients?.map((ing: any, idx: number) => (
                           <li key={idx} className="flex justify-between items-center py-2 border-b border-muted/10 last:border-0">
                             <span className="font-medium">{ing.ingredientName}</span>
@@ -330,7 +330,7 @@ export function AdminRecipeDetailPage() {
                     </h3>
                     <div className="space-y-4">
                       {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                         
                         recipe.steps?.sort((a: any, b: any) => a.stepNumber - b.stepNumber).map((step: any) => (
                           <div key={step.id} className="flex gap-4">
                             <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black flex-shrink-0">
