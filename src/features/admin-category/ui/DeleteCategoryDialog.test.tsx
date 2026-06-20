@@ -10,7 +10,7 @@ vi.mock("@/entities/admin-category/api/adminCategoryQueries", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog", () => ({
-  Dialog: ({ open, onOpenChange, children }: unknown) => {
+  Dialog: ({ open, onOpenChange, children }: any) => {
     if (!open) return null;
     return (
       <div data-testid="dialog">
@@ -19,15 +19,15 @@ vi.mock("@/shared/ui/dialog", () => ({
       </div>
     );
   },
-  DialogContent: ({ children }: unknown) => <div>{children}</div>,
-  DialogHeader: ({ children }: unknown) => <header>{children}</header>,
-  DialogTitle: ({ children }: unknown) => <h2>{children}</h2>,
-  DialogDescription: ({ children, className }: unknown) => <p className={className}>{children}</p>,
-  DialogFooter: ({ children }: unknown) => <footer>{children}</footer>,
+  DialogContent: ({ children }: any) => <div>{children}</div>,
+  DialogHeader: ({ children }: any) => <header>{children}</header>,
+  DialogTitle: ({ children }: any) => <h2>{children}</h2>,
+  DialogDescription: ({ children, className }: any) => <p className={className}>{children}</p>,
+  DialogFooter: ({ children }: any) => <footer>{children}</footer>,
 }));
 
 vi.mock("@/shared/ui/button", () => ({
-  Button: ({ children, onClick, disabled, variant }: unknown) => (
+  Button: ({ children, onClick, disabled, variant }: any) => (
     <button onClick={onClick} disabled={disabled} data-testid={`button-${variant}`}>
       {children}
     </button>
@@ -47,7 +47,7 @@ describe("DeleteCategoryDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useDeleteCategory as unknown).mockReturnValue({
+    (useDeleteCategory as any).mockReturnValue({
       mutate: mockDeleteCategory,
       isPending: false,
     });
@@ -87,7 +87,7 @@ describe("DeleteCategoryDialog", () => {
     const user = userEvent.setup();
     render(<DeleteCategoryDialog category={mockCategory} isOpen={true} onClose={onCloseMock} />);
     
-    mockDeleteCategory.mockImplementation((id: unknown, options: unknown) => {
+    mockDeleteCategory.mockImplementation((id: any, options: any) => {
       options.onSuccess();
     });
 
@@ -110,7 +110,7 @@ describe("DeleteCategoryDialog", () => {
   });
 
   it("should handle loading state properly", () => {
-    (useDeleteCategory as unknown).mockReturnValue({
+    (useDeleteCategory as any).mockReturnValue({
       mutate: mockDeleteCategory,
       isPending: true,
     });

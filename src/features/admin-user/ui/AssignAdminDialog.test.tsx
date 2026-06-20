@@ -22,7 +22,7 @@ describe('AssignAdminDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useAssignAdminRole as unknown).mockReturnValue({
+    (useAssignAdminRole as any).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });

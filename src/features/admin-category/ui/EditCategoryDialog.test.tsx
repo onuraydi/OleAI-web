@@ -38,7 +38,7 @@ vi.mock("@/widgets/admin-category/ui/CategoryForm", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog", () => ({
-  Dialog: ({ open, onOpenChange, children }: unknown) => {
+  Dialog: ({ open, onOpenChange, children }: any) => {
     if (!open) return null;
     return (
       <div data-testid="dialog">
@@ -47,10 +47,10 @@ vi.mock("@/shared/ui/dialog", () => ({
       </div>
     );
   },
-  DialogContent: ({ children }: unknown) => <div>{children}</div>,
-  DialogHeader: ({ children }: unknown) => <header>{children}</header>,
-  DialogTitle: ({ children }: unknown) => <h2>{children}</h2>,
-  DialogDescription: ({ children }: unknown) => <p>{children}</p>,
+  DialogContent: ({ children }: any) => <div>{children}</div>,
+  DialogHeader: ({ children }: any) => <header>{children}</header>,
+  DialogTitle: ({ children }: any) => <h2>{children}</h2>,
+  DialogDescription: ({ children }: any) => <p>{children}</p>,
 }));
 
 describe("EditCategoryDialog", () => {
@@ -66,7 +66,7 @@ describe("EditCategoryDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useUpdateCategory as unknown).mockReturnValue({
+    (useUpdateCategory as any).mockReturnValue({
       mutate: mockUpdateCategory,
       isPending: false,
     });
@@ -102,7 +102,7 @@ describe("EditCategoryDialog", () => {
   });
 
   it("should pass isPending to CategoryForm", () => {
-    (useUpdateCategory as unknown).mockReturnValue({
+    (useUpdateCategory as any).mockReturnValue({
       mutate: mockUpdateCategory,
       isPending: true,
     });
@@ -117,7 +117,7 @@ describe("EditCategoryDialog", () => {
     const user = userEvent.setup();
     render(<EditCategoryDialog category={mockCategory} isOpen={true} onClose={onCloseMock} />);
     
-    mockUpdateCategory.mockImplementation((data: unknown, options: unknown) => {
+    mockUpdateCategory.mockImplementation((data: any, options: any) => {
       options.onSuccess();
     });
 

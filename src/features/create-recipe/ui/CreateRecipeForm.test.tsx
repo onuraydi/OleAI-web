@@ -32,7 +32,7 @@ vi.mock("sonner", () => ({
 
 // Mock RecipeEditorForm so we don't render its complex UI
 vi.mock("@/widgets/recipe-editor/ui/RecipeEditorForm", () => ({
-  RecipeEditorForm: ({ onSubmit, onCancel, headerTitle, submitButtonText }: unknown) => (
+  RecipeEditorForm: ({ onSubmit, onCancel, headerTitle, submitButtonText }: any) => (
     <div data-testid="recipe-editor-mock">
       <h2>{headerTitle}</h2>
       <button data-testid="submit-btn" onClick={() => onSubmit(new FormData())}>
@@ -52,13 +52,13 @@ describe("CreateRecipeForm", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useNavigate as unknown).mockReturnValue(mockNavigate);
-    (useQueryClient as unknown).mockReturnValue({
+    (useNavigate as any).mockReturnValue(mockNavigate);
+    (useQueryClient as any).mockReturnValue({
       invalidateQueries: mockInvalidateQueries,
     });
-    (useMutation as unknown).mockImplementation((options: unknown) => {
+    (useMutation as any).mockImplementation((options: any) => {
       return {
-        mutate: (data: unknown) => {
+        mutate: (data: any) => {
           mockMutate(data);
           // Simulate the onSuccess callback manually if needed, or we can just test the options passed to useMutation
           if (options.onSuccess) {
@@ -85,8 +85,8 @@ describe("CreateRecipeForm", () => {
   });
 
   it("calls createMutation when submitted", () => {
-    let capturedOptions: unknown;
-    (useMutation as unknown).mockImplementation((options: unknown) => {
+    let capturedOptions: any;
+    (useMutation as any).mockImplementation((options: any) => {
       capturedOptions = options;
       return { mutate: mockMutate, isPending: false };
     });

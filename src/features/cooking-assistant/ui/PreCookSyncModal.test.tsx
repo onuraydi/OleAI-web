@@ -29,20 +29,20 @@ describe('PreCookSyncModal', () => {
   const mockOnClose = vi.fn();
   const mockOnContinue = vi.fn();
 
-  const missingIngredients: unknown[] = [
+  const missingIngredients: any[] = [
     { id: '1', name: 'Salt' },
     { id: '2', name: 'Pepper' },
   ];
 
-  const recipeIngredients: unknown[] = [
+  const recipeIngredients: any[] = [
     { ingredientId: '1', amount: 2, unitId: 1 },
     { ingredientId: '2', amount: 5, unitId: 2 },
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (shoppingListApi.bulkAddItems as unknown).mockResolvedValue({});
-    (pantryApi.addMultipleIngredients as unknown).mockResolvedValue({});
+    (shoppingListApi.bulkAddItems as any).mockResolvedValue({});
+    (pantryApi.addMultipleIngredients as any).mockResolvedValue({});
   });
 
   const renderComponent = (isOpen = true) => {
@@ -99,7 +99,7 @@ describe('PreCookSyncModal', () => {
   });
 
   it('handles error gracefully and calls onContinue anyway', async () => {
-    (shoppingListApi.bulkAddItems as unknown).mockRejectedValue(new Error('Network Error'));
+    (shoppingListApi.bulkAddItems as any).mockRejectedValue(new Error('Network Error'));
 
     renderComponent();
 

@@ -22,15 +22,15 @@ vi.mock("@/entities/pantry/api/pantryApi", () => ({
 
 vi.mock("@/entities/pantry/model/useAddIngredientStore", () => {
   // Use a simple scoped variable to maintain state in our mock
-  let pantryDrafts: unknown[] = [];
-  let shoppingListDrafts: unknown[] = [];
+  let pantryDrafts: any[] = [];
+  let shoppingListDrafts: any[] = [];
   return {
     useAddIngredientStore: vi.fn(() => ({
       pantryDrafts,
-      setPantryDrafts: (items: unknown) => { pantryDrafts = items; },
+      setPantryDrafts: (items: any) => { pantryDrafts = items; },
       clearPantryDrafts: () => { pantryDrafts = []; },
       shoppingListDrafts,
-      setShoppingListDrafts: (items: unknown) => { shoppingListDrafts = items; },
+      setShoppingListDrafts: (items: any) => { shoppingListDrafts = items; },
       clearShoppingListDrafts: () => { shoppingListDrafts = []; },
     })),
   };
@@ -39,23 +39,23 @@ vi.mock("@/entities/pantry/model/useAddIngredientStore", () => {
 // Mock Framer Motion to bypass animations
 vi.mock("framer-motion", () => ({
   motion: {
-    div: ({ children, ...props }: unknown) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   },
-  AnimatePresence: ({ children }: unknown) => <>{children}</>,
+  AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
 describe("AddIngredientModal", () => {
   const mockOnClose = vi.fn();
   const mockOnSubmitOverride = vi.fn();
   const mockQueryClient = { invalidateQueries: vi.fn() };
-  let mockMutate: unknown;
+  let mockMutate: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    (useQueryClient as unknown).mockReturnValue(mockQueryClient);
+    (useQueryClient as any).mockReturnValue(mockQueryClient);
 
-    (useQuery as unknown).mockImplementation(({ queryKey }: unknown) => {
+    (useQuery as any).mockImplementation(({ queryKey }: any) => {
       if (queryKey[0] === "categories") {
         return { data: [{ id: "cat1", name: "Fruits" }], isLoading: false };
       }
@@ -78,14 +78,14 @@ describe("AddIngredientModal", () => {
     });
 
     mockMutate = vi.fn();
-    (useMutation as unknown).mockReturnValue({
+    (useMutation as any).mockReturnValue({
       mutate: mockMutate,
       isPending: false,
       reset: vi.fn(),
     });
 
     // Reset store state
-    const store = useAddIngredientStore() as unknown;
+    const store = useAddIngredientStore() as any;
     store.clearPantryDrafts();
     store.clearShoppingListDrafts();
   });
@@ -104,7 +104,7 @@ describe("AddIngredientModal", () => {
 
   it("handles input search and adds an item to draft list", async () => {
     // Override search query to return something
-    (useQuery as unknown).mockImplementation(({ queryKey }: unknown) => {
+    (useQuery as any).mockImplementation(({ queryKey }: any) => {
       if (queryKey[0] === "search-ingredients" && queryKey[1] === "App") {
         return {
           data: [{ masterIngredientId: "ing2", displayName: "Apple Pie", categoryName: "Desserts", unitFamily: 1 }],
@@ -134,7 +134,7 @@ describe("AddIngredientModal", () => {
     fireEvent.click(addBtn);
 
     // Should appear in staging area
-    const store = useAddIngredientStore() as unknown;
+    const store = useAddIngredientStore() as any;
     expect(store.pantryDrafts.length).toBe(1);
     expect(store.pantryDrafts[0].ingredient.displayName).toBe("Apple Pie");
   });
@@ -153,7 +153,7 @@ describe("AddIngredientModal", () => {
     const addBtn = screen.getByText("Listeye Ekle");
     fireEvent.click(addBtn);
 
-    const store = useAddIngredientStore() as unknown;
+    const store = useAddIngredientStore() as any;
     expect(store.pantryDrafts.length).toBe(1);
     expect(store.pantryDrafts[0].customName).toBe("Dragonfruit");
   });
@@ -211,7 +211,7 @@ describe("AddIngredientModal", () => {
 
     fireEvent.click(screen.getAllByText("Listeye Ekle")[0]);
 
-    const store = useAddIngredientStore() as unknown;
+    const store = useAddIngredientStore() as any;
     expect(store.shoppingListDrafts.length).toBe(1);
     expect(store.pantryDrafts.length).toBe(0);
 

@@ -48,7 +48,7 @@ describe('AiModerationPanel', () => {
   });
 
   it('calls analyzeWithAi when analyze button is clicked', async () => {
-    (recipeApi.analyzeWithAi as unknown).mockResolvedValueOnce({});
+    (recipeApi.analyzeWithAi as any).mockResolvedValueOnce({});
     
     renderWithClient(<AiModerationPanel {...defaultProps} />);
     fireEvent.click(screen.getByRole('button', { name: /analiz et/i }));

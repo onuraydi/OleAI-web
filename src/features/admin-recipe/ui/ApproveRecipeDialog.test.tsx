@@ -22,7 +22,7 @@ describe('ApproveRecipeDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useApproveRecipe as unknown).mockReturnValue({
+    (useApproveRecipe as any).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });

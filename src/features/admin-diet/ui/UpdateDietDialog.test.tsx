@@ -43,7 +43,7 @@ vi.mock("@/widgets/admin-diet/ui/DietForm", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog/PremiumEntityDialog", () => ({
-  PremiumEntityDialog: ({ isOpen, children, title }: unknown) => {
+  PremiumEntityDialog: ({ isOpen, children, title }: any) => {
     if (!isOpen) return null;
     return (
       <div data-testid="premium-entity-dialog">
@@ -60,11 +60,11 @@ describe("UpdateDietDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useUpdateDiet as unknown).mockReturnValue({
+    (useUpdateDiet as any).mockReturnValue({
       mutate: mockUpdateDiet,
       isPending: false,
     });
-    (useAdminDietById as unknown).mockReturnValue({
+    (useAdminDietById as any).mockReturnValue({
       data: { id: "d123", name: "Old Diet" },
       isLoading: false,
     });
@@ -76,7 +76,7 @@ describe("UpdateDietDialog", () => {
   });
 
   it("should display loading state when diet data is loading", () => {
-    (useAdminDietById as unknown).mockReturnValue({
+    (useAdminDietById as any).mockReturnValue({
       isLoading: true,
     });
     
@@ -109,7 +109,7 @@ describe("UpdateDietDialog", () => {
     const user = userEvent.setup();
     render(<UpdateDietDialog dietId="d123" onClose={onCloseMock} />);
     
-    mockUpdateDiet.mockImplementation((data: unknown, options: unknown) => {
+    mockUpdateDiet.mockImplementation((data: any, options: any) => {
       options.onSuccess();
     });
 
@@ -140,7 +140,7 @@ describe("UpdateDietDialog", () => {
   });
 
   it("should pass isPending to DietForm", () => {
-    (useUpdateDiet as unknown).mockReturnValue({
+    (useUpdateDiet as any).mockReturnValue({
       mutate: mockUpdateDiet,
       isPending: true,
     });

@@ -31,7 +31,7 @@ vi.mock("sonner", () => ({
 }));
 
 vi.mock("@/widgets/recipe-editor/ui/RecipeEditorForm", () => ({
-  RecipeEditorForm: ({ onSubmit, onCancel, headerTitle, submitButtonText, initialData }: unknown) => (
+  RecipeEditorForm: ({ onSubmit, onCancel, headerTitle, submitButtonText, initialData }: any) => (
     <div data-testid="recipe-editor-mock">
       <h2>{headerTitle}</h2>
       <div data-testid="initial-data-id">{initialData?.id}</div>
@@ -58,13 +58,13 @@ describe("EditRecipeForm", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useNavigate as unknown).mockReturnValue(mockNavigate);
-    (useQueryClient as unknown).mockReturnValue({
+    (useNavigate as any).mockReturnValue(mockNavigate);
+    (useQueryClient as any).mockReturnValue({
       invalidateQueries: mockInvalidateQueries,
     });
-    (useMutation as unknown).mockImplementation((options: unknown) => {
+    (useMutation as any).mockImplementation((options: any) => {
       return {
-        mutate: (data: unknown) => {
+        mutate: (data: any) => {
           mockMutate(data);
         },
         isPending: false,
@@ -88,8 +88,8 @@ describe("EditRecipeForm", () => {
   });
 
   it("calls updateMutation when submitted", () => {
-    let capturedOptions: unknown;
-    (useMutation as unknown).mockImplementation((options: unknown) => {
+    let capturedOptions: any;
+    (useMutation as any).mockImplementation((options: any) => {
       capturedOptions = options;
       return { mutate: mockMutate, isPending: false };
     });
