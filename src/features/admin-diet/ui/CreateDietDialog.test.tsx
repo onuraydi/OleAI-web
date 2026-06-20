@@ -1,4 +1,9 @@
+<<<<<<< Updated upstream
+import { render, screen, waitFor } from "@testing-library/react";
+=======
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
+>>>>>>> Stashed changes
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateDietDialog } from "./CreateDietDialog";
@@ -41,7 +46,7 @@ vi.mock("@/widgets/admin-diet/ui/DietForm", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog/PremiumEntityDialog", () => ({
-  PremiumEntityDialog: ({ isOpen, children, title }: unknown) => {
+  PremiumEntityDialog: ({ isOpen, children, title }: any) => {
     if (!isOpen) return null;
     return (
       <div data-testid="premium-entity-dialog">
@@ -58,7 +63,7 @@ describe("CreateDietDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useCreateDiet as unknown).mockReturnValue({
+    (useCreateDiet as any).mockReturnValue({
       mutate: mockCreateDiet,
       isPending: false,
     });
@@ -88,7 +93,7 @@ describe("CreateDietDialog", () => {
   });
 
   it("should pass isPending to DietForm", () => {
-    (useCreateDiet as unknown).mockReturnValue({
+    (useCreateDiet as any).mockReturnValue({
       mutate: mockCreateDiet,
       isPending: true,
     });
@@ -103,7 +108,7 @@ describe("CreateDietDialog", () => {
     const user = userEvent.setup();
     render(<CreateDietDialog isOpen={true} onClose={onCloseMock} />);
     
-    mockCreateDiet.mockImplementation((data: unknown, options: unknown) => {
+    mockCreateDiet.mockImplementation((data: any, options: any) => {
       options.onSuccess();
     });
 
@@ -127,7 +132,7 @@ describe("CreateDietDialog", () => {
 
   it("should handle description being null correctly", async () => {
     const user = userEvent.setup();
-    (DietForm as unknown).mockImplementationOnce(({ onSubmit }: unknown) => (
+    (DietForm as any).mockImplementationOnce(({ onSubmit }: any) => (
       <button
         data-testid="submit-null-desc"
         onClick={() => onSubmit({ name: "D1", iconName: "icon", description: null })}

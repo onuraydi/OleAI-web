@@ -1,4 +1,9 @@
+<<<<<<< Updated upstream
+import { render, screen, waitFor } from "@testing-library/react";
+=======
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
+>>>>>>> Stashed changes
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateAllergyDialog } from "./CreateAllergyDialog";
@@ -42,7 +47,7 @@ vi.mock("@/widgets/admin-allergy/ui/AllergyForm", () => ({
 
 // We mock PremiumEntityDialog to just render its children, so it's easier to test the dialog's content
 vi.mock("@/shared/ui/dialog/PremiumEntityDialog", () => ({
-  PremiumEntityDialog: ({ isOpen, children, title }: unknown) => {
+  PremiumEntityDialog: ({ isOpen, children, title }: any) => {
     if (!isOpen) return null;
     return (
       <div data-testid="premium-entity-dialog">
@@ -59,7 +64,7 @@ describe("CreateAllergyDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useCreateAllergy as unknown).mockReturnValue({
+    (useCreateAllergy as any).mockReturnValue({
       mutate: mockCreateAllergy,
       isPending: false,
     });
@@ -89,7 +94,7 @@ describe("CreateAllergyDialog", () => {
   });
 
   it("should pass isPending to AllergyForm", () => {
-    (useCreateAllergy as unknown).mockReturnValue({
+    (useCreateAllergy as any).mockReturnValue({
       mutate: mockCreateAllergy,
       isPending: true,
     });
@@ -105,7 +110,7 @@ describe("CreateAllergyDialog", () => {
     render(<CreateAllergyDialog isOpen={true} onClose={onCloseMock} />);
     
     // Setup mutation to call onSuccess
-    mockCreateAllergy.mockImplementation((data: unknown, options: unknown) => {
+    mockCreateAllergy.mockImplementation((data: any, options: any) => {
       options.onSuccess();
     });
 
@@ -129,7 +134,7 @@ describe("CreateAllergyDialog", () => {
   
   it("should handle description being null correctly", async () => {
     const user = userEvent.setup();
-    (AllergyForm as unknown).mockImplementationOnce(({ onSubmit }: unknown) => (
+    (AllergyForm as any).mockImplementationOnce(({ onSubmit }: any) => (
       <button
         data-testid="submit-null-desc"
         onClick={() => onSubmit({ name: "A1", iconName: "icon", description: null })}

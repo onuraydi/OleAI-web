@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ResolveRequestDialog } from "./ResolveRequestDialog";
@@ -50,7 +51,7 @@ vi.mock("@/shared/ui/select", () => ({
 
 describe("ResolveRequestDialog", () => {
   const mockOnOpenChange = vi.fn();
-  const mockRequest = {
+  const mockRequest: any = {
     id: "req-1",
     requestedName: "Kırmızı Elma",
     userId: "user-1",

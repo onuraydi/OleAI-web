@@ -38,7 +38,7 @@ describe("DeleteCategoryDialog", () => {
   const mockDeleteCategory = vi.fn();
   const onCloseMock = vi.fn();
   
-  const mockCategory: Category = {
+  const mockCategory: any = {
     id: "cat-1",
     name: "Dairy",
     iconName: "Milk",

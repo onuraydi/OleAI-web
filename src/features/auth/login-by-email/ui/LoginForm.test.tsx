@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
@@ -40,7 +41,11 @@ describe('LoginForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useSessionStore as unknown as unknown).mockImplementation((selector: unknown) =>
+<<<<<<< Updated upstream
+    (useSessionStore as unknown as any).mockImplementation((selector: any) =>
+=======
+    (useSessionStore as any as any).mockImplementation((selector: any) =>
+>>>>>>> Stashed changes
       selector({ setAuth: mockSetAuth })
     );
   });
@@ -88,9 +93,9 @@ describe('LoginForm', () => {
     const mockRole = 'User';
     const mockProfile = { id: '1', email: 'test@example.com', username: 'test', isOnboarded: false };
 
-    (sessionApi.login as unknown).mockResolvedValue({ accessToken: { token: mockToken } });
-    (jwtHelpers.decodeRoleFromToken as unknown).mockReturnValue(mockRole);
-    (userApi.getProfile as unknown).mockResolvedValue(mockProfile);
+    (sessionApi.login as any).mockResolvedValue({ accessToken: { token: mockToken } });
+    (jwtHelpers.decodeRoleFromToken as any).mockReturnValue(mockRole);
+    (userApi.getProfile as any).mockResolvedValue(mockProfile);
 
     renderComponent();
 
@@ -121,9 +126,9 @@ describe('LoginForm', () => {
     const mockRole = 'Admin';
     const mockProfile = { id: '1', email: 'admin@example.com', username: 'admin', isOnboarded: true };
 
-    (sessionApi.login as unknown).mockResolvedValue({ accessToken: { token: mockToken } });
-    (jwtHelpers.decodeRoleFromToken as unknown).mockReturnValue(mockRole);
-    (userApi.getProfile as unknown).mockResolvedValue(mockProfile);
+    (sessionApi.login as any).mockResolvedValue({ accessToken: { token: mockToken } });
+    (jwtHelpers.decodeRoleFromToken as any).mockReturnValue(mockRole);
+    (userApi.getProfile as any).mockResolvedValue(mockProfile);
 
     renderComponent();
 
@@ -141,9 +146,9 @@ describe('LoginForm', () => {
     const mockRole = 'User';
     const mockProfile = { id: '1', email: 'user@example.com', username: 'user', isOnboarded: true };
 
-    (sessionApi.login as unknown).mockResolvedValue({ accessToken: { token: mockToken } });
-    (jwtHelpers.decodeRoleFromToken as unknown).mockReturnValue(mockRole);
-    (userApi.getProfile as unknown).mockResolvedValue(mockProfile);
+    (sessionApi.login as any).mockResolvedValue({ accessToken: { token: mockToken } });
+    (jwtHelpers.decodeRoleFromToken as any).mockReturnValue(mockRole);
+    (userApi.getProfile as any).mockResolvedValue(mockProfile);
 
     renderComponent();
 
@@ -163,10 +168,10 @@ describe('LoginForm', () => {
       status: 400,
       statusText: 'Bad Request',
       headers: {},
-      config: {} as unknown,
+      config: {} as any,
     };
-    (sessionApi.login as unknown).mockRejectedValue(axiosError);
-    (sessionApi.resendOtp as unknown).mockResolvedValue({});
+    (sessionApi.login as any).mockRejectedValue(axiosError);
+    (sessionApi.resendOtp as any).mockResolvedValue({});
 
     renderComponent();
 
@@ -187,9 +192,9 @@ describe('LoginForm', () => {
       status: 401,
       statusText: 'Unauthorized',
       headers: {},
-      config: {} as unknown,
+      config: {} as any,
     };
-    (sessionApi.login as unknown).mockRejectedValue(axiosError);
+    (sessionApi.login as any).mockRejectedValue(axiosError);
 
     renderComponent();
 

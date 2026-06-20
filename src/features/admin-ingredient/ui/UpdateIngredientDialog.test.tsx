@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { UpdateIngredientDialog } from "./UpdateIngredientDialog";
@@ -33,7 +34,7 @@ vi.mock("@/shared/ui/select", () => ({
 
 describe("UpdateIngredientDialog", () => {
   const mockOnOpenChange = vi.fn();
-  const mockIngredient = {
+  const mockIngredient: any = {
     id: "ing-1",
     name: "Elma",
     categoryName: "Meyveler",

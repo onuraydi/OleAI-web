@@ -1,8 +1,14 @@
+<<<<<<< Updated upstream
+import { render, screen, waitFor } from "@testing-library/react";
+=======
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
+>>>>>>> Stashed changes
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { UpdateAllergyDialog } from "./UpdateAllergyDialog";
 import { useUpdateAllergy, useAdminAllergyById } from "@/entities/admin-allergy";
+import { AllergyForm } from "@/widgets/admin-allergy/ui/AllergyForm";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
 
 vi.mock("@/entities/admin-allergy", () => ({
@@ -42,7 +48,7 @@ vi.mock("@/widgets/admin-allergy/ui/AllergyForm", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog/PremiumEntityDialog", () => ({
-  PremiumEntityDialog: ({ isOpen, children, title }: unknown) => {
+  PremiumEntityDialog: ({ isOpen, children, title }: any) => {
     if (!isOpen) return null;
     return (
       <div data-testid="premium-entity-dialog">
@@ -59,11 +65,11 @@ describe("UpdateAllergyDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useUpdateAllergy as unknown).mockReturnValue({
+    (useUpdateAllergy as any).mockReturnValue({
       mutate: mockUpdateAllergy,
       isPending: false,
     });
-    (useAdminAllergyById as unknown).mockReturnValue({
+    (useAdminAllergyById as any).mockReturnValue({
       data: { id: "123", name: "Old Allergy" },
       isLoading: false,
     });
@@ -75,7 +81,7 @@ describe("UpdateAllergyDialog", () => {
   });
 
   it("should display loading state when allergy data is loading", () => {
-    (useAdminAllergyById as unknown).mockReturnValue({
+    (useAdminAllergyById as any).mockReturnValue({
       isLoading: true,
     });
     
@@ -108,7 +114,7 @@ describe("UpdateAllergyDialog", () => {
     const user = userEvent.setup();
     render(<UpdateAllergyDialog allergyId="123" onClose={onCloseMock} />);
     
-    mockUpdateAllergy.mockImplementation((data: unknown, options: unknown) => {
+    mockUpdateAllergy.mockImplementation((data: any, options: any) => {
       options.onSuccess();
     });
 
@@ -134,6 +140,7 @@ describe("UpdateAllergyDialog", () => {
   it("should handle submit when allergyId is somehow null (edge case)", async () => {
     // We render it directly using a tricked prop to simulate the component being mounted
     // but without an allergyId or allergyId disappearing during render
+    const user = userEvent.setup();
     render(<UpdateAllergyDialog allergyId="" onClose={onCloseMock} />);
     
     const submitBtn = screen.queryByTestId("submit-btn");
@@ -141,7 +148,7 @@ describe("UpdateAllergyDialog", () => {
   });
 
   it("should pass isPending to AllergyForm", () => {
-    (useUpdateAllergy as unknown).mockReturnValue({
+    (useUpdateAllergy as any).mockReturnValue({
       mutate: mockUpdateAllergy,
       isPending: true,
     });
