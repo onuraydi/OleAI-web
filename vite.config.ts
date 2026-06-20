@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -12,5 +13,23 @@ export default defineConfig({
   },
   server: {
     allowedHosts: ['a631-176-88-76-92.ngrok-free.app']
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './vitest.setup.ts',
+    coverage: {
+      provider: 'v8',
+      all: true,
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      reporter: ['text', 'html', 'json'],
+      exclude: [
+        'node_modules/',
+        'src/app/main.tsx',
+        'src/**/*.d.ts',
+        '**/*.config.ts',
+        '**/*.config.js'
+      ]
+    }
   }
 })
