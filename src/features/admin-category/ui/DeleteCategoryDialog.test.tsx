@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { DeleteCategoryDialog } from "./DeleteCategoryDialog";
 import { useDeleteCategory } from "@/entities/admin-category/api/adminCategoryQueries";
-import type { Category } from "@/entities/admin-category/model/types";
 
 vi.mock("@/entities/admin-category/api/adminCategoryQueries", () => ({
   useDeleteCategory: vi.fn(),

@@ -1,14 +1,9 @@
-<<<<<<< Updated upstream
-import { render, screen, waitFor } from "@testing-library/react";
-=======
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
->>>>>>> Stashed changes
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { UpdateAllergyDialog } from "./UpdateAllergyDialog";
 import { useUpdateAllergy, useAdminAllergyById } from "@/entities/admin-allergy";
-import { AllergyForm } from "@/widgets/admin-allergy/ui/AllergyForm";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
 
 vi.mock("@/entities/admin-allergy", () => ({
@@ -140,7 +135,6 @@ describe("UpdateAllergyDialog", () => {
   it("should handle submit when allergyId is somehow null (edge case)", async () => {
     // We render it directly using a tricked prop to simulate the component being mounted
     // but without an allergyId or allergyId disappearing during render
-    const user = userEvent.setup();
     render(<UpdateAllergyDialog allergyId="" onClose={onCloseMock} />);
     
     const submitBtn = screen.queryByTestId("submit-btn");

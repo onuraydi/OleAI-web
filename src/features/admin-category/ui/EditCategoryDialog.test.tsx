@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { EditCategoryDialog } from "./EditCategoryDialog";
 import { useUpdateCategory } from "@/entities/admin-category/api/adminCategoryQueries";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
-import type { Category } from "@/entities/admin-category/model/types";
 
 vi.mock("@/entities/admin-category/api/adminCategoryQueries", () => ({
   useUpdateCategory: vi.fn(),

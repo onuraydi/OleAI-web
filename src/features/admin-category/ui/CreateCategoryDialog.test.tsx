@@ -1,14 +1,9 @@
-<<<<<<< Updated upstream
-import { render, screen, waitFor } from "@testing-library/react";
-=======
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
->>>>>>> Stashed changes
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateCategoryDialog } from "./CreateCategoryDialog";
 import { useCreateCategory } from "@/entities/admin-category/api/adminCategoryQueries";
-import { CategoryForm } from "@/widgets/admin-category/ui/CategoryForm";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
 
 vi.mock("@/entities/admin-category/api/adminCategoryQueries", () => ({

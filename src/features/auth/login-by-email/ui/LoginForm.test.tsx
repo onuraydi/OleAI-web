@@ -41,11 +41,7 @@ describe('LoginForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-<<<<<<< Updated upstream
-    (useSessionStore as unknown as any).mockImplementation((selector: any) =>
-=======
-    (useSessionStore as any as any).mockImplementation((selector: any) =>
->>>>>>> Stashed changes
+    (useSessionStore as any).mockImplementation((selector: any) =>
       selector({ setAuth: mockSetAuth })
     );
   });
