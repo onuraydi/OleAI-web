@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { RejectRecipeDialog } from './RejectRecipeDialog';
 import { useRejectRecipe } from '@/entities/admin-recipe';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ describe('RejectRecipeDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useRejectRecipe as any).mockReturnValue({
+    (useRejectRecipe as Mock).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });

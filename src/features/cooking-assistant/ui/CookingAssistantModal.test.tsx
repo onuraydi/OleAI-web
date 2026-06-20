@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { CookingAssistantModal } from './CookingAssistantModal';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipeApi } from '@/entities/recipe/api/recipeApi';
@@ -21,7 +21,7 @@ describe('CookingAssistantModal', () => {
   const mockOnFinishCooking = vi.fn();
   const mockInvalidateQueries = vi.fn();
 
-  const mockRecipe: any = {
+  const mockRecipe: Record<string, unknown> = {
     id: 'recipe-1',
     title: 'Test Recipe',
     steps: [
@@ -33,16 +33,16 @@ describe('CookingAssistantModal', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useQueryClient as any).mockReturnValue({
+    (useQueryClient as Mock).mockReturnValue({
       invalidateQueries: mockInvalidateQueries,
     });
-    (useMutation as any).mockImplementation(({ mutationFn, onSuccess }: any) => ({
+    (useMutation as Mock).mockImplementation(({ mutationFn, onSuccess }: { mutationFn: () => Promise<unknown>; onSuccess: () => void }) => ({
       mutate: () => {
         mutationFn().then(onSuccess);
       },
       isPending: false,
     }));
-    (recipeApi.startCooking as any).mockResolvedValue([{ id: 'ing-1', name: 'Salt' }]);
+    (recipeApi.startCooking as Mock).mockResolvedValue([{ id: 'ing-1', name: 'Salt' }]);
   });
 
   const renderComponent = (isOpen = true) => {

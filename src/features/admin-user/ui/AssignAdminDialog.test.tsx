@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { AssignAdminDialog } from './AssignAdminDialog';
 import { useAssignAdminRole } from '@/entities/admin-user';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ describe('AssignAdminDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useAssignAdminRole as any).mockReturnValue({
+    (useAssignAdminRole as Mock).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });

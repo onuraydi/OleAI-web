@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { ChangePasswordForm } from './ChangePasswordForm';
 import { sessionApi } from '@/entities/session';
 import { useMutation } from '@tanstack/react-query';
@@ -27,8 +27,8 @@ vi.mock('sonner', () => ({
 describe('ChangePasswordForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any).mockImplementation(({ mutationFn, onSuccess, onError }: any) => ({
-      mutate: (variables: any) => {
+    (useMutation as Mock).mockImplementation(({ mutationFn, onSuccess, onError }: { mutationFn: (v: unknown) => Promise<unknown>, onSuccess: () => void, onError: (err: unknown) => void }) => ({
+      mutate: (variables: unknown) => {
         mutationFn(variables).then(onSuccess).catch(onError);
       },
       isPending: false,
@@ -72,7 +72,7 @@ describe('ChangePasswordForm', () => {
   });
 
   it('handles successful password change', async () => {
-    (sessionApi.changePassword as any).mockResolvedValue({});
+    (sessionApi.changePassword as Mock).mockResolvedValue({});
 
     renderComponent();
 
@@ -108,9 +108,9 @@ describe('ChangePasswordForm', () => {
       status: 400,
       statusText: 'Bad Request',
       headers: {},
-      config: {} as any,
+      config: {} as Record<string, unknown>,
     };
-    (sessionApi.changePassword as any).mockRejectedValue(axiosError);
+    (sessionApi.changePassword as Mock).mockRejectedValue(axiosError);
 
     renderComponent();
 

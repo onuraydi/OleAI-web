@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { PreCookSyncModal } from './PreCookSyncModal';
 import { shoppingListApi } from '@/entities/shopping-list/api/shoppingListApi';
 import { pantryApi } from '@/entities/pantry/api/pantryApi';
@@ -29,20 +29,20 @@ describe('PreCookSyncModal', () => {
   const mockOnClose = vi.fn();
   const mockOnContinue = vi.fn();
 
-  const missingIngredients: any[] = [
+  const missingIngredients: Record<string, unknown>[] = [
     { id: '1', name: 'Salt' },
     { id: '2', name: 'Pepper' },
   ];
 
-  const recipeIngredients: any[] = [
+  const recipeIngredients: Record<string, unknown>[] = [
     { ingredientId: '1', amount: 2, unitId: 1 },
     { ingredientId: '2', amount: 5, unitId: 2 },
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (shoppingListApi.bulkAddItems as any).mockResolvedValue({});
-    (pantryApi.addMultipleIngredients as any).mockResolvedValue({});
+    (shoppingListApi.bulkAddItems as Mock).mockResolvedValue({});
+    (pantryApi.addMultipleIngredients as Mock).mockResolvedValue({});
   });
 
   const renderComponent = (isOpen = true) => {
@@ -99,7 +99,7 @@ describe('PreCookSyncModal', () => {
   });
 
   it('handles error gracefully and calls onContinue anyway', async () => {
-    (shoppingListApi.bulkAddItems as any).mockRejectedValue(new Error('Network Error'));
+    (shoppingListApi.bulkAddItems as Mock).mockRejectedValue(new Error('Network Error'));
 
     renderComponent();
 

@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { RecipeComments } from './RecipeComments';
 import { recipeApi } from '@/entities/recipe/api/recipeApi';
 import { useSessionStore } from '@/entities/session/model/store';
@@ -39,10 +39,10 @@ describe('RecipeComments', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useSessionStore as any).mockReturnValue({ user: mockUser });
+    (useSessionStore as Mock).mockReturnValue({ user: mockUser });
     
     // Default API mock
-    (recipeApi.getRecipeComments as any).mockResolvedValue({
+    (recipeApi.getRecipeComments as Mock).mockResolvedValue({
       items: [
         {
           id: 'comment-1',
@@ -81,7 +81,7 @@ describe('RecipeComments', () => {
   });
 
   it('allows adding a new comment', async () => {
-    (recipeApi.addComment as any).mockResolvedValueOnce({});
+    (recipeApi.addComment as Mock).mockResolvedValueOnce({});
     
     renderWithProviders(<RecipeComments recipeId="1" totalComments={0} />);
     
@@ -108,7 +108,7 @@ describe('RecipeComments', () => {
   });
 
   it('allows editing an own comment', async () => {
-    (recipeApi.updateComment as any).mockResolvedValueOnce({});
+    (recipeApi.updateComment as Mock).mockResolvedValueOnce({});
     
     renderWithProviders(<RecipeComments recipeId="1" totalComments={1} />);
     fireEvent.click(screen.getByRole('button', { name: /Yorumlar/i }));
@@ -135,7 +135,7 @@ describe('RecipeComments', () => {
 
   it('allows deleting an own comment', async () => {
     window.confirm = vi.fn().mockReturnValue(true);
-    (recipeApi.deleteComment as any).mockResolvedValueOnce({});
+    (recipeApi.deleteComment as Mock).mockResolvedValueOnce({});
     
     renderWithProviders(<RecipeComments recipeId="1" totalComments={1} />);
     fireEvent.click(screen.getByRole('button', { name: /Yorumlar/i }));

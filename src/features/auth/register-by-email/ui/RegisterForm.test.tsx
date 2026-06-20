@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { RegisterForm } from './RegisterForm';
 import { sessionApi } from '@/entities/session';
@@ -70,7 +70,7 @@ describe('RegisterForm', () => {
   });
 
   it('handles successful registration and redirects', async () => {
-    (sessionApi.register as any).mockResolvedValue({});
+    (sessionApi.register as Mock).mockResolvedValue({});
 
     renderComponent();
 
@@ -105,9 +105,9 @@ describe('RegisterForm', () => {
       status: 400,
       statusText: 'Bad Request',
       headers: {},
-      config: {} as any,
+      config: {} as Record<string, unknown>,
     };
-    (sessionApi.register as any).mockRejectedValue(axiosError);
+    (sessionApi.register as Mock).mockRejectedValue(axiosError);
 
     renderComponent();
 

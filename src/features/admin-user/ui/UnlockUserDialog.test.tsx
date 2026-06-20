@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { UnlockUserDialog } from './UnlockUserDialog';
 import { useUnlockUser } from '@/entities/admin-user';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ describe('UnlockUserDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useUnlockUser as any).mockReturnValue({
+    (useUnlockUser as Mock).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });

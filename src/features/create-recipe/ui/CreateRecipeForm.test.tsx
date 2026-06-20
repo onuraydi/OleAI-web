@@ -1,6 +1,6 @@
  
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { CreateRecipeForm } from "./CreateRecipeForm";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -32,7 +32,7 @@ vi.mock("sonner", () => ({
 
 // Mock RecipeEditorForm so we don't render its complex UI
 vi.mock("@/widgets/recipe-editor/ui/RecipeEditorForm", () => ({
-  RecipeEditorForm: ({ onSubmit, onCancel, headerTitle, submitButtonText }: any) => (
+  RecipeEditorForm: ({ onSubmit, onCancel, headerTitle, submitButtonText }: { onSubmit: (data: FormData) => void; onCancel: () => void; headerTitle: string; submitButtonText: string }) => (
     <div data-testid="recipe-editor-mock">
       <h2>{headerTitle}</h2>
       <button data-testid="submit-btn" onClick={() => onSubmit(new FormData())}>
@@ -52,13 +52,13 @@ describe("CreateRecipeForm", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useNavigate as any).mockReturnValue(mockNavigate);
-    (useQueryClient as any).mockReturnValue({
+    (useNavigate as Mock).mockReturnValue(mockNavigate);
+    (useQueryClient as Mock).mockReturnValue({
       invalidateQueries: mockInvalidateQueries,
     });
-    (useMutation as any).mockImplementation((options: any) => {
+    (useMutation as Mock).mockImplementation((options: { onSuccess?: () => void; onError?: (err: unknown) => void; mutationFn?: unknown }) => {
       return {
-        mutate: (data: any) => {
+        mutate: (data: unknown) => {
           mockMutate(data);
           // Simulate the onSuccess callback manually if needed, or we can just test the options passed to useMutation
           if (options.onSuccess) {
@@ -85,8 +85,8 @@ describe("CreateRecipeForm", () => {
   });
 
   it("calls createMutation when submitted", () => {
-    let capturedOptions: any;
-    (useMutation as any).mockImplementation((options: any) => {
+    let capturedOptions: { mutationFn: unknown; onSuccess: () => void; onError: (err: unknown) => void };
+    (useMutation as Mock).mockImplementation((options: { mutationFn: unknown; onSuccess: () => void; onError: (err: unknown) => void }) => {
       capturedOptions = options;
       return { mutate: mockMutate, isPending: false };
     });

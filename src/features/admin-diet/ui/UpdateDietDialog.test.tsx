@@ -1,7 +1,7 @@
  
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { UpdateDietDialog } from "./UpdateDietDialog";
 import { useUpdateDiet, useAdminDietById } from "@/entities/admin-diet";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
@@ -43,7 +43,7 @@ vi.mock("@/widgets/admin-diet/ui/DietForm", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog/PremiumEntityDialog", () => ({
-  PremiumEntityDialog: ({ isOpen, children, title }: any) => {
+  PremiumEntityDialog: ({ isOpen, children, title }: { isOpen: boolean; children: React.ReactNode; title: string }) => {
     if (!isOpen) return null;
     return (
       <div data-testid="premium-entity-dialog">
@@ -60,11 +60,11 @@ describe("UpdateDietDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useUpdateDiet as any).mockReturnValue({
+    (useUpdateDiet as Mock).mockReturnValue({
       mutate: mockUpdateDiet,
       isPending: false,
     });
-    (useAdminDietById as any).mockReturnValue({
+    (useAdminDietById as Mock).mockReturnValue({
       data: { id: "d123", name: "Old Diet" },
       isLoading: false,
     });
@@ -76,7 +76,7 @@ describe("UpdateDietDialog", () => {
   });
 
   it("should display loading state when diet data is loading", () => {
-    (useAdminDietById as any).mockReturnValue({
+    (useAdminDietById as Mock).mockReturnValue({
       isLoading: true,
     });
     
@@ -109,7 +109,7 @@ describe("UpdateDietDialog", () => {
     const user = userEvent.setup();
     render(<UpdateDietDialog dietId="d123" onClose={onCloseMock} />);
     
-    mockUpdateDiet.mockImplementation((data: any, options: any) => {
+    mockUpdateDiet.mockImplementation((data: unknown, options: { onSuccess: () => void }) => {
       options.onSuccess();
     });
 
@@ -140,7 +140,7 @@ describe("UpdateDietDialog", () => {
   });
 
   it("should pass isPending to DietForm", () => {
-    (useUpdateDiet as any).mockReturnValue({
+    (useUpdateDiet as Mock).mockReturnValue({
       mutate: mockUpdateDiet,
       isPending: true,
     });

@@ -1,6 +1,6 @@
  
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { SystemHealthBadge } from './SystemHealthBadge';
 import { getHealthStatus } from '@/shared/api/healthApi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -24,13 +24,13 @@ describe('SystemHealthBadge', () => {
   });
 
   it('renders loading state initially', () => {
-    (getHealthStatus as any).mockImplementation(() => new Promise(() => {})); // pending promise
+    (getHealthStatus as Mock).mockImplementation(() => new Promise(() => {})); // pending promise
     renderWithProviders(<SystemHealthBadge />);
     expect(screen.getByText('Denetleniyor...')).toBeInTheDocument();
   });
 
   it('renders healthy state on success', async () => {
-    (getHealthStatus as any).mockResolvedValue({ status: 'Healthy' });
+    (getHealthStatus as Mock).mockResolvedValue({ status: 'Healthy' });
     renderWithProviders(<SystemHealthBadge />);
     
     expect(await screen.findByText('Sağlıklı')).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe('SystemHealthBadge', () => {
   });
 
   it('renders error state on failure', async () => {
-    (getHealthStatus as any).mockRejectedValue(new Error('API Error'));
+    (getHealthStatus as Mock).mockRejectedValue(new Error('API Error'));
     renderWithProviders(<SystemHealthBadge />);
     
     expect(await screen.findByText('Hata')).toBeInTheDocument();

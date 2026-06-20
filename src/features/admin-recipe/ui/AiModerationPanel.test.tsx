@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { AiModerationPanel } from './AiModerationPanel';
 import { recipeApi } from '@/entities/recipe/api/recipeApi';
 import { toast } from 'sonner';
@@ -48,7 +48,7 @@ describe('AiModerationPanel', () => {
   });
 
   it('calls analyzeWithAi when analyze button is clicked', async () => {
-    (recipeApi.analyzeWithAi as any).mockResolvedValueOnce({});
+    (recipeApi.analyzeWithAi as Mock).mockResolvedValueOnce({});
     
     renderWithClient(<AiModerationPanel {...defaultProps} />);
     fireEvent.click(screen.getByRole('button', { name: /analiz et/i }));

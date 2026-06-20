@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { AdminEditRecipeForm } from './AdminEditRecipeForm';
 import { recipeApi } from '@/entities/recipe/api/recipeApi';
 import { toast } from 'sonner';
@@ -24,7 +24,7 @@ vi.mock('sonner', () => ({
 
 // Mock RecipeEditorForm so we don't have to deal with its complex internal state
 vi.mock('@/widgets/recipe-editor/ui/RecipeEditorForm', () => ({
-  RecipeEditorForm: ({ onSubmit, onCancel, headerTitle, extraActions }: any) => (
+  RecipeEditorForm: ({ onSubmit, onCancel, headerTitle, extraActions }: { onSubmit: (data: FormData) => void; onCancel: () => void; headerTitle: string; extraActions?: React.ReactNode }) => (
     <div data-testid="recipe-editor-form">
       <h1>{headerTitle}</h1>
       <button onClick={() => onSubmit(new FormData())}>Submit Form</button>
@@ -38,7 +38,7 @@ const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
-    ...actual as any,
+    ...actual as object,
     useNavigate: () => mockNavigate,
   };
 });
@@ -56,7 +56,7 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe('AdminEditRecipeForm', () => {
-  const mockInitialData: any = {
+  const mockInitialData: Record<string, unknown> = {
     id: '1',
     title: 'Test Recipe',
     description: 'Desc',
@@ -78,7 +78,7 @@ describe('AdminEditRecipeForm', () => {
   });
 
   it('calls updateRecipe and navigates on successful update (not review mode)', async () => {
-    (recipeApi.updateRecipe as any).mockResolvedValueOnce({});
+    (recipeApi.updateRecipe as Mock).mockResolvedValueOnce({});
     
     renderWithProviders(<AdminEditRecipeForm initialData={mockInitialData} />);
     fireEvent.click(screen.getByText('Submit Form'));
@@ -91,8 +91,8 @@ describe('AdminEditRecipeForm', () => {
   });
 
   it('calls updateRecipe then approveRecipe in review mode', async () => {
-    (recipeApi.updateRecipe as any).mockResolvedValueOnce({});
-    (recipeApi.approveRecipe as any).mockResolvedValueOnce({});
+    (recipeApi.updateRecipe as Mock).mockResolvedValueOnce({});
+    (recipeApi.approveRecipe as Mock).mockResolvedValueOnce({});
     
     renderWithProviders(<AdminEditRecipeForm initialData={mockInitialData} isReviewMode={true} />);
     fireEvent.click(screen.getByText('Submit Form'));
@@ -106,7 +106,7 @@ describe('AdminEditRecipeForm', () => {
   });
 
   it('shows direct approve button in review mode and calls approveRecipe', async () => {
-    (recipeApi.approveRecipe as any).mockResolvedValueOnce({});
+    (recipeApi.approveRecipe as Mock).mockResolvedValueOnce({});
     
     renderWithProviders(<AdminEditRecipeForm initialData={mockInitialData} isReviewMode={true} />);
     

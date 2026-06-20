@@ -21,15 +21,15 @@ vi.mock("@/entities/admin-ingredient", async (importOriginal) => {
 });
 
 vi.mock("@/shared/ui/select", () => ({
-  Select: ({ onValueChange, value, children }: any) => (
+  Select: ({ onValueChange, value, children }: { onValueChange: (v: string) => void; value?: string; children: React.ReactNode }) => (
     <select data-testid="mock-select" value={value || ""} onChange={(e) => onValueChange(e.target.value)}>
       {children}
     </select>
   ),
   SelectTrigger: () => null,
   SelectValue: () => null,
-  SelectContent: ({ children }: any) => <>{children}</>,
-  SelectItem: ({ value, children }: any) => <option value={value}>{children}</option>
+  SelectContent: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SelectItem: ({ value, children }: { value: string; children: React.ReactNode }) => <option value={value}>{children}</option>
 }));
 
 describe("CreateIngredientDialog", () => {

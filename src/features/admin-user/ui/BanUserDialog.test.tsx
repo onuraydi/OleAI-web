@@ -1,6 +1,6 @@
  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { BanUserDialog } from './BanUserDialog';
 import { useBanUser } from '@/entities/admin-user';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ describe('BanUserDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useBanUser as any).mockReturnValue({
+    (useBanUser as Mock).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });
