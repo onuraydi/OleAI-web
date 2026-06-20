@@ -860,8 +860,10 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
                     className="w-full bg-neutral-100 dark:bg-neutral-800 p-3 rounded-xl font-medium text-foreground outline-none border-none"
                   >
                     <option value="" disabled>Kategori Seçin</option>
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    {pantryCategories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      pantryCategories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)
+                    }
                   </select>
                 </div>
 
