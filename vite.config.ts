@@ -29,11 +29,6 @@ export default defineConfig({
         '**/*.config.ts',
         '**/*.config.js'
       ]
-    },
-    poolOptions: {
-      forks: {
-        singleThread: true,
-      },
     }
   }
 })
