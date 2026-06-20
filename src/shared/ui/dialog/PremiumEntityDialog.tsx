@@ -5,7 +5,7 @@ interface PremiumEntityDialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  description: string;
+  description: React.ReactNode;
   icon: React.ReactNode;
   themeColor?: 'primary' | 'emerald';
   children: React.ReactNode;
