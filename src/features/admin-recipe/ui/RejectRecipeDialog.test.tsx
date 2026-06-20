@@ -21,7 +21,7 @@ describe('RejectRecipeDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useRejectRecipe as any).mockReturnValue({
+    (useRejectRecipe as unknown).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });

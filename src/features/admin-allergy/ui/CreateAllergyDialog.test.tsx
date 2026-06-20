@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateAllergyDialog } from "./CreateAllergyDialog";
@@ -42,7 +42,7 @@ vi.mock("@/widgets/admin-allergy/ui/AllergyForm", () => ({
 
 // We mock PremiumEntityDialog to just render its children, so it's easier to test the dialog's content
 vi.mock("@/shared/ui/dialog/PremiumEntityDialog", () => ({
-  PremiumEntityDialog: ({ isOpen, children, title }: any) => {
+  PremiumEntityDialog: ({ isOpen, children, title }: unknown) => {
     if (!isOpen) return null;
     return (
       <div data-testid="premium-entity-dialog">
@@ -59,7 +59,7 @@ describe("CreateAllergyDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useCreateAllergy as any).mockReturnValue({
+    (useCreateAllergy as unknown).mockReturnValue({
       mutate: mockCreateAllergy,
       isPending: false,
     });
@@ -89,7 +89,7 @@ describe("CreateAllergyDialog", () => {
   });
 
   it("should pass isPending to AllergyForm", () => {
-    (useCreateAllergy as any).mockReturnValue({
+    (useCreateAllergy as unknown).mockReturnValue({
       mutate: mockCreateAllergy,
       isPending: true,
     });
@@ -105,7 +105,7 @@ describe("CreateAllergyDialog", () => {
     render(<CreateAllergyDialog isOpen={true} onClose={onCloseMock} />);
     
     // Setup mutation to call onSuccess
-    mockCreateAllergy.mockImplementation((data: any, options: any) => {
+    mockCreateAllergy.mockImplementation((data: unknown, options: unknown) => {
       options.onSuccess();
     });
 
@@ -129,7 +129,7 @@ describe("CreateAllergyDialog", () => {
   
   it("should handle description being null correctly", async () => {
     const user = userEvent.setup();
-    (AllergyForm as any).mockImplementationOnce(({ onSubmit }: any) => (
+    (AllergyForm as unknown).mockImplementationOnce(({ onSubmit }: unknown) => (
       <button
         data-testid="submit-null-desc"
         onClick={() => onSubmit({ name: "A1", iconName: "icon", description: null })}

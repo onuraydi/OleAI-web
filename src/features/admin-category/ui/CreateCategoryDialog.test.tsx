@@ -1,9 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateCategoryDialog } from "./CreateCategoryDialog";
 import { useCreateCategory } from "@/entities/admin-category/api/adminCategoryQueries";
-import { CategoryForm } from "@/widgets/admin-category/ui/CategoryForm";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
 
 vi.mock("@/entities/admin-category/api/adminCategoryQueries", () => ({
@@ -37,7 +36,7 @@ vi.mock("@/widgets/admin-category/ui/CategoryForm", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog", () => ({
-  Dialog: ({ open, onOpenChange, children }: any) => {
+  Dialog: ({ open, onOpenChange, children }: unknown) => {
     if (!open) return null;
     return (
       <div data-testid="dialog">
@@ -46,10 +45,10 @@ vi.mock("@/shared/ui/dialog", () => ({
       </div>
     );
   },
-  DialogContent: ({ children }: any) => <div>{children}</div>,
-  DialogHeader: ({ children }: any) => <header>{children}</header>,
-  DialogTitle: ({ children }: any) => <h2>{children}</h2>,
-  DialogDescription: ({ children }: any) => <p>{children}</p>,
+  DialogContent: ({ children }: unknown) => <div>{children}</div>,
+  DialogHeader: ({ children }: unknown) => <header>{children}</header>,
+  DialogTitle: ({ children }: unknown) => <h2>{children}</h2>,
+  DialogDescription: ({ children }: unknown) => <p>{children}</p>,
 }));
 
 describe("CreateCategoryDialog", () => {
@@ -58,7 +57,7 @@ describe("CreateCategoryDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useCreateCategory as any).mockReturnValue({
+    (useCreateCategory as unknown).mockReturnValue({
       mutate: mockCreateCategory,
       isPending: false,
     });
@@ -97,7 +96,7 @@ describe("CreateCategoryDialog", () => {
   });
 
   it("should pass isPending to CategoryForm", () => {
-    (useCreateCategory as any).mockReturnValue({
+    (useCreateCategory as unknown).mockReturnValue({
       mutate: mockCreateCategory,
       isPending: true,
     });
@@ -112,7 +111,7 @@ describe("CreateCategoryDialog", () => {
     const user = userEvent.setup();
     render(<CreateCategoryDialog isOpen={true} onClose={onCloseMock} />);
     
-    mockCreateCategory.mockImplementation((data: any, options: any) => {
+    mockCreateCategory.mockImplementation((data: unknown, options: unknown) => {
       options.onSuccess();
     });
 

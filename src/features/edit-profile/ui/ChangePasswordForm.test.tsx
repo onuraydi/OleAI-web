@@ -26,8 +26,8 @@ vi.mock('sonner', () => ({
 describe('ChangePasswordForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any).mockImplementation(({ mutationFn, onSuccess, onError }: any) => ({
-      mutate: (variables: any) => {
+    (useMutation as unknown).mockImplementation(({ mutationFn, onSuccess, onError }: unknown) => ({
+      mutate: (variables: unknown) => {
         mutationFn(variables).then(onSuccess).catch(onError);
       },
       isPending: false,
@@ -71,7 +71,7 @@ describe('ChangePasswordForm', () => {
   });
 
   it('handles successful password change', async () => {
-    (sessionApi.changePassword as any).mockResolvedValue({});
+    (sessionApi.changePassword as unknown).mockResolvedValue({});
 
     renderComponent();
 
@@ -107,9 +107,9 @@ describe('ChangePasswordForm', () => {
       status: 400,
       statusText: 'Bad Request',
       headers: {},
-      config: {} as any,
+      config: {} as unknown,
     };
-    (sessionApi.changePassword as any).mockRejectedValue(axiosError);
+    (sessionApi.changePassword as unknown).mockRejectedValue(axiosError);
 
     renderComponent();
 

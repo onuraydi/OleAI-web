@@ -2,7 +2,6 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AddIngredientModal } from "./AddIngredientModal";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { pantryApi } from "@/entities/pantry/api/pantryApi";
 import { useAddIngredientStore } from "@/entities/pantry/model/useAddIngredientStore";
 
 vi.mock("@tanstack/react-query", () => ({
@@ -22,15 +21,15 @@ vi.mock("@/entities/pantry/api/pantryApi", () => ({
 
 vi.mock("@/entities/pantry/model/useAddIngredientStore", () => {
   // Use a simple scoped variable to maintain state in our mock
-  let pantryDrafts: any[] = [];
-  let shoppingListDrafts: any[] = [];
+  let pantryDrafts: unknown[] = [];
+  let shoppingListDrafts: unknown[] = [];
   return {
     useAddIngredientStore: vi.fn(() => ({
       pantryDrafts,
-      setPantryDrafts: (items: any) => { pantryDrafts = items; },
+      setPantryDrafts: (items: unknown) => { pantryDrafts = items; },
       clearPantryDrafts: () => { pantryDrafts = []; },
       shoppingListDrafts,
-      setShoppingListDrafts: (items: any) => { shoppingListDrafts = items; },
+      setShoppingListDrafts: (items: unknown) => { shoppingListDrafts = items; },
       clearShoppingListDrafts: () => { shoppingListDrafts = []; },
     })),
   };
@@ -39,23 +38,23 @@ vi.mock("@/entities/pantry/model/useAddIngredientStore", () => {
 // Mock Framer Motion to bypass animations
 vi.mock("framer-motion", () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: unknown) => <div {...props}>{children}</div>,
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: unknown) => <>{children}</>,
 }));
 
 describe("AddIngredientModal", () => {
   const mockOnClose = vi.fn();
   const mockOnSubmitOverride = vi.fn();
   const mockQueryClient = { invalidateQueries: vi.fn() };
-  let mockMutate: any;
+  let mockMutate: unknown;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    (useQueryClient as any).mockReturnValue(mockQueryClient);
+    (useQueryClient as unknown).mockReturnValue(mockQueryClient);
 
-    (useQuery as any).mockImplementation(({ queryKey }: any) => {
+    (useQuery as unknown).mockImplementation(({ queryKey }: unknown) => {
       if (queryKey[0] === "categories") {
         return { data: [{ id: "cat1", name: "Fruits" }], isLoading: false };
       }
@@ -78,14 +77,14 @@ describe("AddIngredientModal", () => {
     });
 
     mockMutate = vi.fn();
-    (useMutation as any).mockReturnValue({
+    (useMutation as unknown).mockReturnValue({
       mutate: mockMutate,
       isPending: false,
       reset: vi.fn(),
     });
 
     // Reset store state
-    const store = useAddIngredientStore() as any;
+    const store = useAddIngredientStore() as unknown;
     store.clearPantryDrafts();
     store.clearShoppingListDrafts();
   });
@@ -104,7 +103,7 @@ describe("AddIngredientModal", () => {
 
   it("handles input search and adds an item to draft list", async () => {
     // Override search query to return something
-    (useQuery as any).mockImplementation(({ queryKey }: any) => {
+    (useQuery as unknown).mockImplementation(({ queryKey }: unknown) => {
       if (queryKey[0] === "search-ingredients" && queryKey[1] === "App") {
         return {
           data: [{ masterIngredientId: "ing2", displayName: "Apple Pie", categoryName: "Desserts", unitFamily: 1 }],
@@ -134,7 +133,7 @@ describe("AddIngredientModal", () => {
     fireEvent.click(addBtn);
 
     // Should appear in staging area
-    const store = useAddIngredientStore() as any;
+    const store = useAddIngredientStore() as unknown;
     expect(store.pantryDrafts.length).toBe(1);
     expect(store.pantryDrafts[0].ingredient.displayName).toBe("Apple Pie");
   });
@@ -153,7 +152,7 @@ describe("AddIngredientModal", () => {
     const addBtn = screen.getByText("Listeye Ekle");
     fireEvent.click(addBtn);
 
-    const store = useAddIngredientStore() as any;
+    const store = useAddIngredientStore() as unknown;
     expect(store.pantryDrafts.length).toBe(1);
     expect(store.pantryDrafts[0].customName).toBe("Dragonfruit");
   });
@@ -211,7 +210,7 @@ describe("AddIngredientModal", () => {
 
     fireEvent.click(screen.getAllByText("Listeye Ekle")[0]);
 
-    const store = useAddIngredientStore() as any;
+    const store = useAddIngredientStore() as unknown;
     expect(store.shoppingListDrafts.length).toBe(1);
     expect(store.pantryDrafts.length).toBe(0);
 

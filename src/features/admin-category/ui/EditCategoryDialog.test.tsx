@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { EditCategoryDialog } from "./EditCategoryDialog";
 import { useUpdateCategory } from "@/entities/admin-category/api/adminCategoryQueries";
-import { CategoryForm } from "@/widgets/admin-category/ui/CategoryForm";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
 import type { Category } from "@/entities/admin-category/model/types";
 
@@ -39,7 +38,7 @@ vi.mock("@/widgets/admin-category/ui/CategoryForm", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog", () => ({
-  Dialog: ({ open, onOpenChange, children }: any) => {
+  Dialog: ({ open, onOpenChange, children }: unknown) => {
     if (!open) return null;
     return (
       <div data-testid="dialog">
@@ -48,10 +47,10 @@ vi.mock("@/shared/ui/dialog", () => ({
       </div>
     );
   },
-  DialogContent: ({ children }: any) => <div>{children}</div>,
-  DialogHeader: ({ children }: any) => <header>{children}</header>,
-  DialogTitle: ({ children }: any) => <h2>{children}</h2>,
-  DialogDescription: ({ children }: any) => <p>{children}</p>,
+  DialogContent: ({ children }: unknown) => <div>{children}</div>,
+  DialogHeader: ({ children }: unknown) => <header>{children}</header>,
+  DialogTitle: ({ children }: unknown) => <h2>{children}</h2>,
+  DialogDescription: ({ children }: unknown) => <p>{children}</p>,
 }));
 
 describe("EditCategoryDialog", () => {
@@ -67,7 +66,7 @@ describe("EditCategoryDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useUpdateCategory as any).mockReturnValue({
+    (useUpdateCategory as unknown).mockReturnValue({
       mutate: mockUpdateCategory,
       isPending: false,
     });
@@ -103,7 +102,7 @@ describe("EditCategoryDialog", () => {
   });
 
   it("should pass isPending to CategoryForm", () => {
-    (useUpdateCategory as any).mockReturnValue({
+    (useUpdateCategory as unknown).mockReturnValue({
       mutate: mockUpdateCategory,
       isPending: true,
     });
@@ -118,7 +117,7 @@ describe("EditCategoryDialog", () => {
     const user = userEvent.setup();
     render(<EditCategoryDialog category={mockCategory} isOpen={true} onClose={onCloseMock} />);
     
-    mockUpdateCategory.mockImplementation((data: any, options: any) => {
+    mockUpdateCategory.mockImplementation((data: unknown, options: unknown) => {
       options.onSuccess();
     });
 

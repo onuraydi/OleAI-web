@@ -38,10 +38,10 @@ describe('RecipeComments', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useSessionStore as any).mockReturnValue({ user: mockUser });
+    (useSessionStore as unknown).mockReturnValue({ user: mockUser });
     
     // Default API mock
-    (recipeApi.getRecipeComments as any).mockResolvedValue({
+    (recipeApi.getRecipeComments as unknown).mockResolvedValue({
       items: [
         {
           id: 'comment-1',
@@ -80,7 +80,7 @@ describe('RecipeComments', () => {
   });
 
   it('allows adding a new comment', async () => {
-    (recipeApi.addComment as any).mockResolvedValueOnce({});
+    (recipeApi.addComment as unknown).mockResolvedValueOnce({});
     
     renderWithProviders(<RecipeComments recipeId="1" totalComments={0} />);
     
@@ -107,7 +107,7 @@ describe('RecipeComments', () => {
   });
 
   it('allows editing an own comment', async () => {
-    (recipeApi.updateComment as any).mockResolvedValueOnce({});
+    (recipeApi.updateComment as unknown).mockResolvedValueOnce({});
     
     renderWithProviders(<RecipeComments recipeId="1" totalComments={1} />);
     fireEvent.click(screen.getByRole('button', { name: /Yorumlar/i }));
@@ -134,7 +134,7 @@ describe('RecipeComments', () => {
 
   it('allows deleting an own comment', async () => {
     window.confirm = vi.fn().mockReturnValue(true);
-    (recipeApi.deleteComment as any).mockResolvedValueOnce({});
+    (recipeApi.deleteComment as unknown).mockResolvedValueOnce({});
     
     renderWithProviders(<RecipeComments recipeId="1" totalComments={1} />);
     fireEvent.click(screen.getByRole('button', { name: /Yorumlar/i }));

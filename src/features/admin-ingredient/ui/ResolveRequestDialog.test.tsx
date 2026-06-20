@@ -25,27 +25,27 @@ vi.mock("@/entities/admin-ingredient", async (importOriginal) => {
 });
 
 vi.mock("@/shared/ui/select", () => ({
-  Select: ({ onValueChange, value, children }: any) => (
+  Select: ({ onValueChange, value, children }: unknown) => (
     <select data-testid="mock-select" value={value || ""} onChange={(e) => onValueChange(e.target.value)}>
       {children}
     </select>
   ),
   SelectTrigger: () => null,
   SelectValue: () => null,
-  SelectContent: ({ children }: any) => <>{children}</>,
-  SelectItem: ({ value, children }: any) => <option value={value}>{children}</option>
+  SelectContent: ({ children }: unknown) => <>{children}</>,
+  SelectItem: ({ value, children }: unknown) => <option value={value}>{children}</option>
 }));
 
 vi.mock("@/shared/ui/select", () => ({
-  Select: ({ onValueChange, value, children }: any) => (
+  Select: ({ onValueChange, value, children }: unknown) => (
     <select data-testid="mock-select" value={value || ""} onChange={(e) => onValueChange(e.target.value)}>
       {children}
     </select>
   ),
   SelectTrigger: () => null,
   SelectValue: () => null,
-  SelectContent: ({ children }: any) => <>{children}</>,
-  SelectItem: ({ value, children }: any) => <option value={value}>{children}</option>
+  SelectContent: ({ children }: unknown) => <>{children}</>,
+  SelectItem: ({ value, children }: unknown) => <option value={value}>{children}</option>
 }));
 
 describe("ResolveRequestDialog", () => {
@@ -54,7 +54,7 @@ describe("ResolveRequestDialog", () => {
     id: "req-1",
     requestedName: "Kırmızı Elma",
     userId: "user-1",
-    status: "pending" as any,
+    status: "pending" as unknown,
     createdAt: "",
     updatedAt: ""
   };

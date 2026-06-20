@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateDietDialog } from "./CreateDietDialog";
@@ -41,7 +41,7 @@ vi.mock("@/widgets/admin-diet/ui/DietForm", () => ({
 }));
 
 vi.mock("@/shared/ui/dialog/PremiumEntityDialog", () => ({
-  PremiumEntityDialog: ({ isOpen, children, title }: any) => {
+  PremiumEntityDialog: ({ isOpen, children, title }: unknown) => {
     if (!isOpen) return null;
     return (
       <div data-testid="premium-entity-dialog">
@@ -58,7 +58,7 @@ describe("CreateDietDialog", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useCreateDiet as any).mockReturnValue({
+    (useCreateDiet as unknown).mockReturnValue({
       mutate: mockCreateDiet,
       isPending: false,
     });
@@ -88,7 +88,7 @@ describe("CreateDietDialog", () => {
   });
 
   it("should pass isPending to DietForm", () => {
-    (useCreateDiet as any).mockReturnValue({
+    (useCreateDiet as unknown).mockReturnValue({
       mutate: mockCreateDiet,
       isPending: true,
     });
@@ -103,7 +103,7 @@ describe("CreateDietDialog", () => {
     const user = userEvent.setup();
     render(<CreateDietDialog isOpen={true} onClose={onCloseMock} />);
     
-    mockCreateDiet.mockImplementation((data: any, options: any) => {
+    mockCreateDiet.mockImplementation((data: unknown, options: unknown) => {
       options.onSuccess();
     });
 
@@ -127,7 +127,7 @@ describe("CreateDietDialog", () => {
 
   it("should handle description being null correctly", async () => {
     const user = userEvent.setup();
-    (DietForm as any).mockImplementationOnce(({ onSubmit }: any) => (
+    (DietForm as unknown).mockImplementationOnce(({ onSubmit }: unknown) => (
       <button
         data-testid="submit-null-desc"
         onClick={() => onSubmit({ name: "D1", iconName: "icon", description: null })}

@@ -20,15 +20,15 @@ vi.mock("@/entities/admin-ingredient", async (importOriginal) => {
 });
 
 vi.mock("@/shared/ui/select", () => ({
-  Select: ({ onValueChange, value, children }: any) => (
+  Select: ({ onValueChange, value, children }: unknown) => (
     <select data-testid="mock-select" value={value || ""} onChange={(e) => onValueChange(e.target.value)}>
       {children}
     </select>
   ),
   SelectTrigger: () => null,
   SelectValue: () => null,
-  SelectContent: ({ children }: any) => <>{children}</>,
-  SelectItem: ({ value, children }: any) => <option value={value}>{children}</option>
+  SelectContent: ({ children }: unknown) => <>{children}</>,
+  SelectItem: ({ value, children }: unknown) => <option value={value}>{children}</option>
 }));
 
 describe("UpdateIngredientDialog", () => {
@@ -37,10 +37,10 @@ describe("UpdateIngredientDialog", () => {
     id: "ing-1",
     name: "Elma",
     categoryName: "Meyveler",
-    unitFamily: "count" as any,
+    unitFamily: "count" as unknown,
     isPolarizing: false,
     isStaple: false,
-    defaultExpirationMode: "ShelfLife" as any,
+    defaultExpirationMode: "ShelfLife" as unknown,
     estimatedShelfLifeInDays: 7,
     createdAt: "",
     updatedAt: "",

@@ -39,7 +39,7 @@ describe('usePushNotifications', () => {
 
     it('listens for foreground messages if isAuth is true', async () => {
       const mockPayload = { notification: { title: 'Test Title', body: 'Test Body' } };
-      (onMessageListener as any).mockResolvedValue(mockPayload);
+      (onMessageListener as unknown).mockResolvedValue(mockPayload);
 
       renderHook(() => useForegroundNotifications(true));
       expect(onMessageListener).toHaveBeenCalled();
@@ -51,7 +51,7 @@ describe('usePushNotifications', () => {
 
     it('uses fallback title if payload has no title', async () => {
       const mockPayload = { notification: { body: 'Test Body' } };
-      (onMessageListener as any).mockResolvedValue(mockPayload);
+      (onMessageListener as unknown).mockResolvedValue(mockPayload);
 
       renderHook(() => useForegroundNotifications(true));
       expect(onMessageListener).toHaveBeenCalled();
@@ -63,12 +63,12 @@ describe('usePushNotifications', () => {
   });
 
   describe('useRequestPushPermission', () => {
-    let mockMutate: any;
+    let mockMutate: unknown;
 
     beforeEach(() => {
       mockMutate = vi.fn();
-      (useMutation as any).mockImplementation(({ mutationFn, onSuccess, onError }: any) => ({
-        mutate: (vars: any) => {
+      (useMutation as unknown).mockImplementation(({ mutationFn, onSuccess, onError }: unknown) => ({
+        mutate: (vars: unknown) => {
           mockMutate(vars);
           mutationFn(vars).then(onSuccess).catch(onError);
         },
@@ -78,8 +78,8 @@ describe('usePushNotifications', () => {
 
     it('requests token and registers device if successful', async () => {
       const mockToken = 'mock-device-token';
-      (requestForToken as any).mockResolvedValue(mockToken);
-      (registerDeviceToken as any).mockResolvedValue({});
+      (requestForToken as unknown).mockResolvedValue(mockToken);
+      (registerDeviceToken as unknown).mockResolvedValue({});
 
       const { result } = renderHook(() => useRequestPushPermission());
 
@@ -99,7 +99,7 @@ describe('usePushNotifications', () => {
     });
 
     it('shows error toast if requestForToken fails', async () => {
-      (requestForToken as any).mockRejectedValue(new Error('Permission denied'));
+      (requestForToken as unknown).mockRejectedValue(new Error('Permission denied'));
 
       const { result } = renderHook(() => useRequestPushPermission());
 
@@ -112,8 +112,8 @@ describe('usePushNotifications', () => {
 
     it('shows error toast if registerDevice fails', async () => {
       const mockToken = 'mock-device-token';
-      (requestForToken as any).mockResolvedValue(mockToken);
-      (registerDeviceToken as any).mockRejectedValue(new Error('API Error'));
+      (requestForToken as unknown).mockResolvedValue(mockToken);
+      (registerDeviceToken as unknown).mockRejectedValue(new Error('API Error'));
 
       const { result } = renderHook(() => useRequestPushPermission());
 

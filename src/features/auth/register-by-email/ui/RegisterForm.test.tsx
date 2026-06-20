@@ -69,7 +69,7 @@ describe('RegisterForm', () => {
   });
 
   it('handles successful registration and redirects', async () => {
-    (sessionApi.register as any).mockResolvedValue({});
+    (sessionApi.register as unknown).mockResolvedValue({});
 
     renderComponent();
 
@@ -104,9 +104,9 @@ describe('RegisterForm', () => {
       status: 400,
       statusText: 'Bad Request',
       headers: {},
-      config: {} as any,
+      config: {} as unknown,
     };
-    (sessionApi.register as any).mockRejectedValue(axiosError);
+    (sessionApi.register as unknown).mockRejectedValue(axiosError);
 
     renderComponent();
 

@@ -40,7 +40,7 @@ describe('LoginForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useSessionStore as unknown as any).mockImplementation((selector: any) =>
+    (useSessionStore as unknown as unknown).mockImplementation((selector: unknown) =>
       selector({ setAuth: mockSetAuth })
     );
   });
@@ -88,9 +88,9 @@ describe('LoginForm', () => {
     const mockRole = 'User';
     const mockProfile = { id: '1', email: 'test@example.com', username: 'test', isOnboarded: false };
 
-    (sessionApi.login as any).mockResolvedValue({ accessToken: { token: mockToken } });
-    (jwtHelpers.decodeRoleFromToken as any).mockReturnValue(mockRole);
-    (userApi.getProfile as any).mockResolvedValue(mockProfile);
+    (sessionApi.login as unknown).mockResolvedValue({ accessToken: { token: mockToken } });
+    (jwtHelpers.decodeRoleFromToken as unknown).mockReturnValue(mockRole);
+    (userApi.getProfile as unknown).mockResolvedValue(mockProfile);
 
     renderComponent();
 
@@ -121,9 +121,9 @@ describe('LoginForm', () => {
     const mockRole = 'Admin';
     const mockProfile = { id: '1', email: 'admin@example.com', username: 'admin', isOnboarded: true };
 
-    (sessionApi.login as any).mockResolvedValue({ accessToken: { token: mockToken } });
-    (jwtHelpers.decodeRoleFromToken as any).mockReturnValue(mockRole);
-    (userApi.getProfile as any).mockResolvedValue(mockProfile);
+    (sessionApi.login as unknown).mockResolvedValue({ accessToken: { token: mockToken } });
+    (jwtHelpers.decodeRoleFromToken as unknown).mockReturnValue(mockRole);
+    (userApi.getProfile as unknown).mockResolvedValue(mockProfile);
 
     renderComponent();
 
@@ -141,9 +141,9 @@ describe('LoginForm', () => {
     const mockRole = 'User';
     const mockProfile = { id: '1', email: 'user@example.com', username: 'user', isOnboarded: true };
 
-    (sessionApi.login as any).mockResolvedValue({ accessToken: { token: mockToken } });
-    (jwtHelpers.decodeRoleFromToken as any).mockReturnValue(mockRole);
-    (userApi.getProfile as any).mockResolvedValue(mockProfile);
+    (sessionApi.login as unknown).mockResolvedValue({ accessToken: { token: mockToken } });
+    (jwtHelpers.decodeRoleFromToken as unknown).mockReturnValue(mockRole);
+    (userApi.getProfile as unknown).mockResolvedValue(mockProfile);
 
     renderComponent();
 
@@ -163,10 +163,10 @@ describe('LoginForm', () => {
       status: 400,
       statusText: 'Bad Request',
       headers: {},
-      config: {} as any,
+      config: {} as unknown,
     };
-    (sessionApi.login as any).mockRejectedValue(axiosError);
-    (sessionApi.resendOtp as any).mockResolvedValue({});
+    (sessionApi.login as unknown).mockRejectedValue(axiosError);
+    (sessionApi.resendOtp as unknown).mockResolvedValue({});
 
     renderComponent();
 
@@ -187,9 +187,9 @@ describe('LoginForm', () => {
       status: 401,
       statusText: 'Unauthorized',
       headers: {},
-      config: {} as any,
+      config: {} as unknown,
     };
-    (sessionApi.login as any).mockRejectedValue(axiosError);
+    (sessionApi.login as unknown).mockRejectedValue(axiosError);
 
     renderComponent();
 

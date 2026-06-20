@@ -20,7 +20,7 @@ describe('CookingAssistantModal', () => {
   const mockOnFinishCooking = vi.fn();
   const mockInvalidateQueries = vi.fn();
 
-  const mockRecipe: any = {
+  const mockRecipe: unknown = {
     id: 'recipe-1',
     title: 'Test Recipe',
     steps: [
@@ -32,16 +32,16 @@ describe('CookingAssistantModal', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useQueryClient as any).mockReturnValue({
+    (useQueryClient as unknown).mockReturnValue({
       invalidateQueries: mockInvalidateQueries,
     });
-    (useMutation as any).mockImplementation(({ mutationFn, onSuccess }: any) => ({
+    (useMutation as unknown).mockImplementation(({ mutationFn, onSuccess }: unknown) => ({
       mutate: () => {
         mutationFn().then(onSuccess);
       },
       isPending: false,
     }));
-    (recipeApi.startCooking as any).mockResolvedValue([{ id: 'ing-1', name: 'Salt' }]);
+    (recipeApi.startCooking as unknown).mockResolvedValue([{ id: 'ing-1', name: 'Salt' }]);
   });
 
   const renderComponent = (isOpen = true) => {

@@ -23,13 +23,13 @@ describe('SystemHealthBadge', () => {
   });
 
   it('renders loading state initially', () => {
-    (getHealthStatus as any).mockImplementation(() => new Promise(() => {})); // pending promise
+    (getHealthStatus as unknown).mockImplementation(() => new Promise(() => {})); // pending promise
     renderWithProviders(<SystemHealthBadge />);
     expect(screen.getByText('Denetleniyor...')).toBeInTheDocument();
   });
 
   it('renders healthy state on success', async () => {
-    (getHealthStatus as any).mockResolvedValue({ status: 'Healthy' });
+    (getHealthStatus as unknown).mockResolvedValue({ status: 'Healthy' });
     renderWithProviders(<SystemHealthBadge />);
     
     expect(await screen.findByText('Sağlıklı')).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe('SystemHealthBadge', () => {
   });
 
   it('renders error state on failure', async () => {
-    (getHealthStatus as any).mockRejectedValue(new Error('API Error'));
+    (getHealthStatus as unknown).mockRejectedValue(new Error('API Error'));
     renderWithProviders(<SystemHealthBadge />);
     
     expect(await screen.findByText('Hata')).toBeInTheDocument();

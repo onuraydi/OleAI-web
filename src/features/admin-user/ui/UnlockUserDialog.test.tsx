@@ -21,7 +21,7 @@ describe('UnlockUserDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useUnlockUser as any).mockReturnValue({
+    (useUnlockUser as unknown).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });

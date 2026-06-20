@@ -21,7 +21,7 @@ describe('BanUserDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useBanUser as any).mockReturnValue({
+    (useBanUser as unknown).mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
     });

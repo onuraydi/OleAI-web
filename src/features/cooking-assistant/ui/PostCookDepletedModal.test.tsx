@@ -7,7 +7,7 @@ describe('PostCookDepletedModal', () => {
   const mockOnClose = vi.fn();
   const mockOnSync = vi.fn();
 
-  const depletedIngredients: any[] = [
+  const depletedIngredients: unknown[] = [
     { id: '1', name: 'Salt', unitFamily: MeasurementCategory.Weight },
     { id: '2', name: 'Water', unitFamily: MeasurementCategory.Volume },
     { id: '3', name: 'Apple', unitFamily: MeasurementCategory.Count },
