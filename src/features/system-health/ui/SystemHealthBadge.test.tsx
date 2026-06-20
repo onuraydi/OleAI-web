@@ -24,7 +24,7 @@ describe('SystemHealthBadge', () => {
   });
 
   it('renders loading state initially', () => {
-    (getHealthStatus as Mock).mockImplementation(() => new Promise(() => {})); // pending promise
+    (getHealthStatus as Mock).mockImplementation(() => new Promise((resolve) => setTimeout(() => resolve({ status: 'Healthy' }), 100))); // pending promise that eventually resolves
     renderWithProviders(<SystemHealthBadge />);
     expect(screen.getByText('Denetleniyor...')).toBeInTheDocument();
   });
