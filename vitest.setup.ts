@@ -2,6 +2,23 @@ import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { afterEach, beforeAll, afterAll, vi } from 'vitest';
 
+// Mock Firebase to prevent open handles during tests
+vi.mock('firebase/app', () => ({
+  initializeApp: vi.fn(),
+  getApps: vi.fn(() => []),
+  getApp: vi.fn(),
+}));
+
+vi.mock('firebase/analytics', () => ({
+  getAnalytics: vi.fn(),
+}));
+
+vi.mock('firebase/messaging', () => ({
+  getMessaging: vi.fn(),
+  getToken: vi.fn(),
+  onMessage: vi.fn(),
+}));
+
 // Runs a cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {
   cleanup();
