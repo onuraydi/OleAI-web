@@ -17,7 +17,7 @@ import { MultiSelectBox } from "@/shared/ui/multi-select-box";
 import { toPascalCase } from "@/shared/lib/icon-helpers";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 
-export const entityRestrictionSchema = z.object({
+const entityRestrictionSchema = z.object({
   name: z.string().min(2, "Ad en az 2 karakter olmalıdır"),
   description: z.string().optional().nullable(),
   iconName: z.string().min(2, "İkon adı zorunludur").refine(

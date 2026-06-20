@@ -11,7 +11,7 @@ import { Checkbox } from "@/shared/ui/checkbox";
 import { MeasurementCategory, useIngredientCategories, type Ingredient } from "@/entities/admin-ingredient";
 import { getCategoryIcon } from "@/shared/lib/icon-helpers";
 
-export const ingredientFormSchema = z.object({
+const ingredientFormSchema = z.object({
   name: z.string().min(2, "Malzeme adı en az 2 karakter olmalıdır"),
   categoryId: z.string().min(1, "Lütfen bir kategori seçin"),
   unitFamily: z.nativeEnum(MeasurementCategory, {
