@@ -18,10 +18,10 @@ jobs:
       - name: Create .env.production file for Build
         run: |
           cat <<EOF > .env.production
-          VITE_API_URL=https://api.oleai.com/api
+          VITE_API_URL=https://api.oleai.com.tr/api
           VITE_APP_ENV=production
-          VITE_GRAFANA_URL=https://grafana.oleai.com
-          VITE_HEALTH_URL=https://api.oleai.com/health
+          VITE_GRAFANA_URL=https://grafana.oleai.com.tr
+          VITE_HEALTH_URL=https://api.oleai.com.tr/health
           VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}
