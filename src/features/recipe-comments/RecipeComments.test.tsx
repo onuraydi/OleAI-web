@@ -22,7 +22,7 @@ vi.mock('@/entities/session/model/store', () => ({
 }));
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, gcTime: 0 } },
 });
 
 const renderWithProviders = (ui: React.ReactElement) => {

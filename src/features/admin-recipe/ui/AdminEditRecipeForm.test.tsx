@@ -44,7 +44,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, gcTime: 0 } },
 });
 
 const renderWithProviders = (ui: React.ReactElement) => {
