@@ -68,7 +68,7 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground mb-1">Müşteri Destek & Genel Bilgi</p>
-                        <a href="mailto:iletisim@oleai.com" className="text-lg font-bold hover:text-primary transition-colors">iletisim@oleai.com</a>
+                        <a href="mailto:iletisim@oleai.com.tr" className="text-lg font-bold hover:text-primary transition-colors">iletisim@oleai.com.tr</a>
                       </div>
                     </div>
 

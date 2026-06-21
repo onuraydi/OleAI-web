@@ -85,7 +85,7 @@ export default function HelpPage() {
                       Bize Ulaşın
                     </Button>
                   </Link>
-                  <a href="mailto:destek@oleai.com">
+                  <a href="mailto:destek@oleai.com.tr">
                     <Button className="w-full sm:w-auto rounded-full h-12 px-8 shadow-lg shadow-primary/20 font-semibold">
                       E-Posta Gönder
                     </Button>
