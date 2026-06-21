@@ -70,7 +70,7 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
   });
 
   const { data: categories } = useQuery({
-    queryKey: ["categories"],
+    queryKey: ["ingredient-categories"],
     queryFn: () => pantryApi.getCategories(),
   });
 
@@ -200,7 +200,7 @@ export const AddIngredientModal = ({ isOpen, onClose, initialKeyword = "", onSub
           req.aliasId = item.aliasId;
         } else {
           req.requestedName = item.customName;
-          if (item.categoryId) {
+          if (item.categoryId && item.categoryId.trim() !== "") {
             req.suggestedCategoryId = item.categoryId;
           }
         }

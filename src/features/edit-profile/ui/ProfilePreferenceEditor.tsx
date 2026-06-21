@@ -21,6 +21,7 @@ interface ProfilePreferenceEditorProps {
   description: string;
   icon: LucideIcon;
   submitButtonLabel: string;
+  renderIcon?: (item: { id: string; name: string }, isActive: boolean) => React.ReactNode;
 }
 
 export const ProfilePreferenceEditor = ({
@@ -33,6 +34,7 @@ export const ProfilePreferenceEditor = ({
   description,
   icon: Icon,
   submitButtonLabel,
+  renderIcon,
 }: ProfilePreferenceEditorProps) => {
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<Set<string>>(
@@ -91,7 +93,10 @@ export const ProfilePreferenceEditor = ({
                   : "border-muted/60 hover:border-primary/40 text-foreground hover:bg-muted/30"
                 }`}
             >
-              <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+              {renderIcon 
+                ? renderIcon(item, isActive) 
+                : <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+              }
               <span className="leading-snug truncate" title={item.name}>{item.name}</span>
               {isActive && (
                 <span className="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
