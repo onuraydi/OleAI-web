@@ -2,7 +2,7 @@ name: Frontend CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main","master" ]
 
 concurrency:
   group: cd-frontend-${{ github.ref }}
