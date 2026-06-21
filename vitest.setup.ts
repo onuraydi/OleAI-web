@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { afterEach, beforeAll, afterAll, vi } from 'vitest';
+import { queryClient } from './src/app/providers/query/QueryProvider';
+
+afterAll(() => {
+  queryClient.clear();
+});
 
 // Mock Firebase to prevent open handles during tests
 vi.mock('firebase/app', () => ({

@@ -6,6 +6,7 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: import.meta.env?.MODE === 'test' ? 0 : 1000 * 60 * 5,
       retry: 1,
       refetchOnWindowFocus: false,
     },
