@@ -42,6 +42,13 @@ jobs:
         # Herhangi bir tip hatası (Örn: any kullanımı veya eksik prop) varsa pipeline burada patlar.
         run: npm run build
 
+      - name: 🧪 Run Tests & Generate Coverage
+        # Vitest ile testleri çalıştırıp SonarQube'un okuyacağı lcov raporunu oluşturuyoruz
+        env:
+          NODE_OPTIONS: "--max_old_space_size=8192"
+        run: npm run test:coverage
+
+
       - name: 📊 SonarCloud Scan
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'pull_request'
         uses: SonarSource/sonarcloud-github-action@master
