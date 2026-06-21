@@ -188,7 +188,7 @@ export default function ForgotPasswordPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="chef@oleai.com"
+                    placeholder="chef@oleai.com.tr"
                     className="pl-11 h-14 bg-secondary/30 border-transparent focus:bg-background transition-all rounded-xl"
                     {...forgotForm.register("email")}
                   />

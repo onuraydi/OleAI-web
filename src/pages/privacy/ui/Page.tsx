@@ -45,7 +45,7 @@ export default function PrivacyPage() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold text-foreground">5. Kullanıcı Hakları</h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                KVKK'nın 11. maddesi uyarınca; kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin bilgi talep etme, işlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme, eksik veya yanlış işlenmişse düzeltilmesini isteme ve silinmesini talep etme haklarına sahipsiniz. Bu haklarınızı kullanmak için <strong>kvkk@oleai.com</strong> adresi üzerinden bizimle iletişime geçebilirsiniz.
+                KVKK'nın 11. maddesi uyarınca; kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin bilgi talep etme, işlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme, eksik veya yanlış işlenmişse düzeltilmesini isteme ve silinmesini talep etme haklarına sahipsiniz. Bu haklarınızı kullanmak için <strong>kvkk@oleai.com.tr</strong> adresi üzerinden bizimle iletişime geçebilirsiniz.
               </p>
             </section>
           </div>
