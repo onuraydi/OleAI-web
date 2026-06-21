@@ -212,7 +212,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
 
   // Fetch Pantry Categories (for new ingredient suggestions)
   const { data: pantryCategories = [] } = useQuery({
-    queryKey: ["ingredient-categories"],
+    queryKey: ['ingredient-categories'],
     queryFn: () => pantryApi.getCategories()
   });
 
@@ -583,7 +583,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
             </div>
 
             <TaxonomyGroup 
-              label="Kategoriler" 
+              label="Tarif Kategorileri" 
               items={recipeCategories} 
               selectedIds={selectedCategoryIds} 
               onToggle={toggleCategory} 

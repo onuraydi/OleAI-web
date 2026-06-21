@@ -15,9 +15,8 @@ export interface HealthCheckResponse {
 }
 
 export const getHealthStatus = async (): Promise<HealthCheckResponse> => {
-  // Extract base URL without the /api suffix
-  const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://localhost:7190';
+  const healthUrl = import.meta.env.VITE_HEALTH_URL || 'https://localhost:7190/health';
   
-  const response = await axios.get<HealthCheckResponse>(`${baseUrl}/health`);
+  const response = await axios.get<HealthCheckResponse>(healthUrl);
   return response.data;
 };
