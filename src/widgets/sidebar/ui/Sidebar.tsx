@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { 
   Home, 
   Refrigerator, 
@@ -22,6 +23,7 @@ import {
 import { motion } from "framer-motion";
 import { useSessionStore } from "@/entities/session";
 import { SystemHealthBadge } from "@/features/system-health";
+import { useUiStore } from "@/entities/ui";
 
 const menuItems = [
   { icon: Home, label: "Ana Sayfa", path: "/home" },
@@ -51,6 +53,13 @@ export const Sidebar = () => {
   const location = useLocation();
   const logout = useSessionStore((state) => state.logout);
   const userRole = useSessionStore((state) => state.user?.role);
+  const isMobileSidebarOpen = useUiStore((state) => state.isMobileSidebarOpen);
+  const closeMobileSidebar = useUiStore((state) => state.closeMobileSidebar);
+
+  // Close sidebar on route change on mobile
+  useEffect(() => {
+    closeMobileSidebar();
+  }, [location.pathname, closeMobileSidebar]);
 
   const renderMenuItem = (item: { icon: React.ElementType; label: string; path: string; isExternal?: boolean }) => {
     if (item.isExternal) {
@@ -102,8 +111,17 @@ export const Sidebar = () => {
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-72 bg-background border-r border-muted/30 hidden lg:flex flex-col z-50 transition-colors duration-500">
-      {/* Logo */}
+    <>
+      {/* Mobile Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+          onClick={closeMobileSidebar}
+        />
+      )}
+
+      <aside className={`fixed left-0 top-0 h-screen w-72 bg-background border-r border-muted/30 flex flex-col z-50 transition-transform duration-300 lg:translate-x-0 ${isMobileSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+        {/* Logo */}
       <div className="p-8 flex items-center gap-3">
         <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
           <Sparkles className="w-6 h-6 text-white" />
@@ -151,5 +169,6 @@ export const Sidebar = () => {
         </button>
       </div>
     </aside>
+    </>
   );
 };

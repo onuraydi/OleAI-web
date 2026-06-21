@@ -1,5 +1,6 @@
 import { Menu, Sparkles, Sun, Moon, Sunrise, Sunset, CloudMoon, LogOut, Settings, User, Bookmark } from "lucide-react";
 import { useSessionStore } from "@/entities/session";
+import { useUiStore } from "@/entities/ui";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,6 +23,7 @@ interface DashboardHeaderProps {
 export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
   const user = useSessionStore((state) => state.user);
   const logout = useSessionStore((state) => state.logout);
+  const toggleMobileSidebar = useUiStore((state) => state.toggleMobileSidebar);
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   
@@ -50,9 +52,27 @@ export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
   const displayName = user?.username || user?.email?.split('@')[0] || "Şef";
 
   return (
-    <header className="h-24 px-8 flex items-center justify-between bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl border-b border-muted/30 sticky top-0 z-40 transition-colors duration-500">
-      {/* Time-based Greeting */}
-      <div className="flex-1 hidden md:flex items-center gap-2">
+    <header className="h-20 lg:h-24 px-4 lg:px-8 flex items-center justify-between bg-white/50 dark:bg-neutral-950/50 backdrop-blur-xl border-b border-muted/30 sticky top-0 z-40 transition-colors duration-500">
+      
+      {/* Mobile Left Section */}
+      <div className="flex lg:hidden items-center gap-3">
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={toggleMobileSidebar}
+          className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center transition-transform active:scale-95"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        {/* Mobile Logo Logo */}
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Time-based Greeting */}
+      <div className="flex-1 hidden lg:flex items-center gap-2">
         <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
           <GreetingIcon className="w-5 h-5" />
         </div>
@@ -61,9 +81,8 @@ export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
         </p>
       </div>
 
-
       {/* Right Actions */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 lg:gap-4">
         {/* AI Magic Button */}
         <Link 
           to="/ai-recommendations"
@@ -83,9 +102,9 @@ export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
 
         <NotificationBell />
 
-        <div className="h-10 w-[1px] bg-muted/30 mx-2" />
+        <div className="hidden sm:block h-10 w-[1px] bg-muted/30 mx-1" />
 
-        <div className="flex items-center pl-2">
+        <div className="flex items-center">
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-3 outline-none">
               <div className="text-right hidden sm:block">
@@ -128,11 +147,6 @@ export const DashboardHeader = ({}: DashboardHeaderProps = {}) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        {/* Mobile Menu Button */}
-        <button className="lg:hidden w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center">
-          <Menu className="w-5 h-5" />
-        </button>
       </div>
     </header>
   );
