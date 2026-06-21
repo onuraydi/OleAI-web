@@ -18,8 +18,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './vitest.setup.ts',
+    teardownTimeout: 1000,
     coverage: {
-      provider: 'v8',
+      provider: 'istanbul',
       include: ['src/**/*.ts', 'src/**/*.tsx'],
       reporter: ['text', 'html', 'json', 'lcov'],
       exclude: [
