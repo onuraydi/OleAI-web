@@ -9,6 +9,7 @@ import {
   InteractionStats,
   DifficultyDistribution,
   AdminGlobalNotificationForm,
+  AiSyncWidget
 } from "@/widgets/admin-overview";
 import { useAdminDashboardStats } from "@/entities/admin-dashboard";
 import { Sparkles } from "lucide-react";
@@ -94,8 +95,9 @@ export const AdminDashboardPage = () => {
               <InteractionStats stats={stats} isLoading={isLoading} />
               <DifficultyDistribution stats={stats} isLoading={isLoading} />
             </div>
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 flex flex-col gap-6">
               <AdminGlobalNotificationForm />
+              <AiSyncWidget />
             </div>
           </motion.section>
 

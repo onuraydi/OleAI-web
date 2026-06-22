@@ -19,7 +19,7 @@ export const AdminGlobalNotificationForm = () => {
   };
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="flex flex-col">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Megaphone className="h-5 w-5 text-primary" />
@@ -29,15 +29,15 @@ export const AdminGlobalNotificationForm = () => {
           Tüm kullanıcılara (ve cihazlarına) sistem düzeyinde bir duyuru veya uyarı gönderin.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-4">
         <Textarea 
           placeholder="Bildirim mesajınızı buraya yazın..."
-          className="resize-none flex-1 min-h-[120px]"
+          className="resize-none min-h-[120px]"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
       </CardContent>
-      <CardFooter className="justify-end">
+      <CardFooter className="justify-end pb-4">
         <Button 
           onClick={handleSend} 
           disabled={!message.trim() || isPending}

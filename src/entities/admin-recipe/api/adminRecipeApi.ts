@@ -60,5 +60,9 @@ export const adminRecipeApi = {
 
   hardDeleteRecipe: async (id: string): Promise<void> => {
     await api.delete(`/Recipes/${id}/hard`);
+  },
+
+  syncAllToAi: async (): Promise<void> => {
+    await api.post('/Recipes/sync-all-to-ai');
   }
 };
