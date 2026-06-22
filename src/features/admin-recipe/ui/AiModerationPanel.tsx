@@ -83,7 +83,6 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
     onSuccess: () => {
       toast.success("Tarif onaylandı!");
       queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipeId] });
-      setIsEditMode(false);
     },
     onError: () => {
       toast.error("Onaylama sırasında bir hata oluştu.");
