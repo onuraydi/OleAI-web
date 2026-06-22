@@ -39,11 +39,11 @@ const getUnitLabel = (unit: MeasurementUnit): string => {
     case MeasurementUnit.Kilogram: return 'kg';
     case MeasurementUnit.Milliliter: return 'ml';
     case MeasurementUnit.Liter: return 'L';
-    case MeasurementUnit.Piece: return 'piece';
-    case MeasurementUnit.Packet: return 'packet';
-    case MeasurementUnit.Bunch: return 'bunch';
-    case MeasurementUnit.Slice: return 'slice';
-    case MeasurementUnit.Pinch: return 'pinch';
+    case MeasurementUnit.Piece: return 'Adet';
+    case MeasurementUnit.Packet: return 'Paket';
+    case MeasurementUnit.Bunch: return 'Demet';
+    case MeasurementUnit.Slice: return 'Dilim';
+    case MeasurementUnit.Pinch: return 'Tutam';
     case MeasurementUnit.Other: return '';
     default: return '';
   }

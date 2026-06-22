@@ -4,8 +4,8 @@ import { MeasurementUnit } from '../constants/measurement';
 
 describe('convertMeasurement', () => {
   it('returns as is for non-metric specific units', () => {
-    expect(convertMeasurement(5, MeasurementUnit.Piece, 'imperial')).toEqual({ amount: 5, unitLabel: 'piece' });
-    expect(convertMeasurement(2, MeasurementUnit.Slice, 'imperial')).toEqual({ amount: 2, unitLabel: 'slice' });
+    expect(convertMeasurement(5, MeasurementUnit.Piece, 'imperial')).toEqual({ amount: 5, unitLabel: 'Adet' });
+    expect(convertMeasurement(2, MeasurementUnit.Slice, 'imperial')).toEqual({ amount: 2, unitLabel: 'Dilim' });
   });
 
   it('returns metric values when target system is metric', () => {
