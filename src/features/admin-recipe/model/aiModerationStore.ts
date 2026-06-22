@@ -2,23 +2,27 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface AiModerationState {
-  analyzingRecipes: Record<string, number>; // stores timestamp
-  setAnalyzing: (recipeId: string, isAnalyzing: boolean) => void;
+  analyzingRecipes: Record<string, string>; // stores initial updatedDate
+  setAnalyzing: (recipeId: string, initialUpdatedDate: string | null) => void;
   checkAndClearExpired: () => void;
+  clearAnalyzing: (recipeId: string) => void;
 }
 
 export const useAiModerationStore = create<AiModerationState>()(
   persist(
     (set, get) => ({
       analyzingRecipes: {},
-      setAnalyzing: (recipeId, isAnalyzing) => {
+      setAnalyzing: (recipeId, initialUpdatedDate) => {
         set((state) => {
           const newRecords = { ...state.analyzingRecipes };
-          if (isAnalyzing) {
-            newRecords[recipeId] = Date.now();
-          } else {
-            delete newRecords[recipeId];
-          }
+          newRecords[recipeId] = initialUpdatedDate || "none";
+          return { analyzingRecipes: newRecords };
+        });
+      },
+      clearAnalyzing: (recipeId) => {
+        set((state) => {
+          const newRecords = { ...state.analyzingRecipes };
+          delete newRecords[recipeId];
           return { analyzingRecipes: newRecords };
         });
       },
