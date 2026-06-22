@@ -13,6 +13,7 @@ interface AiModerationPanelProps {
   originalSteps: { stepNumber: number; instruction: string }[];
   llmReviewResultJson?: string;
   status: number;
+  updatedDate?: string | null;
   onApplyToForm?: () => void;
 }
 
@@ -26,7 +27,7 @@ interface LlmCorrection {
 
 
 // eslint-disable-next-line unused-imports/no-unused-vars
-export function AiModerationPanel({ recipeId, originalDescription, originalSteps, llmReviewResultJson, status, onApplyToForm }: AiModerationPanelProps) {
+export function AiModerationPanel({ recipeId, originalDescription, originalSteps, llmReviewResultJson, status, updatedDate, onApplyToForm }: AiModerationPanelProps) {
   const queryClient = useQueryClient();
   
   const setAnalyzing = useAiModerationStore(state => state.setAnalyzing);
@@ -49,15 +50,19 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
     return () => clearInterval(interval);
   }, [isAnalyzingGlobally, recipeId, queryClient]);
 
+  const analysisStartTime = useAiModerationStore(state => state.analyzingRecipes[recipeId]);
+
   React.useEffect(() => {
-    // Eğer daha önce hiç analiz edilmemişse ve şimdi sonuç geldiyse (F5 polling sayesinde)
-    if (llmReviewResultJson && isAnalyzingGlobally) {
-      // Not: Yeniden analiz et'te zaten dolu olduğu için bu hementemizleyebilir, 
-      // o yüzden F5 sonrasında 'yeniden analiz' 60 saniye bekler veya onSettled ile temizlenir.
-      // Sadece null iken yeni dolduğunu varsayarsak:
-      // Ama en güvenlisi sadece mutation onSettled'a güvenmek, ve 60 saniye timeout'u beklemek.
+    if (!analysisStartTime) return;
+    
+    // Eğer recipe.updatedDate, analiz başlangıcından sonraysa işlem bitmiş demektir
+    if (updatedDate) {
+      const updatedTime = new Date(updatedDate).getTime();
+      if (updatedTime > analysisStartTime) {
+        setAnalyzing(recipeId, false);
+      }
     }
-  }, [llmReviewResultJson, isAnalyzingGlobally, recipeId, setAnalyzing]);
+  }, [updatedDate, analysisStartTime, recipeId, setAnalyzing]);
 
   const analyzeMutation = useMutation({
     mutationFn: () => recipeApi.analyzeWithAi(recipeId),
