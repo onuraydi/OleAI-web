@@ -5,3 +5,4 @@ export { RecipeStatusChart } from "./ui/RecipeStatusChart";
 export { InteractionStats } from "./ui/InteractionStats";
 export { DifficultyDistribution } from "./ui/DifficultyDistribution";
 export * from './ui/AdminGlobalNotificationForm';
+export { AiSyncWidget } from './ui/AiSyncWidget';

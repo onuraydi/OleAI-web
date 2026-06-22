@@ -65,13 +65,12 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
       setAnalyzing(recipeId, true);
     },
     onSuccess: () => {
-      toast.success("Yapay zeka analizi başarıyla tamamlandı.");
+      toast.info("Analiz arka planda başlatıldı. İşlem tamamlanınca sayfayı yenileyiniz.", { duration: 5000 });
+      // Invalidate queries temporarily or maybe wait
       queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipeId] });
     },
     onError: () => {
       toast.error("Yapay zeka analizi sırasında bir hata oluştu.");
-    },
-    onSettled: () => {
       setAnalyzing(recipeId, false);
     }
   });
