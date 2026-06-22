@@ -184,6 +184,7 @@ export function AdminRecipeDetailPage() {
                   originalSteps={recipe.steps}
                   llmReviewResultJson={recipe.llmReviewResultJson}
                   status={recipe.status}
+                  updatedDate={recipe.updatedDate}
                   onApplyToForm={() => {
                     setIsEditing(true);
                   }}

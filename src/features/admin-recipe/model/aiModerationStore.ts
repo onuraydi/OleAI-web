@@ -28,11 +28,8 @@ export const useAiModerationStore = create<AiModerationState>()(
         const newRecords = { ...get().analyzingRecipes };
         
         Object.keys(newRecords).forEach(key => {
-          // If older than 60 seconds, clear it to prevent infinite stuck state
-          if (now - newRecords[key] > 60000) {
-            delete newRecords[key];
-            changed = true;
-          }
+          // Expiration check removed as requested. It will spin indefinitely
+          // until an error occurs or the session is manually cleared.
         });
 
         if (changed) {
