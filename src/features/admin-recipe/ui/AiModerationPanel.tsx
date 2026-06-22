@@ -31,52 +31,44 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
   const queryClient = useQueryClient();
   
   const setAnalyzing = useAiModerationStore(state => state.setAnalyzing);
-  const checkAndClearExpired = useAiModerationStore(state => state.checkAndClearExpired);
+  const clearAnalyzing = useAiModerationStore(state => state.clearAnalyzing);
   const isAnalyzingGlobally = !!useAiModerationStore(state => state.analyzingRecipes[recipeId]);
 
   React.useEffect(() => {
-    checkAndClearExpired();
-    const interval = setInterval(checkAndClearExpired, 5000);
-    return () => clearInterval(interval);
-  }, [checkAndClearExpired]);
-
-  // F5 senaryosu için: eğer sayfa yenilendiyse ve hala analizde görünüyorsa, backend'i poll et.
-  // İlk defa analiz ediliyorsa llmReviewResultJson dolduğunda statü temizlenir.
-  React.useEffect(() => {
     if (!isAnalyzingGlobally) return;
+
+    // Her 5 saniyede bir recipe datasını invalidate et (arka planda poll yap)
     const interval = setInterval(() => {
       queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipeId] });
     }, 5000);
+
     return () => clearInterval(interval);
   }, [isAnalyzingGlobally, recipeId, queryClient]);
 
-  const analysisStartTime = useAiModerationStore(state => state.analyzingRecipes[recipeId]);
+  const initialUpdatedDateStore = useAiModerationStore(state => state.analyzingRecipes[recipeId]);
 
   React.useEffect(() => {
-    if (!analysisStartTime) return;
+    if (!initialUpdatedDateStore) return;
     
-    // Eğer recipe.updatedDate, analiz başlangıcından sonraysa işlem bitmiş demektir
-    if (updatedDate) {
-      const updatedTime = new Date(updatedDate).getTime();
-      if (updatedTime > analysisStartTime) {
-        setAnalyzing(recipeId, false);
-      }
+    // Eğer recipe.updatedDate, analiz başladığındaki updatedDate'den farklıysa işlem bitmiştir
+    const currentUpdatedStr = updatedDate || "none";
+    if (currentUpdatedStr !== initialUpdatedDateStore) {
+      clearAnalyzing(recipeId);
     }
-  }, [updatedDate, analysisStartTime, recipeId, setAnalyzing]);
+  }, [updatedDate, initialUpdatedDateStore, recipeId, clearAnalyzing]);
 
   const analyzeMutation = useMutation({
     mutationFn: () => recipeApi.analyzeWithAi(recipeId),
     onMutate: () => {
-      setAnalyzing(recipeId, true);
+      setAnalyzing(recipeId, updatedDate || "none");
     },
     onSuccess: () => {
-      toast.info("Analiz arka planda başlatıldı. İşlem tamamlanınca sayfayı yenileyiniz.", { duration: 5000 });
-      // Invalidate queries temporarily or maybe wait
+      toast.info("Analiz arka planda başlatıldı...");
       queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipeId] });
     },
     onError: () => {
       toast.error("Yapay zeka analizi sırasında bir hata oluştu.");
-      setAnalyzing(recipeId, false);
+      clearAnalyzing(recipeId);
     }
   });
 
