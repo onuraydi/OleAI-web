@@ -152,7 +152,7 @@ export default function PreferencesPage() {
   const scrollRefDiets = React.useRef<HTMLDivElement>(null);
   const scrollRefAllergies = React.useRef<HTMLDivElement>(null);
 
-  const scroll = (ref: React.RefObject<HTMLDivElement>, direction: 'left' | 'right') => {
+  const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
     if (ref.current) {
       const { current } = ref;
       const scrollAmount = direction === 'left' ? -current.offsetWidth : current.offsetWidth;
