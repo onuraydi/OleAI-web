@@ -185,6 +185,9 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
   const [visibility, setVisibility] = useState<string>(getInitial("visibility", initialVis)); 
   const [errors, setErrors] = useState<Record<string, string>>({});
   
+  const [activeDescTab, setActiveDescTab] = useState<'original' | 'ai'>('original');
+  const [activeStepTabs, setActiveStepTabs] = useState<Record<string, 'original' | 'ai'>>({});
+  
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
     getInitial("selectedTagIds", Array.from(new Set(initialData?.tags?.map((t: any) => t.id) || [])))
   );
@@ -580,7 +583,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
 
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
         {/* LEFT COLUMN: Basic Info & Meta */}
-        <div className="flex-1 flex flex-col gap-8">
+        <div className="lg:w-5/12 flex flex-col gap-8 shrink-0">
           
           {/* Title & Description */}
           <div className="flex flex-col gap-4">
@@ -594,32 +597,55 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
               />
               {errors.title && <span className="text-[#588157] text-xs font-bold px-2 mt-2">{errors.title}</span>}
             </div>
-            <div className={`flex flex-col rounded-xl p-2 transition-colors ${errors.description ? 'bg-[#588157]/5 border border-[#588157]' : ''}`}>
-              <textarea
-                placeholder="Bu yemeğin hikayesini anlatın... (Örn. 'Büyükannemden bana kalan, pazar günlerinin vazgeçilmezi...')"
-                value={description}
-                onChange={(e) => { setDescription(e.target.value); setErrors(prev => ({...prev, description: ""})); }}
-                className={`text-lg bg-transparent border-none outline-none w-full resize-none min-h-[100px] px-2 ${errors.description ? 'text-[#588157] placeholder:text-[#588157]/50' : 'text-muted-foreground placeholder:text-muted-foreground/50'}`}
-              />
-              {errors.description && <span className="text-[#588157] text-xs font-bold px-2 mt-2">{errors.description}</span>}
-            </div>
-            {aiSuggestions?.description && aiSuggestions.description !== description && (
-              <div className="mt-1 p-4 bg-primary/5 border border-primary/20 rounded-xl flex flex-col gap-3 relative">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                    <Sparkles className="w-4 h-4" /> Yapay Zeka Önerisi
-                  </div>
-                  <button 
-                    onClick={() => setDescription(aiSuggestions.description!)}
-                    className="flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    Bunu Uygula
-                  </button>
+            <div className={aiSuggestions?.description && aiSuggestions.description !== description ? "flex flex-col gap-3" : ""}>
+              {/* Sol: Orijinal Metin */}
+              <div className={`flex flex-col rounded-xl p-3 transition-colors h-full ${errors.description ? 'bg-[#588157]/5 border border-[#588157]' : 'bg-muted/10 border border-muted/20'}`}>
+                <div className="flex items-center gap-2 mb-2 opacity-60">
+                  <span className="text-[10px] font-black uppercase tracking-wider">Orijinal Metin</span>
                 </div>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{aiSuggestions.description}</p>
+                <textarea
+                  placeholder="Bu yemeğin hikayesini anlatın... (Örn. 'Büyükannemden bana kalan, pazar günlerinin vazgeçilmezi...')"
+                  value={description}
+                  onChange={(e) => { setDescription(e.target.value); setErrors(prev => ({...prev, description: ""})); }}
+                  className={`text-base bg-transparent border-none outline-none w-full resize-none h-full min-h-[120px] ${errors.description ? 'text-[#588157] placeholder:text-[#588157]/50' : 'text-muted-foreground placeholder:text-muted-foreground/50'}`}
+                />
+                {errors.description && <span className="text-[#588157] text-xs font-bold mt-2">{errors.description}</span>}
               </div>
-            )}
+
+              {/* Sağ: AI Önerisi */}
+              {aiSuggestions?.description && aiSuggestions.description !== description && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                  className="relative group/ai w-full"
+                >
+                  <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/40 via-emerald-500/30 to-primary/40 rounded-2xl blur-[2px] opacity-60 group-hover/ai:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="relative h-full bg-background/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-2xl border border-primary/15 overflow-hidden flex flex-col">
+                    <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary/8 via-emerald-500/5 to-transparent border-b border-primary/10 shrink-0">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/20 to-emerald-500/20 flex items-center justify-center">
+                          <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+                        </div>
+                        <span className="text-xs font-black text-primary uppercase tracking-wider">AI Düzeltme Önerisi</span>
+                      </div>
+                      <button 
+                        onClick={() => setDescription(aiSuggestions.description!)}
+                        className="flex items-center gap-1.5 bg-gradient-to-r from-primary to-emerald-600 text-white px-4 py-1.5 rounded-xl text-[11px] font-black hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                      >
+                        <CheckCircle2 className="w-3 h-3" />
+                        Uygula
+                      </button>
+                    </div>
+                    
+                    <div className="p-4 flex-1 overflow-auto">
+                      <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">{aiSuggestions.description}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
           </div>
 
           {/* Cover Photo Upload */}
@@ -707,7 +733,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
         </div>
 
         {/* RIGHT COLUMN: Ingredients & Preparation */}
-        <div className="flex-1 flex flex-col gap-6">
+        <div className="lg:w-7/12 flex flex-col gap-6">
           
           <div className={`bg-neutral-50 dark:bg-neutral-900/50 rounded-[2rem] p-6 md:p-8 transition-colors ${errors.ingredients ? 'border border-[#588157] bg-[#588157]/5' : ''}`}>
             <div className="flex items-center justify-between mb-6">
@@ -858,29 +884,54 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
                     {index + 1}
                   </div>
                   <div className="flex-1 bg-muted/40 dark:bg-neutral-800 rounded-2xl p-5 shadow-sm border border-muted/10 relative">
-                    <textarea 
-                      value={step.instruction}
-                      onChange={(e) => updateStep(step.id, "instruction", e.target.value)}
-                      placeholder="Bu adımda ne yapılması gerektiğini açıklayın..."
-                      className="w-full bg-transparent outline-none resize-none text-foreground leading-relaxed min-h-[60px]"
-                    />
-                    
-                    {aiSuggestions?.steps && aiSuggestions.steps[index] && aiSuggestions.steps[index] !== step.instruction && (
-                      <div className="mt-3 mb-2 p-3 bg-primary/5 border border-primary/20 rounded-xl flex flex-col gap-2 relative">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 text-primary font-bold text-xs">
-                            <Sparkles className="w-3.5 h-3.5" /> AI Önerisi
-                          </div>
-                          <button 
-                            onClick={(e) => { e.preventDefault(); updateStep(step.id, "instruction", aiSuggestions.steps[index]); }}
-                            className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded text-[10px] font-bold hover:bg-primary/90 transition-colors shadow-sm"
-                          >
-                            <CheckCircle2 className="w-3 h-3" /> Uygula
-                          </button>
+                    <div className={aiSuggestions?.steps && aiSuggestions.steps[index] && aiSuggestions.steps[index] !== step.instruction ? "flex flex-col gap-3" : ""}>
+                      
+                      {/* Sol: Orijinal Adım Metni */}
+                      <div className="flex flex-col h-full bg-background/50 border border-muted/20 rounded-xl p-3">
+                        <div className="flex items-center gap-2 mb-2 opacity-60">
+                          <span className="text-[10px] font-black uppercase tracking-wider">Orijinal Metin</span>
                         </div>
-                        <p className="text-sm text-muted-foreground">{aiSuggestions.steps[index]}</p>
+                        <textarea 
+                          value={step.instruction}
+                          onChange={(e) => updateStep(step.id, "instruction", e.target.value)}
+                          placeholder="Bu adımda ne yapılması gerektiğini açıklayın..."
+                          className={`w-full bg-transparent outline-none resize-none text-foreground leading-relaxed h-full ${aiSuggestions?.steps && aiSuggestions.steps[index] && aiSuggestions.steps[index] !== step.instruction ? 'min-h-[120px]' : 'min-h-[100px]'}`}
+                        />
                       </div>
-                    )}
+                      
+                      {/* Sağ: AI Adım Önerisi */}
+                      {aiSuggestions?.steps && aiSuggestions.steps[index] && aiSuggestions.steps[index] !== step.instruction && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+                          className="relative group/aistep w-full"
+                        >
+                          <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/30 via-emerald-500/20 to-primary/30 rounded-xl blur-[1px] opacity-50 group-hover/aistep:opacity-90 transition-opacity duration-500" />
+                          
+                          <div className="relative h-full bg-background/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-xl border border-primary/10 overflow-hidden flex flex-col">
+                            <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-primary/8 to-transparent border-b border-primary/10 shrink-0">
+                              <div className="flex items-center gap-1.5">
+                                <Sparkles className="w-3 h-3 text-primary animate-pulse" />
+                                <span className="text-[10px] font-black text-primary uppercase tracking-wider">AI Düzeltme</span>
+                              </div>
+                              <button 
+                                onClick={(e) => { 
+                                  e.preventDefault(); 
+                                  updateStep(step.id, "instruction", aiSuggestions.steps![index]); 
+                                }}
+                                className="flex items-center gap-1 bg-gradient-to-r from-primary to-emerald-600 text-white px-3 py-1 rounded-lg text-[10px] font-black hover:shadow-md hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                              >
+                                <CheckCircle2 className="w-2.5 h-2.5" /> Uygula
+                              </button>
+                            </div>
+                            <div className="p-4 flex-1 overflow-auto min-h-[120px]">
+                              <p className="text-sm text-foreground/90 leading-relaxed">{aiSuggestions.steps[index]}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
                     
                     <div className="mt-4 flex items-center gap-4">
                       <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-muted-foreground hover:text-primary transition-colors">

@@ -135,59 +135,76 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
     );
   }
 
+  const resultStyles = parsedResult.isToxic 
+    ? { glow: 'from-red-500/30 via-orange-500/20 to-red-500/30', bg: 'from-red-500/8 to-transparent', border: 'border-red-500/15' }
+    : parsedResult.isApproved 
+    ? { glow: 'from-primary/40 via-emerald-500/30 to-primary/40', bg: 'from-primary/8 via-emerald-500/5 to-transparent', border: 'border-primary/15' }
+    : { glow: 'from-amber-500/30 via-orange-500/20 to-amber-500/30', bg: 'from-amber-500/8 to-transparent', border: 'border-amber-500/15' };
+
   return (
     <motion.div 
-      initial={{ opacity: 0, y: -5 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`border rounded-2xl overflow-hidden shadow-sm flex flex-col md:flex-row items-center justify-between p-4 gap-4 ${
-        parsedResult.isToxic ? 'bg-destructive/10 border-destructive/20' : 
-        parsedResult.isApproved ? 'bg-primary/5 border-primary/20' : 
-        'bg-secondary/30 border-border'
-      }`}
+      initial={{ opacity: 0, y: -8, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+      className="relative group/panel"
     >
-      <div className="flex items-center gap-4">
-          <div className="p-2.5 rounded-full bg-background border shadow-sm shrink-0">
-            {parsedResult.isToxic ? <AlertTriangle className="w-5 h-5 text-destructive" /> : 
-             parsedResult.isApproved ? <CheckCircle2 className="w-5 h-5 text-primary" /> : 
-             <XCircle className="w-5 h-5 text-muted-foreground" />}
+      {/* Gradient glow */}
+      <div className={`absolute -inset-[1px] bg-gradient-to-r ${resultStyles.glow} rounded-2xl blur-[2px] opacity-50 group-hover/panel:opacity-80 transition-opacity duration-500`} />
+      
+      <div className={`relative bg-background/95 dark:bg-neutral-900/95 backdrop-blur-xl rounded-2xl ${resultStyles.border} border overflow-hidden`}>
+        <div className={`flex flex-col md:flex-row items-center justify-between p-4 gap-4 bg-gradient-to-r ${resultStyles.bg}`}>
+          <div className="flex items-center gap-4">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-sm shrink-0 ${
+              parsedResult.isToxic ? 'bg-gradient-to-br from-red-500/20 to-orange-500/20' : 
+              parsedResult.isApproved ? 'bg-gradient-to-br from-primary/20 to-emerald-500/20' : 
+              'bg-gradient-to-br from-amber-500/20 to-orange-500/20'
+            }`}>
+              {parsedResult.isToxic ? <AlertTriangle className="w-5 h-5 text-red-500" /> : 
+               parsedResult.isApproved ? <CheckCircle2 className="w-5 h-5 text-primary" /> : 
+               <XCircle className="w-5 h-5 text-amber-500" />}
+            </div>
+            <div>
+              <h3 className="text-sm font-black text-foreground flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+                AI Analiz Sonucu
+              </h3>
+              <p className="text-xs font-bold mt-0.5">
+                {parsedResult.isToxic ? (
+                  <span className="text-red-500">Zararlı İçerik Tespit Edildi: {parsedResult.rejectionReason}</span>
+                ) : parsedResult.isApproved ? (
+                  <span className="text-primary">Analiz tamamlandı — düzeltme önerileri formu düzenleyince görünecek.</span>
+                ) : (
+                  <span className="text-amber-500">Reddedildi: {parsedResult.rejectionReason}</span>
+                )}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-black text-foreground">Yapay Zeka Değerlendirmesi</h3>
-            <p className="text-xs font-medium opacity-80 flex items-center gap-2 mt-0.5">
-              {parsedResult.isToxic ? (
-                <span className="text-destructive font-bold">Zararlı İçerik: {parsedResult.rejectionReason}</span>
-              ) : parsedResult.isApproved ? (
-                <span className="text-primary font-bold">Analiz Tamamlandı. İncelemek ve uygulamak için formu düzenleyin.</span>
-              ) : (
-                <span className="text-muted-foreground font-bold">Reddedildi: {parsedResult.rejectionReason}</span>
-              )}
-            </p>
-          </div>
-      </div>
 
-      <div className="flex items-center gap-3 shrink-0">
-        <Button 
-          variant="ghost" 
-          onClick={() => analyzeMutation.mutate()} 
-          disabled={isPending}
-          className="text-muted-foreground hover:text-foreground text-xs font-bold h-9"
-        >
-          {isPending ? (
-            <><Loader2 className="w-3 h-3 animate-spin mr-2" /> Analiz Ediliyor...</>
-          ) : (
-            "Yeniden Analiz Et"
-          )}
-        </Button>
-        
-        {parsedResult.isApproved && onApplyToForm && (
-          <Button 
-            className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs h-9 shadow-sm"
-            onClick={handleApplyToForm}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            Önerileri İncele
-          </Button>
-        )}
+          <div className="flex items-center gap-2 shrink-0">
+            <Button 
+              variant="ghost" 
+              onClick={() => analyzeMutation.mutate()} 
+              disabled={isPending}
+              className="text-muted-foreground hover:text-foreground text-xs font-bold h-9 rounded-xl"
+            >
+              {isPending ? (
+                <><Loader2 className="w-3 h-3 animate-spin mr-2" /> Analiz Ediliyor...</>
+              ) : (
+                "Yeniden Analiz Et"
+              )}
+            </Button>
+            
+            {parsedResult.isApproved && onApplyToForm && (
+              <Button 
+                className="gap-2 bg-gradient-to-r from-primary to-emerald-600 hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] text-white font-black text-xs h-9 rounded-xl transition-all duration-200"
+                onClick={handleApplyToForm}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Önerileri İncele
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </motion.div>
   );
