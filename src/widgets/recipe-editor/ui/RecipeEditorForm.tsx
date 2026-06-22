@@ -13,6 +13,7 @@ import {
   ALL_UNITS,
   MeasurementUnit
 } from "@/shared/constants/measurement";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 
 interface IngredientInput {
   id: string;
@@ -48,57 +49,62 @@ export interface RecipeEditorFormProps {
   onSubmit: (formData: FormData) => void;
   onCancel: () => void;
   isPending: boolean;
-  headerTitle: string;
-  submitButtonText: string;
-  prefillAiEdits?: { description: string; steps: string[] } | null;
-  aiSuggestions?: { description: string | null; steps: string[] } | null;
+  headerTitle?: string;
+  submitButtonText?: string;
+  aiSuggestions?: { description: string | null; steps: string[] };
   extraActions?: React.ReactNode;
 }
 
 // Reusable Meta Input Component
-function MetaInputBox({ label, unit, value, onChange, min = "0" }: { label: string, unit: string, value: string, onChange: (val: string) => void, min?: string }) {
+function MetaInputBox({ label, unit, value, onChange, min = "0", errorText }: { label: string, unit: string, value: string, onChange: (val: string) => void, min?: string, errorText?: string }) {
   return (
     <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{label}</span>
-      <div className="flex items-center gap-2 bg-muted/40 border border-muted rounded-xl px-4 py-3 focus-within:border-primary/50 transition-colors hover:border-primary/30">
+      <span className={`text-xs font-bold uppercase tracking-wider mb-2 ${errorText ? 'text-[#588157]' : 'text-muted-foreground'}`}>{label}</span>
+      <div className={`flex items-center gap-2 bg-muted/40 border rounded-xl px-4 py-3 transition-colors ${errorText ? 'border-[#588157] bg-[#588157]/5' : 'border-muted focus-within:border-primary/50 hover:border-primary/30'}`}>
         <input 
           type="number" 
           value={value} 
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            onChange(e.target.value);
+          }}
           className="w-full bg-transparent font-medium text-foreground outline-none"
           min={min}
         />
         <span className="text-muted-foreground text-sm">{unit}</span>
       </div>
+      {errorText && <span className="text-[#588157] text-[10px] font-bold mt-2">{errorText}</span>}
     </div>
   );
 }
 
 // Reusable Select Component
-function MetaSelectBox({ label, value, onChange, options, defaultOption }: { label: string, value: string, onChange: (val: string) => void, options: { id: string, name: string }[], defaultOption?: string }) {
+function MetaSelectBox({ label, value, onChange, options, defaultOption, errorText }: { label: string, value: string, onChange: (val: string) => void, options: { id: string, name: string }[], defaultOption?: string, errorText?: string }) {
   return (
     <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col">
-      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{label}</span>
+      <span className={`text-xs font-bold uppercase tracking-wider mb-2 ${errorText ? 'text-[#588157]' : 'text-muted-foreground'}`}>{label}</span>
       <div className="relative">
         <select 
           value={value} 
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-muted/40 border border-muted hover:border-primary/30 rounded-xl px-4 py-3 appearance-none font-medium text-foreground outline-none focus:border-primary/50 transition-colors"
+          onChange={(e) => {
+            onChange(e.target.value);
+          }}
+          className={`w-full bg-muted/40 border rounded-xl px-4 py-3 appearance-none font-medium text-foreground outline-none transition-colors ${errorText ? 'border-[#588157] bg-[#588157]/5' : 'border-muted hover:border-primary/30 focus:border-primary/50'}`}
         >
           {defaultOption && <option value="" disabled className="text-foreground bg-neutral-50 dark:bg-neutral-900">{defaultOption}</option>}
           {options.map(opt => <option key={opt.id} value={opt.id} className="text-foreground bg-neutral-50 dark:bg-neutral-900">{opt.name}</option>)}
         </select>
         <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
       </div>
+      {errorText && <span className="text-[#588157] text-[10px] font-bold mt-2">{errorText}</span>}
     </div>
   );
 }
 
 // Reusable Tag/Category Group
-function TaxonomyGroup({ label, items, selectedIds, onToggle }: { label: string, items: any[], selectedIds: number[], onToggle: (id: number) => void }) {
+function TaxonomyGroup({ label, items, selectedIds, onToggle, errorText }: { label: string, items: any[], selectedIds: number[], onToggle: (id: number) => void, errorText?: string }) {
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3">
-      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
+    <div className={`bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 flex flex-col gap-3 transition-colors ${errorText ? 'border border-[#588157] bg-[#588157]/5' : ''}`}>
+      <span className={`text-xs font-bold uppercase tracking-wider ${errorText ? 'text-[#588157]' : 'text-muted-foreground'}`}>{label}</span>
       <div className="flex flex-wrap gap-2">
         {items.map((item: any) => {
           const isSelected = selectedIds.includes(item.id);
@@ -109,7 +115,9 @@ function TaxonomyGroup({ label, items, selectedIds, onToggle }: { label: string,
               className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
                 isSelected 
                   ? 'bg-primary text-primary-foreground border-primary shadow-md' 
-                  : 'bg-muted/40 dark:bg-neutral-800 text-muted-foreground border-muted/50 hover:border-primary/50'
+                  : errorText 
+                    ? 'bg-transparent text-[#588157] border-[#588157] hover:bg-[#588157]/10'
+                    : 'bg-muted/40 dark:bg-neutral-800 text-muted-foreground border-muted/50 hover:border-primary/50'
               }`}
             >
               {item.name}
@@ -117,16 +125,33 @@ function TaxonomyGroup({ label, items, selectedIds, onToggle }: { label: string,
           );
         })}
       </div>
+      {errorText && <span className="text-[#588157] text-[10px] font-bold mt-1">{errorText}</span>}
     </div>
   );
 }
 
-export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, headerTitle, submitButtonText, prefillAiEdits, aiSuggestions, extraActions }: RecipeEditorFormProps) => {
+export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, headerTitle, submitButtonText = "Tarifi Kaydet",
+  aiSuggestions,
+  extraActions
+}: RecipeEditorFormProps) => {
 
       const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [title, setTitle] = useState(initialData?.title || "");
-  const [description, setDescription] = useState(initialData?.description || "");
+  const draftKey = initialData?.id ? `recipe-draft-${initialData.id}` : "recipe-draft-new";
+
+  const getInitial = (key: string, defaultVal: any) => {
+    try {
+      const saved = localStorage.getItem(draftKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed[key] !== undefined && parsed[key] !== null) return parsed[key];
+      }
+    } catch (e) {}
+    return defaultVal;
+  };
+
+  const [title, setTitle] = useState<string>(getInitial("title", initialData?.title || ""));
+  const [description, setDescription] = useState<string>(getInitial("description", initialData?.description || ""));
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
    
   const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(initialData?.images?.find((i: any) => i.isMain)?.imageUrl || null);
@@ -147,26 +172,25 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
     "2": "2"
   };
 
-  const initialDiff = initialData?.difficulty ? (difficultyMap[initialData?.difficulty.toString()] || "1") : "1";
-  const initialVis = initialData?.visibility ? (visibilityMap[initialData?.visibility.toString()] || "2") : "2";
+  const initialDiff = initialData?.difficulty ? (difficultyMap[initialData?.difficulty.toString()] || "1") : "";
+  const initialVis = initialData?.visibility ? (visibilityMap[initialData?.visibility.toString()] || "2") : "";
 
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>(
-     
-    Array.from(new Set(initialData?.categories?.map((c: any) => c.id) || []))
+    getInitial("selectedCategoryIds", Array.from(new Set(initialData?.categories?.map((c: any) => c.id) || [])))
   );
-  const [difficulty, setDifficulty] = useState(initialDiff);
-  const [servings, setServings] = useState(initialData?.servings?.toString() || "4");
-  const [prepTime, setPrepTime] = useState(initialData?.prepTime?.toString() || "15");
-  const [cookTime, setCookTime] = useState(initialData?.cookTime?.toString() || "45");
-  const [visibility, setVisibility] = useState(initialVis); 
+  const [difficulty, setDifficulty] = useState<string>(getInitial("difficulty", initialDiff));
+  const [servings, setServings] = useState<string>(getInitial("servings", initialData?.servings?.toString() || ""));
+  const [prepTime, setPrepTime] = useState<string>(getInitial("prepTime", initialData?.prepTime?.toString() || ""));
+  const [cookTime, setCookTime] = useState<string>(getInitial("cookTime", initialData?.cookTime?.toString() || ""));
+  const [visibility, setVisibility] = useState<string>(getInitial("visibility", initialVis)); 
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
-     
-    Array.from(new Set(initialData?.tags?.map((t: any) => t.id) || []))
+    getInitial("selectedTagIds", Array.from(new Set(initialData?.tags?.map((t: any) => t.id) || [])))
   );
 
   const [ingredients, setIngredients] = useState<IngredientInput[]>(
-    initialData?.ingredients && initialData.ingredients.length > 0 
+    getInitial("ingredients", initialData?.ingredients && initialData.ingredients.length > 0 
       ? initialData.ingredients.map((ing, i) => ({
           id: i.toString(),
           qty: ing.amount.toString(),
@@ -178,10 +202,11 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
           searchResults: []
         }))
       : [{ id: "1", qty: "", unitId: "", ingredientId: "", name: "", isSearching: false, searchResults: [] }]
+    )
   );
 
   const [steps, setSteps] = useState<StepInput[]>(
-    initialData?.steps && initialData.steps.length > 0
+    getInitial("steps", initialData?.steps && initialData.steps.length > 0
       ? initialData.steps.map(s => ({
           id: s.id.toString(),
           instruction: s.instruction,
@@ -189,19 +214,26 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
           imagePreview: initialData?.images?.find((i: any) => i.stepId === s.id)?.imageUrl || null
         }))
       : [{ id: "1", instruction: "" }]
+    )
   );
 
-  // Handle AI prefilling
   useEffect(() => {
-    if (prefillAiEdits) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (prefillAiEdits.description) setDescription(prefillAiEdits.description);
-      if (prefillAiEdits.steps && prefillAiEdits.steps.length > 0) {
-         
-        setSteps(prefillAiEdits.steps.map((s, i) => ({ id: i.toString(), instruction: s })));
-      }
-    }
-  }, [prefillAiEdits]);
+    const draftData = {
+      title,
+      description,
+      difficulty,
+      servings,
+      prepTime,
+      cookTime,
+      visibility,
+      selectedCategoryIds,
+      selectedTagIds,
+      ingredients: ingredients.map(ing => ({...ing, isSearching: false, searchResults: []})),
+      steps: steps.map(s => ({...s, image: null, imagePreview: s.imagePreview}))
+    };
+    localStorage.setItem(draftKey, JSON.stringify(draftData));
+  }, [title, description, difficulty, servings, prepTime, cookTime, visibility, selectedCategoryIds, selectedTagIds, ingredients, steps, draftKey]);
+
 
   // Modal State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -221,6 +253,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
   const { data: recipeTags = [] } = useAdminTags();
 
   const toggleCategory = (id: number) => {
+    setErrors(err => ({...err, categories: ""}));
     setSelectedCategoryIds(prev => {
       if (prev.includes(id)) return prev.filter(c => c !== id);
       if (prev.length >= 3) {
@@ -232,6 +265,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
   };
 
   const toggleTag = (id: number) => {
+    setErrors(err => ({...err, tags: ""}));
     setSelectedTagIds(prev => {
       if (prev.includes(id)) return prev.filter(t => t !== id);
       if (prev.length >= 5) {
@@ -246,6 +280,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
     const file = e.target.files?.[0];
     if (file) {
       setCoverPhoto(file);
+      setErrors(err => ({...err, coverPhoto: ""}));
       const reader = new FileReader();
       reader.onloadend = () => {
         setCoverPhotoPreview(reader.result as string);
@@ -271,11 +306,13 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
 
    
   const updateIngredient = (id: string, field: keyof IngredientInput, value: any) => {
+    setErrors(err => ({...err, ingredients: ""}));
     setIngredients(prev => prev.map(ing => ing.id === id ? { ...ing, [field]: value } : ing));
   };
 
   // Ingredient Autocomplete Logic
   const handleIngredientSearch = async (id: string, keyword: string) => {
+    setErrors(err => ({...err, ingredients: ""}));
     setIngredients(prev => prev.map(ing => 
       ing.id === id ? { ...ing, name: keyword, ingredientId: "" } : ing
     ));
@@ -350,6 +387,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
 
    
   const updateStep = (id: string, field: keyof StepInput, value: any) => {
+    setErrors(err => ({...err, steps: ""}));
     setSteps(prev => prev.map(step => step.id === id ? { ...step, [field]: value } : step));
   };
 
@@ -365,30 +403,84 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
   
 
   const handleSubmit = () => {
-    if (!title.trim() || selectedCategoryIds.length === 0 || (!initialData && !coverPhoto)) {
-      toast.error("Lütfen Tarif Adı, en az bir Kategori ve Kapak Fotoğrafı alanlarını eksiksiz doldurun.");
-      return;
+    setErrors({});
+    const newErrors: Record<string, string> = {};
+    let hasGlobalError = false;
+
+    if (!(title || "").trim()) {
+      newErrors.title = "Lütfen Tarif Adı alanını doldurun.";
+      hasGlobalError = true;
     }
-      
+    
+    if (!(description || "").trim()) {
+      newErrors.description = "Lütfen tarifiniz için bir hikaye/açıklama girin.";
+      hasGlobalError = true;
+    }
+    
+    if (!initialData && !coverPhoto) {
+      newErrors.coverPhoto = "Lütfen bir Kapak Fotoğrafı yükleyin.";
+      hasGlobalError = true;
+    }
+    
+    if (selectedCategoryIds.length === 0) {
+      newErrors.categories = "Lütfen en az bir Kategori seçin.";
+      hasGlobalError = true;
+    }
+
+    if (selectedTagIds.length === 0) {
+      newErrors.tags = "Lütfen en az bir Etiket seçin.";
+      hasGlobalError = true;
+    }
 
     if (!difficulty) {
-      toast.error("Lütfen bir zorluk derecesi seçin.");
-      return;
+      newErrors.difficulty = "Zorluk derecesini seçin";
+    }
+
+    if (!visibility) {
+      newErrors.visibility = "Görünürlük seçin";
     }
 
     if (!servings || parseInt(servings) <= 0) {
-      toast.error("Porsiyon 0'dan büyük olmalıdır.");
-      return;
+      newErrors.servings = "Geçerli bir porsiyon girin";
     }
 
-    if (!prepTime || parseInt(prepTime) < 0 || !cookTime || parseInt(cookTime) < 0) {
-      toast.error("Lütfen geçerli bir hazırlık ve pişirme süresi girin.");
-      return;
+    if (!prepTime || parseInt(prepTime) < 0) {
+      newErrors.prepTime = "Geçerli bir süre girin";
+    }
+
+    if (!cookTime || parseInt(cookTime) < 0) {
+      newErrors.cookTime = "Geçerli bir süre girin";
     }
 
     const validIngredients = ingredients.filter(i => (i.ingredientId || i.isPending) && i.qty && i.unitId);
-    if (validIngredients.length === 0) {
-      toast.error("Lütfen en az bir geçerli malzeme ekleyin.");
+    const hasIncompleteIngredient = ingredients.some(i => 
+      ((i.name || "").trim() !== "" || i.qty !== "" || i.unitId !== "") && 
+      !( (i.ingredientId || i.isPending) && i.qty && i.unitId )
+    );
+
+    if (hasIncompleteIngredient) {
+      newErrors.ingredients = "Eksik malzeme bilgisi var.";
+      hasGlobalError = true;
+    } else if (validIngredients.length === 0) {
+      newErrors.ingredients = "Lütfen en az bir malzeme ekleyin.";
+      hasGlobalError = true;
+    }
+
+    const validSteps = steps.filter(s => (s.instruction || "").trim() !== "");
+    const hasIncompleteStep = steps.some(s => (s.instruction || "").trim() === "");
+    
+    if (hasIncompleteStep) {
+      newErrors.steps = "Açıklaması boş olan adımlar var.";
+      hasGlobalError = true;
+    } else if (validSteps.length === 0) {
+      newErrors.steps = "Lütfen en az bir adım ekleyin.";
+      hasGlobalError = true;
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      const firstErrorMessage = Object.values(newErrors)[0];
+      toast.error(firstErrorMessage || "Lütfen eksik alanları (kırmızıyla işaretlenmiş) doldurun.");
       return;
     }
 
@@ -451,6 +543,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
       }
     });
 
+    localStorage.removeItem(draftKey);
     onSubmit(formData);
   };
 
@@ -465,7 +558,10 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
         </div>
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => onCancel()}
+            onClick={() => {
+              localStorage.removeItem(draftKey);
+              onCancel();
+            }}
             disabled={isPending}
             className="px-6 py-2.5 rounded-xl font-bold text-foreground hover:bg-muted/50 transition-colors"
           >
@@ -477,7 +573,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
             disabled={isPending}
             className="px-6 py-2.5 rounded-xl font-bold bg-[#588157] hover:bg-[#3a5a39] text-white transition-colors flex items-center gap-2 shadow-lg shadow-[#588157]/20 disabled:opacity-50"
           >
-            {isPending ? <span className="animate-pulse">Güncelleniyor...</span> : <><Save className="w-4 h-4" /> {submitButtonText}</>}
+            {isPending ? <span className="animate-pulse">Kaydediliyor...</span> : <><Save className="w-4 h-4" /> {submitButtonText}</>}
           </button>
         </div>
       </div>
@@ -488,19 +584,25 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
           
           {/* Title & Description */}
           <div className="flex flex-col gap-4">
-            <input
-              type="text"
-              placeholder="Tarif Adı"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="text-4xl md:text-5xl font-black text-foreground/30 placeholder:text-foreground/30 focus:text-foreground bg-transparent border-none outline-none w-full transition-colors"
-            />
-            <textarea
-              placeholder="Bu yemeğin hikayesini anlatın... (Örn. 'Büyükannemden bana kalan, pazar günlerinin vazgeçilmezi...')"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="text-lg text-muted-foreground placeholder:text-muted-foreground/50 bg-transparent border-none outline-none w-full resize-none min-h-[100px]"
-            />
+            <div className={`flex flex-col rounded-xl p-2 transition-colors ${errors.title ? 'bg-[#588157]/5 border border-[#588157]' : ''}`}>
+              <input
+                type="text"
+                placeholder="Tarif Adı"
+                value={title}
+                onChange={(e) => { setTitle(e.target.value); setErrors(prev => ({...prev, title: ""})); }}
+                className={`text-4xl md:text-5xl font-black bg-transparent border-none outline-none w-full transition-colors px-2 ${errors.title ? 'text-[#588157] placeholder:text-[#588157]/50' : 'text-foreground/30 placeholder:text-foreground/30 focus:text-foreground'}`}
+              />
+              {errors.title && <span className="text-[#588157] text-xs font-bold px-2 mt-2">{errors.title}</span>}
+            </div>
+            <div className={`flex flex-col rounded-xl p-2 transition-colors ${errors.description ? 'bg-[#588157]/5 border border-[#588157]' : ''}`}>
+              <textarea
+                placeholder="Bu yemeğin hikayesini anlatın... (Örn. 'Büyükannemden bana kalan, pazar günlerinin vazgeçilmezi...')"
+                value={description}
+                onChange={(e) => { setDescription(e.target.value); setErrors(prev => ({...prev, description: ""})); }}
+                className={`text-lg bg-transparent border-none outline-none w-full resize-none min-h-[100px] px-2 ${errors.description ? 'text-[#588157] placeholder:text-[#588157]/50' : 'text-muted-foreground placeholder:text-muted-foreground/50'}`}
+              />
+              {errors.description && <span className="text-[#588157] text-xs font-bold px-2 mt-2">{errors.description}</span>}
+            </div>
             {aiSuggestions?.description && aiSuggestions.description !== description && (
               <div className="mt-1 p-4 bg-primary/5 border border-primary/20 rounded-xl flex flex-col gap-3 relative">
                 <div className="flex items-center justify-between">
@@ -531,7 +633,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
                 e.currentTarget.click();
               }
             }}
-            className={`w-full aspect-[4/3] md:aspect-[16/9] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group ${coverPhoto ? 'border-primary/50' : 'border-muted/40 hover:bg-muted/5 hover:border-primary/50'}`}
+            className={`w-full aspect-[4/3] md:aspect-[16/9] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group ${errors.coverPhoto ? 'border-[#588157] bg-[#588157]/5' : coverPhoto ? 'border-primary/50' : 'border-muted/40 hover:bg-muted/5 hover:border-primary/50'}`}
           >
             {coverPhotoPreview ? (
               <>
@@ -541,12 +643,13 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
                 </div>
               </>
             ) : (
-              <div className="flex flex-col items-center gap-3 text-muted-foreground group-hover:text-primary transition-colors">
-                <div className="w-16 h-16 rounded-full bg-muted/20 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+              <div className={`flex flex-col items-center gap-3 transition-colors ${errors.coverPhoto ? 'text-[#588157] group-hover:text-[#3a5a39]' : 'text-muted-foreground group-hover:text-primary'}`}>
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${errors.coverPhoto ? 'bg-[#588157]/10 group-hover:bg-[#588157]/20' : 'bg-muted/20 group-hover:bg-primary/10'}`}>
                   <ImagePlus className="w-8 h-8" />
                 </div>
-                <span className="font-bold text-foreground">Kapak Fotoğrafı Yükle</span>
+                <span className={`font-bold ${errors.coverPhoto ? 'text-[#588157]' : 'text-foreground'}`}>Kapak Fotoğrafı Yükle</span>
                 <span className="text-sm">PNG, JPG (Maks 10MB)</span>
+                {errors.coverPhoto && <span className="text-[#588157] text-xs font-bold mt-2">{errors.coverPhoto}</span>}
               </div>
             )}
             <input 
@@ -564,29 +667,33 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
               <MetaSelectBox 
                 label="Zorluk Derecesi"
                 value={difficulty}
-                onChange={setDifficulty}
+                onChange={(val) => { setDifficulty(val); setErrors(prev => ({...prev, difficulty: ""})) }}
                 options={DIFFICULTIES}
                 defaultOption="Zorluk Seçin"
+                errorText={errors.difficulty}
               />
               <MetaSelectBox 
                 label="Görünürlük"
                 value={visibility}
-                onChange={setVisibility}
+                onChange={(val) => { setVisibility(val); setErrors(prev => ({...prev, visibility: ""})) }}
                 options={[{ id: "2", name: "Herkese Açık (Public)" }, { id: "1", name: "Sadece Ben (Private)" }]}
+                defaultOption="Görünürlük Seçin"
+                errorText={errors.visibility}
               />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <MetaInputBox label="Porsiyon" unit="Kişilik" value={servings} onChange={setServings} min="1" />
-              <MetaInputBox label="Hazırlık" unit="Dk" value={prepTime} onChange={setPrepTime} />
-              <MetaInputBox label="Pişirme" unit="Dk" value={cookTime} onChange={setCookTime} />
+              <MetaInputBox label="Porsiyon" unit="Kişilik" value={servings} onChange={(val) => { setServings(val); setErrors(prev => ({...prev, servings: ""})) }} min="1" errorText={errors.servings} />
+              <MetaInputBox label="Hazırlık" unit="Dk" value={prepTime} onChange={(val) => { setPrepTime(val); setErrors(prev => ({...prev, prepTime: ""})) }} errorText={errors.prepTime} />
+              <MetaInputBox label="Pişirme" unit="Dk" value={cookTime} onChange={(val) => { setCookTime(val); setErrors(prev => ({...prev, cookTime: ""})) }} errorText={errors.cookTime} />
             </div>
 
             <TaxonomyGroup 
-              label="Tarif Kategorileri" 
+              label="Kategoriler" 
               items={recipeCategories} 
               selectedIds={selectedCategoryIds} 
               onToggle={toggleCategory} 
+              errorText={errors.categories}
             />
 
             <TaxonomyGroup 
@@ -594,6 +701,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
               items={recipeTags} 
               selectedIds={selectedTagIds} 
               onToggle={toggleTag} 
+              errorText={errors.tags}
             />
           </div>
         </div>
@@ -601,13 +709,14 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
         {/* RIGHT COLUMN: Ingredients & Preparation */}
         <div className="flex-1 flex flex-col gap-6">
           
-          <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-[2rem] p-6 md:p-8">
+          <div className={`bg-neutral-50 dark:bg-neutral-900/50 rounded-[2rem] p-6 md:p-8 transition-colors ${errors.ingredients ? 'border border-[#588157] bg-[#588157]/5' : ''}`}>
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-muted/40 dark:bg-neutral-800 flex items-center justify-center shadow-sm border border-muted/20">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm border transition-colors ${errors.ingredients ? 'bg-[#588157]/10 border-[#588157]/20' : 'bg-muted/40 dark:bg-neutral-800 border-muted/20'}`}>
                   <span className="text-primary font-bold text-lg">⚖️</span>
                 </div>
-                <h3 className="text-2xl font-bold text-foreground">Malzemeler</h3>
+                <h3 className={`text-2xl font-bold transition-colors ${errors.ingredients ? 'text-[#588157]' : 'text-foreground'}`}>Malzemeler</h3>
+                {errors.ingredients && <span className="text-[#588157] text-xs font-bold bg-[#588157]/10 px-3 py-1 rounded-full">{errors.ingredients}</span>}
               </div>
               <span className="text-sm font-bold text-muted-foreground">{ingredients.length} ADET</span>
             </div>
@@ -627,7 +736,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
                   : ALL_UNITS;
 
                 return (
-                  <div key={ing.id} className="grid grid-cols-[auto_60px_100px_1fr_auto] gap-4 items-center bg-muted/40 dark:bg-neutral-800 p-2 rounded-xl shadow-sm border border-muted/10 group relative">
+                  <div key={ing.id} className={`grid grid-cols-[auto_60px_100px_1fr_auto] gap-4 items-center p-2 rounded-xl shadow-sm border transition-colors group relative ${errors.ingredients ? 'bg-background border-[#588157]/30' : 'bg-muted/40 dark:bg-neutral-800 border-muted/10'}`}>
                     <div className="w-6 flex items-center justify-center text-muted-foreground/30 cursor-grab">
                       <GripVertical className="w-4 h-4" />
                     </div>
@@ -711,7 +820,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
 
                     <button 
                       onClick={() => removeIngredient(ing.id)}
-                      className="w-6 flex items-center justify-center text-muted-foreground/50 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                      className="w-6 flex items-center justify-center text-muted-foreground/50 hover:text-[#588157] transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -728,13 +837,14 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
             </div>
           </div>
 
-          <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-[2rem] p-6 md:p-8">
+          <div className={`bg-neutral-50 dark:bg-neutral-900/50 rounded-[2rem] p-6 md:p-8 transition-colors ${errors.steps ? 'border border-[#588157] bg-[#588157]/5' : ''}`}>
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-muted/40 dark:bg-neutral-800 flex items-center justify-center shadow-sm border border-muted/20">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm border transition-colors ${errors.steps ? 'bg-[#588157]/10 border-[#588157]/20' : 'bg-muted/40 dark:bg-neutral-800 border-muted/20'}`}>
                   <span className="text-primary font-bold text-lg">📖</span>
                 </div>
-                <h3 className="text-2xl font-bold text-foreground">Hazırlanışı</h3>
+                <h3 className={`text-2xl font-bold transition-colors ${errors.steps ? 'text-[#588157]' : 'text-foreground'}`}>Hazırlanışı</h3>
+                {errors.steps && <span className="text-[#588157] text-xs font-bold bg-[#588157]/10 px-3 py-1 rounded-full">{errors.steps}</span>}
               </div>
               <span className="text-sm font-bold text-muted-foreground">{steps.length} ADIM</span>
             </div>
@@ -814,7 +924,7 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
                     {steps.length > 1 && (
                       <button 
                         onClick={() => removeStep(step.id)}
-                        className="absolute -right-3 -top-3 w-8 h-8 rounded-full bg-muted/40 dark:bg-neutral-800 border border-muted/20 shadow-sm flex items-center justify-center text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                        className="absolute -right-3 -top-3 w-8 h-8 rounded-full bg-muted/40 dark:bg-neutral-800 border border-muted/20 shadow-sm flex items-center justify-center text-muted-foreground hover:text-[#588157] opacity-0 group-hover:opacity-100 transition-all"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -862,32 +972,34 @@ export const RecipeEditorForm = ({ initialData, onSubmit, onCancel, isPending, h
                 
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase">Önerilen Kategori</label>
-                  <select 
-                    value={newIngCategory} 
-                    onChange={(e) => setNewIngCategory(e.target.value)}
-                    className="w-full bg-neutral-100 dark:bg-neutral-800 p-3 rounded-xl font-medium text-foreground outline-none border-none"
-                  >
-                    <option value="" disabled>Kategori Seçin</option>
-                    {
-                       
-                      pantryCategories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)
-                    }
-                  </select>
+                  <Select value={newIngCategory} onValueChange={setNewIngCategory}>
+                    <SelectTrigger className="w-full bg-neutral-100 dark:bg-neutral-800 h-12 rounded-xl font-medium text-foreground border-none ring-0 focus:ring-0">
+                      <SelectValue placeholder="Kategori Seçin" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border-border/10 rounded-xl shadow-xl z-[200]">
+                      {pantryCategories.map((c: any) => (
+                        <SelectItem key={c.id} value={c.id} className="rounded-lg focus:bg-primary/10 focus:text-primary cursor-pointer">
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase">Varsayılan Birim</label>
-                  <select 
-                    value={newIngUnit} 
-                    onChange={(e) => setNewIngUnit(Number(e.target.value) as MeasurementUnit)}
-                    className="w-full bg-neutral-100 dark:bg-neutral-800 p-3 rounded-xl font-medium text-foreground outline-none border-none"
-                  >
-                    {ALL_UNITS.map(unitVal => (
-                      <option key={unitVal} value={unitVal}>
-                        {MEASUREMENT_UNIT_LABELS[unitVal as MeasurementUnit]}
-                      </option>
-                    ))}
-                  </select>
+                  <Select value={newIngUnit?.toString()} onValueChange={(val) => setNewIngUnit(Number(val) as MeasurementUnit)}>
+                    <SelectTrigger className="w-full bg-neutral-100 dark:bg-neutral-800 h-12 rounded-xl font-medium text-foreground border-none ring-0 focus:ring-0">
+                      <SelectValue placeholder="Birim Seçin" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border-border/10 rounded-xl shadow-xl z-[200]">
+                      {ALL_UNITS.map(unitVal => (
+                        <SelectItem key={unitVal} value={unitVal.toString()} className="rounded-lg focus:bg-primary/10 focus:text-primary cursor-pointer">
+                          {MEASUREMENT_UNIT_LABELS[unitVal as MeasurementUnit]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div className="bg-orange-500/10 text-orange-600 dark:text-orange-400 p-4 rounded-xl text-sm font-medium border border-orange-500/20 mt-2">

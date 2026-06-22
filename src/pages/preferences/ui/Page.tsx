@@ -75,6 +75,23 @@ const getCategoryIcon = (categoryName: string) => {
   return <Sparkles className="w-4 h-4" />;
 };
 
+const reorderRowByRow = <T,>(arr: T[], rows: number): (T | null)[] => {
+  const cols = Math.ceil(arr.length / rows);
+  const reordered: (T | null)[] = [];
+  
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) {
+      const origIndex = r * cols + c;
+      if (origIndex < arr.length) {
+        reordered.push(arr[origIndex]);
+      } else {
+        reordered.push(null);
+      }
+    }
+  }
+  return reordered;
+};
+
 export default function PreferencesPage() {
   const [step, setStep] = useState(1);
   const [username, setUsername] = useState("");
@@ -132,11 +149,12 @@ export default function PreferencesPage() {
     enabled: debouncedSearchQuery.length >= 2,
   });
 
-  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const scrollRefDiets = React.useRef<HTMLDivElement>(null);
+  const scrollRefAllergies = React.useRef<HTMLDivElement>(null);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const { current } = scrollRef;
+  const scroll = (ref: React.RefObject<HTMLDivElement>, direction: 'left' | 'right') => {
+    if (ref.current) {
+      const { current } = ref;
       const scrollAmount = direction === 'left' ? -current.offsetWidth : current.offsetWidth;
       current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
@@ -333,53 +351,85 @@ export default function PreferencesPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {diets?.filter(d => d.isActive).map((diet) => (
-                    <motion.button
-                      key={diet.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => toggleDiet(diet.id)}
-                      className={`relative flex flex-col items-start p-6 rounded-3xl border-2 transition-all text-left ${
-                        selectedDiets.includes(diet.id) 
-                          ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" 
-                          : "border-transparent bg-card shadow-sm hover:shadow-md"
-                      }`}
-                    >
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
-                        selectedDiets.includes(diet.id) ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
-                      }`}>
-                        {getDietIcon(diet.name)}
-                      </div>
-                      <h3 className="font-bold text-xl mb-1 text-foreground">{diet.name}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{diet.description}</p>
-                      
-                      {selectedDiets.includes(diet.id) && (
-                        <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                          <Check className="w-4 h-4 text-white" />
-                        </div>
-                      )}
-                    </motion.button>
-                  ))}
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => toggleDiet("none")}
-                    className={`relative flex flex-col items-start p-6 rounded-3xl border-2 transition-all text-left ${
-                      selectedDiets.length === 0 
-                        ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" 
-                        : "border-transparent bg-card shadow-sm hover:shadow-md"
-                    }`}
+                <div className="relative group">
+                  <div 
+                    ref={scrollRefDiets}
+                    className="overflow-x-auto pb-4 snap-x -mx-2 px-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                   >
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
-                      selectedDiets.length === 0 ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
-                    }`}>
-                      <UtensilsCrossed />
+                    <div className="grid grid-rows-4 grid-flow-col auto-cols-[240px] md:auto-cols-[265px] gap-4 w-max">
+                      {reorderRowByRow(
+                        [...(diets?.filter(d => d.isActive) || []), { id: "none", name: "Her Şeyi Yerim", description: "Herhangi bir beslenme kısıtlamam yok.", isSpecial: true }], 
+                        4
+                      ).map((item, index) => {
+                        if (!item) return <div key={`empty-diet-${index}`} />;
+                        if ('isSpecial' in item) {
+                          return (
+                            <motion.button
+                              key="none"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => toggleDiet("none")}
+                              className={`relative snap-start flex flex-col items-start p-6 h-[190px] rounded-3xl border-2 transition-all text-left ${
+                                selectedDiets.length === 0 
+                                  ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" 
+                                  : "border-transparent bg-card shadow-sm hover:shadow-md"
+                              }`}
+                            >
+                              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
+                                selectedDiets.length === 0 ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
+                              }`}>
+                                <UtensilsCrossed />
+                              </div>
+                              <h3 className="font-bold text-lg mb-1 text-foreground">Her Şeyi Yerim</h3>
+                              <p className="text-sm text-muted-foreground">Herhangi bir beslenme kısıtlamam yok.</p>
+                            </motion.button>
+                          );
+                        }
+                        
+                        const diet = item as any;
+                        return (
+                          <motion.button
+                            key={diet.id}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => toggleDiet(diet.id)}
+                            className={`relative snap-start flex flex-col items-start p-6 h-[190px] rounded-3xl border-2 transition-all text-left ${
+                              selectedDiets.includes(diet.id) 
+                                ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" 
+                                : "border-transparent bg-card shadow-sm hover:shadow-md"
+                            }`}
+                          >
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
+                              selectedDiets.includes(diet.id) ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
+                            }`}>
+                              {getDietIcon(diet.name)}
+                            </div>
+                            <h3 className="font-bold text-lg mb-1 text-foreground">{diet.name}</h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2">{diet.description}</p>
+                            
+                            {selectedDiets.includes(diet.id) && (
+                              <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                <Check className="w-4 h-4 text-white" />
+                              </div>
+                            )}
+                          </motion.button>
+                        );
+                      })}
                     </div>
-                    <h3 className="font-bold text-xl mb-1 text-foreground">Her Şeyi Yerim</h3>
-                    <p className="text-sm text-muted-foreground">Herhangi bir beslenme kısıtlamam yok.</p>
-                  </motion.button>
+                  </div>
+
+                  <button 
+                    onClick={() => scroll(scrollRefDiets, 'left')}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-12 h-12 bg-background border-2 border-border rounded-full flex items-center justify-center shadow-lg text-foreground hover:border-primary hover:text-primary transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button 
+                    onClick={() => scroll(scrollRefDiets, 'right')}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-12 h-12 bg-background border-2 border-border rounded-full flex items-center justify-center shadow-lg text-foreground hover:border-primary hover:text-primary transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
                 </div>
               </motion.div>
             ) : step === 3 ? (
@@ -401,50 +451,54 @@ export default function PreferencesPage() {
 
                 <div className="relative group">
                   <div 
-                    ref={scrollRef}
+                    ref={scrollRefAllergies}
                     className="overflow-x-auto pb-4 snap-x -mx-2 px-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                   >
-                    <div className="grid grid-rows-4 grid-flow-col auto-cols-[240px] md:auto-cols-[280px] gap-4 w-max">
-                      {allergies?.filter(a => a.isActive).map((allergy) => (
-                        <motion.button
-                          key={allergy.id}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => toggleAllergy(allergy.id)}
-                          className={`relative snap-start flex flex-col items-start p-6 rounded-3xl border-2 transition-all text-left ${
-                            selectedAllergies.includes(allergy.id)
-                              ? "border-primary bg-primary/5 shadow-xl shadow-primary/10"
-                              : "border-transparent bg-card shadow-sm hover:shadow-md"
-                          }`}
-                        >
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
-                            selectedAllergies.includes(allergy.id) ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
-                          }`}>
-                            {getAllergyIcon(allergy.name)}
-                          </div>
-                          <h3 className="font-bold text-lg mb-1 text-foreground">{allergy.name}</h3>
-                          {allergy.description && (
-                            <p className="text-xs text-muted-foreground line-clamp-2">{allergy.description}</p>
-                          )}
-                          
-                          {selectedAllergies.includes(allergy.id) && (
-                            <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
+                    <div className="grid grid-rows-4 grid-flow-col auto-cols-[240px] md:auto-cols-[265px] gap-4 w-max">
+                      {reorderRowByRow(allergies?.filter(a => a.isActive) || [], 4).map((item, index) => {
+                        if (!item) return <div key={`empty-allergy-${index}`} />;
+                        const allergy = item;
+                        return (
+                          <motion.button
+                            key={allergy.id}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => toggleAllergy(allergy.id)}
+                            className={`relative snap-start flex flex-col items-start p-6 h-[190px] rounded-3xl border-2 transition-all text-left ${
+                              selectedAllergies.includes(allergy.id)
+                                ? "border-primary bg-primary/5 shadow-xl shadow-primary/10"
+                                : "border-transparent bg-card shadow-sm hover:shadow-md"
+                            }`}
+                          >
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
+                              selectedAllergies.includes(allergy.id) ? "bg-primary text-white" : "bg-muted dark:bg-neutral-800 text-primary"
+                            }`}>
+                              {getAllergyIcon(allergy.name)}
                             </div>
-                          )}
-                        </motion.button>
-                      ))}
+                            <h3 className="font-bold text-lg mb-1 text-foreground">{allergy.name}</h3>
+                            {allergy.description && (
+                              <p className="text-sm text-muted-foreground line-clamp-2">{allergy.description}</p>
+                            )}
+                            
+                            {selectedAllergies.includes(allergy.id) && (
+                              <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                <Check className="w-4 h-4 text-white" />
+                              </div>
+                            )}
+                          </motion.button>
+                        );
+                      })}
                     </div>
                   </div>
 
                   <button 
-                    onClick={() => scroll('left')}
+                    onClick={() => scroll(scrollRefAllergies, 'left')}
                     className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-12 h-12 bg-background border-2 border-border rounded-full flex items-center justify-center shadow-lg text-foreground hover:border-primary hover:text-primary transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10"
                   >
                     <ChevronLeft className="w-6 h-6" />
                   </button>
                   <button 
-                    onClick={() => scroll('right')}
+                    onClick={() => scroll(scrollRefAllergies, 'right')}
                     className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-12 h-12 bg-background border-2 border-border rounded-full flex items-center justify-center shadow-lg text-foreground hover:border-primary hover:text-primary transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10"
                   >
                     <ChevronRight className="w-6 h-6" />

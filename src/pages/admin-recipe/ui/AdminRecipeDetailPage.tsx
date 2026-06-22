@@ -22,8 +22,6 @@ export function AdminRecipeDetailPage() {
   const queryClient = useQueryClient();
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [isEditing, setIsEditing] = React.useState(false);
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [aiEdits, setAiEdits] = React.useState<{description: string, steps: string[]} | null>(null);
 
   const deleteMutation = useMutation({
     mutationFn: () => recipeApi.deleteRecipe(id!),
@@ -186,7 +184,9 @@ export function AdminRecipeDetailPage() {
                   originalSteps={recipe.steps}
                   llmReviewResultJson={recipe.llmReviewResultJson}
                   status={recipe.status}
-                  onApplyToForm={() => setIsEditing(true)}
+                  onApplyToForm={() => {
+                    setIsEditing(true);
+                  }}
                 />
               </div>
 

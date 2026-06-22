@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Loader2, AlertCircle, Bot, HandMetal, CheckCircle } from "lucide-react";
+import { Loader2, AlertCircle, Bot, HandMetal, CheckCircle, Sparkles } from "lucide-react";
 import { usePendingRequests, type PendingRequest } from "@/entities/admin-ingredient";
 import { ResolveRequestDialog } from "@/features/admin-ingredient";
 import { Button } from "@/shared/ui/button";
@@ -61,10 +61,9 @@ export const PendingRequests = ({ searchTerm = "" }: { searchTerm?: string }) =>
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-muted-foreground uppercase bg-muted/20 border-b border-muted/30">
               <tr>
-                <th className="px-6 py-5 font-black tracking-wider w-1/4">Talep Edilen Malzeme</th>
-                <th className="px-6 py-5 font-black tracking-wider w-[15%]">Tarih</th>
-                <th className="px-6 py-5 font-black tracking-wider w-[45%]">AI Analizi</th>
-                <th className="px-6 py-5 font-black tracking-wider text-right w-[15%]">İşlem</th>
+                <th className="px-6 py-5 font-black tracking-wider w-1/2">Talep Edilen Malzeme</th>
+                <th className="px-6 py-5 font-black tracking-wider w-1/4">Tarih</th>
+                <th className="px-6 py-5 font-black tracking-wider text-right w-1/4">İşlem</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-muted/30">
@@ -80,6 +79,15 @@ export const PendingRequests = ({ searchTerm = "" }: { searchTerm?: string }) =>
                   // eslint-disable-next-line unused-imports/no-unused-vars
                   } catch (e) {
                     // ignore
+                  }
+                }
+
+                let parsedLlm: any = null;
+                if (request.llmAnalysisResult && request.llmAnalysisResult.trim().startsWith('{')) {
+                  try {
+                    parsedLlm = JSON.parse(request.llmAnalysisResult);
+                  } catch {
+                    // Not valid JSON, will fallback to raw string
                   }
                 }
 
@@ -107,19 +115,6 @@ export const PendingRequests = ({ searchTerm = "" }: { searchTerm?: string }) =>
                   </td>
                   <td className="px-6 py-6 text-muted-foreground font-medium align-top">
                     {new Date(request.createdDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </td>
-                  <td className="px-6 py-6 align-top">
-                    <div className="bg-[#F4F1E1] dark:bg-[#F4F1E1]/5 rounded-2xl p-4 text-sm flex items-start gap-3">
-                      <div className="bg-background/50 p-1.5 rounded-full shrink-0 shadow-sm mt-0.5">
-                        <Bot className="w-5 h-5 text-[#556B2F]" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-[#556B2F] dark:text-[#F4F1E1] mb-1 text-xs uppercase tracking-widest">AI Analiz Sonucu</p>
-                        <p className="text-muted-foreground font-medium leading-relaxed break-words max-w-xl">
-                          {isJson ? request.requestedName : (request.llmAnalysisResult || "Analiz sonucu bulunamadı.")}
-                        </p>
-                      </div>
-                    </div>
                   </td>
                   <td className="px-6 py-6 text-right align-top">
                     <Button 

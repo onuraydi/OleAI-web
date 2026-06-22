@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipeApi } from '@/entities/recipe/api/recipeApi';
 import { toast } from 'sonner';
+import { useAiModerationStore } from '../model/aiModerationStore';
 
 interface AiModerationPanelProps {
   recipeId: string;
@@ -12,7 +13,7 @@ interface AiModerationPanelProps {
   originalSteps: { stepNumber: number; instruction: string }[];
   llmReviewResultJson?: string;
   status: number;
-  onApplyToForm?: (description: string, steps: string[]) => void;
+  onApplyToForm?: () => void;
 }
 
 interface LlmCorrection {
@@ -28,16 +29,54 @@ interface LlmCorrection {
 export function AiModerationPanel({ recipeId, originalDescription, originalSteps, llmReviewResultJson, status, onApplyToForm }: AiModerationPanelProps) {
   const queryClient = useQueryClient();
   
+  const setAnalyzing = useAiModerationStore(state => state.setAnalyzing);
+  const checkAndClearExpired = useAiModerationStore(state => state.checkAndClearExpired);
+  const isAnalyzingGlobally = !!useAiModerationStore(state => state.analyzingRecipes[recipeId]);
+
+  React.useEffect(() => {
+    checkAndClearExpired();
+    const interval = setInterval(checkAndClearExpired, 5000);
+    return () => clearInterval(interval);
+  }, [checkAndClearExpired]);
+
+  // F5 senaryosu için: eğer sayfa yenilendiyse ve hala analizde görünüyorsa, backend'i poll et.
+  // İlk defa analiz ediliyorsa llmReviewResultJson dolduğunda statü temizlenir.
+  React.useEffect(() => {
+    if (!isAnalyzingGlobally) return;
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipeId] });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isAnalyzingGlobally, recipeId, queryClient]);
+
+  React.useEffect(() => {
+    // Eğer daha önce hiç analiz edilmemişse ve şimdi sonuç geldiyse (F5 polling sayesinde)
+    if (llmReviewResultJson && isAnalyzingGlobally) {
+      // Not: Yeniden analiz et'te zaten dolu olduğu için bu hementemizleyebilir, 
+      // o yüzden F5 sonrasında 'yeniden analiz' 60 saniye bekler veya onSettled ile temizlenir.
+      // Sadece null iken yeni dolduğunu varsayarsak:
+      // Ama en güvenlisi sadece mutation onSettled'a güvenmek, ve 60 saniye timeout'u beklemek.
+    }
+  }, [llmReviewResultJson, isAnalyzingGlobally, recipeId, setAnalyzing]);
+
   const analyzeMutation = useMutation({
     mutationFn: () => recipeApi.analyzeWithAi(recipeId),
+    onMutate: () => {
+      setAnalyzing(recipeId, true);
+    },
     onSuccess: () => {
       toast.success("Yapay zeka analizi başarıyla tamamlandı.");
       queryClient.invalidateQueries({ queryKey: ["recipe-detail", recipeId] });
     },
     onError: () => {
       toast.error("Yapay zeka analizi sırasında bir hata oluştu.");
+    },
+    onSettled: () => {
+      setAnalyzing(recipeId, false);
     }
   });
+
+  const isPending = analyzeMutation.isPending || isAnalyzingGlobally;
 
   const approveMutation = useMutation({
     mutationFn: () => recipeApi.approveRecipe(recipeId),
@@ -60,26 +99,9 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
     }
   }
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [isEditMode, setIsEditMode] = React.useState(false);
-  const [editedDescription, setEditedDescription] = React.useState<string>("");
-  const [editedSteps, setEditedSteps] = React.useState<string[]>([]);
-
-  React.useEffect(() => {
-    if (parsedResult) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setEditedDescription(parsedResult.correctedDescription || "");
-      setEditedSteps(parsedResult.correctedSteps || []);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [llmReviewResultJson]);
-
   const handleApplyToForm = () => {
     if (onApplyToForm) {
-      onApplyToForm(
-        editedDescription,
-        editedSteps
-      );
+      onApplyToForm();
       toast.success("Yapay zeka önerilerini formu düzenleyerek inceleyebilirsiniz.");
     } else {
       approveMutation.mutate();
@@ -105,10 +127,10 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
         </div>
         <Button 
           onClick={() => analyzeMutation.mutate()} 
-          disabled={analyzeMutation.isPending}
+          disabled={isPending}
           className="gap-2 font-bold shrink-0 h-9"
         >
-          {analyzeMutation.isPending ? (
+          {isPending ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Analiz Ediliyor...</>
           ) : (
             <><Sparkles className="w-4 h-4" /> Analiz Et</>
@@ -152,10 +174,14 @@ export function AiModerationPanel({ recipeId, originalDescription, originalSteps
         <Button 
           variant="ghost" 
           onClick={() => analyzeMutation.mutate()} 
-          disabled={analyzeMutation.isPending}
+          disabled={isPending}
           className="text-muted-foreground hover:text-foreground text-xs font-bold h-9"
         >
-          {analyzeMutation.isPending ? "Analiz Ediliyor..." : "Yeniden Analiz Et"}
+          {isPending ? (
+            <><Loader2 className="w-3 h-3 animate-spin mr-2" /> Analiz Ediliyor...</>
+          ) : (
+            "Yeniden Analiz Et"
+          )}
         </Button>
         
         {parsedResult.isApproved && onApplyToForm && (
