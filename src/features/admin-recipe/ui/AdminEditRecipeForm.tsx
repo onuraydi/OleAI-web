@@ -9,18 +9,17 @@ import { RecipeEditorForm } from "@/widgets/recipe-editor/ui/RecipeEditorForm";
 interface AdminEditRecipeFormProps {
   initialData: RecipeDetailResponse;
   isReviewMode?: boolean;
-  prefillAiEdits?: { description: string; steps: string[] } | null;
   onCancel?: () => void;
 }
 
-export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefillAiEdits, onCancel }: AdminEditRecipeFormProps) => {
+export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, onCancel }: AdminEditRecipeFormProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   let aiCorrectedDescription: string | null = null;
   let aiCorrectedSteps: string[] = [];
   
-  if (isReviewMode && initialData.llmReviewResultJson) {
+  if (initialData.llmReviewResultJson) {
     try {
       const parsed = JSON.parse(initialData.llmReviewResultJson);
       aiCorrectedDescription = parsed.correctedDescription || null;
@@ -78,9 +77,8 @@ export const AdminEditRecipeForm = ({ initialData, isReviewMode = false, prefill
       isPending={isPending}
       headerTitle="Tarifi Düzenle"
       submitButtonText={isReviewMode ? "Değişiklikleri Kaydet ve Onayla" : "Tarifi Güncelle"}
-      prefillAiEdits={prefillAiEdits}
       aiSuggestions={
-        isReviewMode && (aiCorrectedDescription || aiCorrectedSteps.length > 0) 
+        (aiCorrectedDescription || aiCorrectedSteps.length > 0) 
           ? { description: aiCorrectedDescription, steps: aiCorrectedSteps } 
           : undefined
       }

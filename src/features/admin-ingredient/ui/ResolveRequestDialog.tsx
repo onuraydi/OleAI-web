@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, CheckCircle2, GitMerge, XCircle } from "lucide-react";
+import { Loader2, CheckCircle2, GitMerge, XCircle, Sparkles } from "lucide-react";
 import { 
   Dialog,
   DialogContent,
@@ -140,6 +140,15 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
     } catch { /* ignore */ }
   }
 
+  let parsedLlm: any = null;
+  if (request.llmAnalysisResult && request.llmAnalysisResult.trim().startsWith('{')) {
+    try {
+      parsedLlm = JSON.parse(request.llmAnalysisResult);
+    } catch {
+      // Not valid JSON, will fallback to raw string
+    }
+  }
+
   const filteredMasterIngredients = ingredientsData?.items.filter(ing => 
     ing.name.toLowerCase().includes(searchMaster.toLowerCase())
   ) || [];
@@ -155,13 +164,57 @@ export const ResolveRequestDialog = ({ request, open, onOpenChange }: ResolveReq
         </DialogHeader>
 
         {(request.llmAnalysisResult || isJson) && (
-          <div className="bg-muted p-3 rounded-md text-sm mb-4 max-h-40 overflow-y-auto">
-            <p className="font-semibold mb-1 flex items-center gap-2">
+          <div className="bg-muted p-4 rounded-xl text-sm mb-4">
+            <p className="font-semibold mb-3 flex items-center gap-2 text-foreground">
               <span className="text-xl">🤖</span> AI Analizi
             </p>
-            <p className="text-muted-foreground break-words">
-              {isJson ? request.requestedName : request.llmAnalysisResult}
-            </p>
+            {parsedLlm ? (
+              <div className="flex flex-col gap-2 w-full">
+                {parsedLlm.Reason && (
+                  <div className={`text-xs font-medium p-2.5 rounded-lg border ${parsedLlm.Reason.includes("Hata") || parsedLlm.Reason.includes("HATASI") ? "bg-red-500/10 text-red-600 border-red-500/20 dark:text-red-400" : "bg-primary/10 text-primary border-primary/20"}`}>
+                    {parsedLlm.Reason}
+                  </div>
+                )}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                  {parsedLlm.IsNew !== undefined && (
+                    <div className="bg-background/50 rounded-xl p-2.5 border border-border/50 flex flex-col justify-center">
+                      <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-black mb-0.5">Durum</span>
+                      <span className="text-xs font-bold text-foreground">{parsedLlm.IsNew ? "Yeni Eklenebilir" : "Mevcut / Geçersiz"}</span>
+                    </div>
+                  )}
+                  {parsedLlm.Category && parsedLlm.Category !== "Belirsiz" && (
+                    <div className="bg-background/50 rounded-xl p-2.5 border border-border/50 flex flex-col justify-center">
+                      <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-black mb-0.5">Kategori</span>
+                      <span className="text-xs font-bold text-foreground">{parsedLlm.Category}</span>
+                    </div>
+                  )}
+                  {parsedLlm.BaseUnitType && (
+                    <div className="bg-background/50 rounded-xl p-2.5 border border-border/50 flex flex-col justify-center">
+                      <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-black mb-0.5">Birim</span>
+                      <span className="text-xs font-bold text-foreground">{parsedLlm.BaseUnitType}</span>
+                    </div>
+                  )}
+                  {parsedLlm.EstimatedShelfLifeInDays !== null && parsedLlm.EstimatedShelfLifeInDays !== undefined && (
+                    <div className="bg-background/50 rounded-xl p-2.5 border border-border/50 flex flex-col justify-center">
+                      <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-black mb-0.5">Raf Ömrü</span>
+                      <span className="text-xs font-bold text-foreground">{parsedLlm.EstimatedShelfLifeInDays} Gün</span>
+                    </div>
+                  )}
+                  {parsedLlm.SuggestedAliasFor && (
+                    <div className="bg-[#FF9800]/10 rounded-xl p-2.5 border border-[#FF9800]/20 flex flex-col justify-center col-span-2 sm:col-span-3">
+                      <span className="text-[9px] uppercase tracking-widest text-[#FF9800] font-black mb-0.5 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" /> Önerilen Eşleşme (Alias)
+                      </span>
+                      <span className="text-xs font-bold text-[#FF9800]">{parsedLlm.SuggestedAliasFor}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground break-words max-h-32 overflow-y-auto">
+                {isJson ? request.requestedName : request.llmAnalysisResult}
+              </p>
+            )}
           </div>
         )}
 

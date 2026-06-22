@@ -4,6 +4,7 @@ import { ThemeProvider } from './providers/theme';
 import { AppRouter } from './providers/router';
 import { useSessionStore } from '@/entities/session';
 import { useForegroundNotifications } from '@/features/notifications/hooks/usePushNotifications';
+import { Toaster } from '@/shared/ui/sonner';
 import '../index.css';
 
 function InnerApp() {
@@ -31,6 +32,7 @@ function App() {
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <QueryProvider>
         <InnerApp />
+        <Toaster />
       </QueryProvider>
     </ThemeProvider>
   );
